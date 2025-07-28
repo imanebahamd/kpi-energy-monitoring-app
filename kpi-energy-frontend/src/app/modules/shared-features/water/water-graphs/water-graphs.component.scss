@@ -1,0 +1,97 @@
+.water-graphs-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+
+  h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      label {
+        font-weight: 500;
+      }
+
+      input {
+        padding: 5px 10px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .chart-container {
+    position: relative;
+    height: 500px;
+    margin-bottom: 30px;
+  }
+
+  .data-summary {
+    margin-top: 30px;
+
+    h3 {
+      color: #2c3e50;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+
+      .summary-card {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        text-align: center;
+
+        h4 {
+          color: #495057;
+          margin-top: 0;
+          margin-bottom: 10px;
+          font-size: 1rem;
+        }
+
+        p {
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #2c3e50;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  /* Style des onglets */
+  ::ng-deep .p-tabview .p-tabview-nav {
+    background: #f8f9fa;
+    border: none;
+  }
+
+  ::ng-deep .p-tabview .p-tabview-nav li .p-tabview-nav-link {
+    border: none;
+    background: transparent;
+  }
+
+  ::ng-deep .p-tabview .p-tabview-nav li.p-highlight .p-tabview-nav-link {
+    color: #2196F3;
+    border-bottom: 2px solid #2196F3;
+  }
+}

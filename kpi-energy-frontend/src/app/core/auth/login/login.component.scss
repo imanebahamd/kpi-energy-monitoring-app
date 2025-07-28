@@ -1,0 +1,589 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// Nouvelle palette de couleurs claires
+$primary-color: #5D9CEC;
+$primary-dark: #4A89DC;
+$primary-darker: #3B7DDD;
+$secondary-color: #7FB2F0;
+$background-dark: #F5F7FA;
+$background-medium: #EBEFF5;
+$background-light: #E1E8F0;
+$text-dark: #2C3E50;
+$text-light: #7F8C8D;
+$text-placeholder: #CCD1D9;
+$border-color: #E0E6ED;
+$white: #FFFFFF;
+$light-bg: #F8FAFD;
+$error-color: #FF6B6B;
+$error-light: #FFE5E5;
+$success-color: #4CAF50;
+
+// Animations
+@keyframes containerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes titleSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes subtitleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+@keyframes formTitleSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes formSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes inputGroupSlide {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes iconPulse {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes errorSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 50px;
+  }
+}
+
+@keyframes errorShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+// Styles principaux
+:host {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, $background-dark 0%, $background-medium 50%, $background-light 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.bg-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+
+  .particle {
+    position: absolute;
+    background: rgba($primary-color, 0.08);
+    border-radius: 50%;
+    animation: float 6s ease-in-out infinite;
+
+    &:nth-child(1) {
+      width: 80px;
+      height: 80px;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    &:nth-child(2) {
+      width: 60px;
+      height: 60px;
+      left: 20%;
+      animation-delay: 2s;
+    }
+
+    &:nth-child(3) {
+      width: 120px;
+      height: 120px;
+      left: 80%;
+      animation-delay: 4s;
+    }
+
+    &:nth-child(4) {
+      width: 40px;
+      height: 40px;
+      left: 70%;
+      animation-delay: 1s;
+    }
+  }
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+  animation: containerFadeIn 1.2s ease-out;
+}
+
+.login-card {
+  display: flex;
+  width: 100%;
+  max-width: 1000px;
+  min-height: 600px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba($white, 0.98);
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 32px 64px rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba($white, 0.1);
+  animation: cardSlideIn 1s ease-out;
+}
+
+// Partie gauche - message d'accueil
+.login-left {
+  flex: 1;
+  background: linear-gradient(135deg, $primary-color 0%, $primary-dark 50%, $primary-darker 100%);
+  color: $white;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+    opacity: 0.3;
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .welcome-title {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    animation: titleSlideIn 1.2s ease-out;
+
+    strong {
+      color: rgba($white, 1);
+      display: block;
+      margin-top: 8px;
+    }
+  }
+
+  .welcome-subtitle {
+    font-size: 20px;
+    font-weight: 300;
+    opacity: 0.9;
+    animation: subtitleFadeIn 1.5s ease-out;
+  }
+
+  .energy-icon {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    width: 80px;
+    height: 80px;
+    opacity: 0.2;
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+}
+
+// Partie droite - formulaire
+.login-right {
+  flex: 1;
+  padding: 80px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: linear-gradient(145deg, $white 0%, $light-bg 100%);
+
+  .form-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: $text-dark;
+    position: relative;
+    text-align: center;
+    animation: formTitleSlide 1s ease-out;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, $primary-color, $secondary-color);
+      border-radius: 2px;
+    }
+  }
+
+  .login-form {
+    animation: formSlideIn 1.2s ease-out;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+
+    .input-group {
+      margin-bottom: 24px;
+      animation: inputGroupSlide 1.4s ease-out;
+      width: 100%;
+
+      .input-wrapper {
+        position: relative;
+        width: 100%;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: translateY(-2px);
+        }
+
+        .input-icon {
+          position: absolute;
+          left: 20px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 22px;
+          height: 22px;
+          fill: $text-light;
+          transition: all 0.3s ease;
+          z-index: 2;
+        }
+
+        input {
+          width: 100%;
+          height: 60px;
+          padding: 0 20px 0 60px;
+          border: 2px solid $border-color;
+          border-radius: 16px;
+          font-size: 16px;
+          font-weight: 400;
+          background: rgba($light-bg, 0.8);
+          color: $text-dark;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          box-sizing: border-box;
+
+          &::placeholder {
+            color: $text-placeholder;
+            font-weight: 300;
+          }
+
+          &:focus {
+            border-color: $primary-color;
+            outline: none;
+            background: $white;
+            box-shadow:
+              0 0 0 4px rgba($primary-color, 0.1),
+              0 8px 25px rgba($primary-color, 0.1);
+            transform: translateY(-1px);
+
+            + .input-icon {
+              fill: $primary-color;
+              transform: translateY(-50%) scale(1.1);
+            }
+          }
+
+          &.ng-invalid.ng-touched,
+          &.error {
+            border-color: $error-color;
+            box-shadow: 0 0 0 4px rgba($error-color, 0.1);
+            animation: errorShake 0.5s ease-in-out;
+
+            + .input-icon {
+              fill: $error-color;
+            }
+          }
+        }
+      }
+
+      // Messages d'erreur pour les champs
+      .error-message {
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: $error-light;
+        border: 1px solid rgba($error-color, 0.2);
+        border-radius: 8px;
+        font-size: 14px;
+        color: $error-color;
+        animation: errorSlideDown 0.3s ease-out;
+
+        .error-icon {
+          width: 16px;
+          height: 16px;
+          fill: $error-color;
+          flex-shrink: 0;
+        }
+
+        span {
+          font-weight: 500;
+        }
+      }
+    }
+
+    // Message d'erreur général
+    .general-error-message {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: $error-light;
+      border: 1px solid rgba($error-color, 0.3);
+      border-radius: 12px;
+      font-size: 15px;
+      color: $error-color;
+      font-weight: 500;
+      animation: errorSlideDown 0.3s ease-out;
+
+      .error-icon {
+        width: 20px;
+        height: 20px;
+        fill: $error-color;
+        flex-shrink: 0;
+      }
+    }
+
+    .submit-btn {
+      width: 100%;
+      height: 60px;
+      background: linear-gradient(135deg, $primary-color 0%, $secondary-color 100%);
+      color: $white;
+      font-size: 18px;
+      font-weight: 600;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-top: 20px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba($primary-color, 0.15);
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba($white, 0.2), transparent);
+        transition: left 0.5s ease;
+      }
+
+      .btn-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        height: 100%;
+        position: relative;
+        z-index: 2;
+
+        .spinner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .spinner-icon {
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+          }
+        }
+
+        .btn-text {
+          transition: opacity 0.3s ease;
+
+          &.loading {
+            opacity: 0.9;
+          }
+        }
+      }
+
+      &:hover:not(:disabled) {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba($primary-color, 0.2);
+
+        &::before {
+          left: 100%;
+        }
+      }
+
+      &:active:not(:disabled) {
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 4px 15px rgba($primary-color, 0.1);
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .login-card {
+    flex-direction: column;
+    max-width: 400px;
+    min-height: auto;
+  }
+
+  .login-left,
+  .login-right {
+    padding: 40px 30px;
+  }
+
+  .login-left {
+    .welcome-title {
+      font-size: 28px;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+    }
+
+    .energy-icon {
+      display: none;
+    }
+  }
+
+  .login-right {
+    .form-title {
+      font-size: 24px;
+    }
+
+    .login-form {
+      max-width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+  }
+
+  .login-left,
+  .login-right {
+    padding: 30px 20px;
+  }
+
+  .login-right {
+    .login-form {
+      .input-group {
+        margin-bottom: 20px;
+
+        .input-wrapper input {
+          height: 55px;
+          font-size: 15px;
+        }
+
+        .error-message {
+          font-size: 13px;
+          padding: 6px 10px;
+        }
+      }
+
+      .general-error-message {
+        font-size: 14px;
+        padding: 10px 14px;
+      }
+
+      .submit-btn {
+        height: 55px;
+        font-size: 16px;
+      }
+    }
+  }
+}

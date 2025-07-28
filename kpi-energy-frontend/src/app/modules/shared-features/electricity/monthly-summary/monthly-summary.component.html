@@ -1,0 +1,112 @@
+<div class="monthly-summary">
+  <div class="header">
+    <h1>
+      <i class="icon lightning"></i>
+      Rapport Mensuel Électrique
+    </h1>
+    <a routerLink="/admin/electricity-annual" class="button">
+      <i class="icon calendar"></i> Vue Annuelle
+    </a>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label for="year">Année</label>
+      <input id="year" type="number" [(ngModel)]="year"
+             (change)="onFilterChange()"
+             min="2000" max="2100"
+             placeholder="Entrez l'année">
+    </div>
+
+    <div class="filter-group">
+      <label for="month">Mois</label>
+      <select id="month" [(ngModel)]="month" (change)="onFilterChange()">
+        <option [ngValue]="null" disabled>Choisissez un mois</option>
+        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+      </select>
+    </div>
+
+    <button (click)="loadSummary()" [disabled]="!year || !month || isLoading">
+      <span *ngIf="!isLoading">Afficher</span>
+      <span *ngIf="isLoading" class="spinner"></span>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="!filtersTouched" class="instruction">
+    <i class="icon info"></i>
+    <span>Veuillez sélectionner une année et un mois pour afficher les données</span>
+  </div>
+
+  <div *ngIf="isLoading" class="status loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <div *ngIf="error && filtersTouched" class="status error">
+    <i class="icon warning"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Tableau 60KV -->
+  <div *ngIf="summary" class="network-section">
+    <h2><i class="icon high-voltage"></i> Réseau 60KV</h2>
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Pointe (KW)</th>
+        <th>Facteur de puissance</th>
+        <th>Consommation (KWh)</th>
+        <th>État</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="numeric">{{ summary.network60kvPeak | number:'1.2-2' }}</td>
+        <td class="numeric">{{ summary.network60kvPowerFactor | number:'1.3-3' }}</td>
+        <td class="numeric">{{ summary.network60kvConsumption | number:'1.2-2' }}</td>
+        <td class="status-cell" [class]="getCosphiStatus(summary.network60kvPowerFactor, 0.9)">
+          <i class="icon" [class]="getStatusIcon(getCosphiStatus(summary.network60kvPowerFactor, 0.9))"></i>
+          {{ getCosphiStatus(summary.network60kvPowerFactor, 0.9) | titlecase }}
+        </td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="4">Limite: ≥ 0.9 | Optimal: ≈0.95</td>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Tableau 22KV -->
+  <div *ngIf="summary" class="network-section">
+    <h2><i class="icon medium-voltage"></i> Réseau 22KV</h2>
+    <table class="data-table">
+      <thead>
+      <tr>
+        <th>Pointe (KW)</th>
+        <th>Facteur de puissance</th>
+        <th>Consommation (KWh)</th>
+        <th>État</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td class="numeric">{{ summary.network22kvPeak | number:'1.2-2' }}</td>
+        <td class="numeric">{{ summary.network22kvPowerFactor | number:'1.3-3' }}</td>
+        <td class="numeric">{{ summary.network22kvConsumption | number:'1.2-2' }}</td>
+        <td class="status-cell" [class]="getCosphiStatus(summary.network22kvPowerFactor, 0.8)">
+          <i class="icon" [class]="getStatusIcon(getCosphiStatus(summary.network22kvPowerFactor, 0.8))"></i>
+          {{ getCosphiStatus(summary.network22kvPowerFactor, 0.8) | titlecase }}
+        </td>
+      </tr>
+      </tbody>
+      <tfoot>
+      <tr>
+        <td colspan="4">Limite: ≥ 0.8 | Optimal: ≈0.85</td>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

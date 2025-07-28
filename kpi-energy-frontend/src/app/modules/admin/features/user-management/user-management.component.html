@@ -1,0 +1,324 @@
+<!-- user-management.component.html -->
+<div class="user-management-container">
+  <!-- En-tête avec titre et bouton d'ajout -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <i class="bi bi-people-fill"></i>
+          Gestion des Utilisateurs
+        </h1>
+        <p class="page-subtitle">Gérez les utilisateurs, leurs rôles et leurs accès</p>
+      </div>
+      <button class="btn-add-user" (click)="initAddUser()" [disabled]="isLoading">
+        <i class="bi bi-plus-circle"></i>
+        <span>Ajouter un Utilisateur</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Messages d'alerte -->
+  <div class="alerts-container">
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+      <button class="alert-close" (click)="errorMessage = null">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ successMessage }}</span>
+      <button class="alert-close" (click)="successMessage = null">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Formulaire utilisateur -->
+  <div *ngIf="showUserForm" class="form-card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-person-plus'"></i>
+        {{ isEditMode ? 'Modifier Utilisateur' : 'Nouvel Utilisateur' }}
+      </h3>
+    </div>
+
+    <div class="card-body">
+      <form (ngSubmit)="submitUser()" #userFormRef="ngForm">
+        <div class="form-grid">
+          <!-- Nom Complet -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-person"></i>
+              Nom Complet <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="userForm.nomComplet"
+              name="nomComplet"
+              required
+              placeholder="Entrez le nom complet">
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-envelope"></i>
+              Email <span class="required">*</span>
+            </label>
+            <input
+              type="email"
+              class="form-control"
+              [(ngModel)]="userForm.email"
+              name="email"
+              required
+              placeholder="exemple@email.com">
+          </div>
+
+          <!-- Téléphone -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-telephone"></i>
+              Téléphone
+            </label>
+            <input
+              type="tel"
+              class="form-control"
+              [(ngModel)]="userForm.telephone"
+              name="telephone"
+              placeholder="+33 1 23 45 67 89">
+          </div>
+
+          <!-- Rôle -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-shield-check"></i>
+              Rôle <span class="required">*</span>
+            </label>
+            <select class="form-control" [(ngModel)]="userForm.role" name="role" required>
+              <option value="USER">Utilisateur</option>
+              <option value="ADMIN">Administrateur</option>
+            </select>
+          </div>
+
+          <!-- Département -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-building"></i>
+              Département
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="userForm.departement"
+              name="departement"
+              placeholder="Ex: Ressources Humaines">
+          </div>
+
+          <!-- Fonction -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-briefcase"></i>
+              Fonction
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              [(ngModel)]="userForm.fonction"
+              name="fonction"
+              placeholder="Ex: Manager">
+          </div>
+
+          <!-- Mot de passe -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-lock"></i>
+              Mot de passe <span class="required" *ngIf="!isEditMode">*</span>
+            </label>
+            <input
+              type="password"
+              class="form-control"
+              [(ngModel)]="userForm.motDePasse"
+              name="motDePasse"
+              [required]="!isEditMode"
+              placeholder="Entrez le mot de passe">
+          </div>
+
+          <!-- Confirmation mot de passe -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-lock-fill"></i>
+              Confirmer le mot de passe
+            </label>
+            <input
+              type="password"
+              class="form-control"
+              [(ngModel)]="userForm.confirmPassword"
+              name="confirmPassword"
+              placeholder="Confirmez le mot de passe">
+          </div>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="cancelForm()">
+            <i class="bi bi-x-circle"></i>
+            Annuler
+          </button>
+          <button type="submit" class="btn btn-submit" [disabled]="isLoading || !userFormRef.form.valid">
+            <i class="bi" [ngClass]="isEditMode ? 'bi-check-circle' : 'bi-plus-circle'"></i>
+            <span *ngIf="!isLoading">{{ isEditMode ? 'Mettre à jour' : 'Créer' }}</span>
+            <span *ngIf="isLoading" class="loading">
+              <i class="bi bi-arrow-repeat spin"></i>
+              Traitement...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Liste des utilisateurs -->
+  <div class="users-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-list-ul"></i>
+        Liste des Utilisateurs
+        <span class="users-count">({{ users.length }})</span>
+      </h3>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading && users.length === 0" class="loading-state">
+      <div class="loading-spinner">
+        <i class="bi bi-arrow-repeat spin"></i>
+      </div>
+      <p>Chargement des utilisateurs...</p>
+    </div>
+
+    <!-- Table des utilisateurs -->
+    <div *ngIf="!isLoading || users.length > 0" class="users-table-container">
+      <div class="table-wrapper">
+        <table class="users-table">
+          <thead>
+          <tr>
+            <th class="col-name">
+              <i class="bi bi-person"></i>
+              Utilisateur
+            </th>
+            <th class="col-contact">
+              <i class="bi bi-envelope"></i>
+              Contact
+            </th>
+            <th class="col-role">
+              <i class="bi bi-shield"></i>
+              Rôle
+            </th>
+            <th class="col-department">
+              <i class="bi bi-building"></i>
+              Département
+            </th>
+            <th class="col-status">
+              <i class="bi bi-circle"></i>
+              Statut
+            </th>
+            <th class="col-actions">
+              <i class="bi bi-gear"></i>
+              Actions
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let user of users; trackBy: trackByUserId" class="user-row">
+            <td class="user-info">
+              <div class="user-avatar">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <div class="user-details">
+                <div class="user-name">{{ user.nomComplet }}</div>
+                <div class="user-function" *ngIf="user.fonction">{{ user.fonction }}</div>
+              </div>
+            </td>
+
+            <td class="contact-info">
+              <div class="email">
+                <i class="bi bi-envelope"></i>
+                {{ user.email }}
+              </div>
+              <div class="phone" *ngIf="user.telephone">
+                <i class="bi bi-telephone"></i>
+                {{ user.telephone }}
+              </div>
+            </td>
+
+            <td class="role-info">
+                <span class="role-badge" [ngClass]="'role-' + user.role.toLowerCase()">
+                  <i class="bi" [ngClass]="user.role === 'ADMIN' ? 'bi-shield-fill-check' : 'bi-person-check'"></i>
+                  {{ user.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur' }}
+                </span>
+            </td>
+
+            <td class="department-info">
+                <span *ngIf="user.departement" class="department-name">
+                  {{ user.departement }}
+                </span>
+              <span *ngIf="!user.departement" class="no-department">
+                  Non défini
+                </span>
+            </td>
+
+            <td class="status-info">
+                <span class="status-badge" [ngClass]="user.actif ? 'status-active' : 'status-inactive'">
+                  <i class="bi" [ngClass]="user.actif ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+                  {{ user.actif ? 'Actif' : 'Inactif' }}
+                </span>
+            </td>
+
+            <td class="actions">
+              <div class="action-buttons">
+                <button
+                  class="btn-action btn-edit"
+                  (click)="initEditUser(user)"
+                  title="Modifier l'utilisateur">
+                  <i class="bi bi-pencil"></i>
+                </button>
+
+                <button
+                  class="btn-action btn-toggle"
+                  [ngClass]="user.actif ? 'btn-deactivate' : 'btn-activate'"
+                  (click)="toggleUserStatus(user)"
+                  [title]="user.actif ? 'Désactiver l\'utilisateur' : 'Activer l\'utilisateur'">
+                  <i class="bi" [ngClass]="user.actif ? 'bi-pause-circle' : 'bi-play-circle'"></i>
+                </button>
+
+                <button
+                  class="btn-action btn-delete"
+                  (click)="deleteUser(user.id)"
+                  title="Supprimer l'utilisateur">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Message si aucun utilisateur -->
+      <div *ngIf="users.length === 0 && !isLoading" class="empty-state">
+        <div class="empty-icon">
+          <i class="bi bi-people"></i>
+        </div>
+        <h3>Aucun utilisateur trouvé</h3>
+        <p>Commencez par ajouter votre premier utilisateur</p>
+        <button class="btn-add-first" (click)="initAddUser()">
+          <i class="bi bi-plus-circle"></i>
+          Ajouter le premier utilisateur
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

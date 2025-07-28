@@ -1,0 +1,483 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// Palette de couleurs style Creative Tim
+$primary-gradient: linear-gradient(310deg, #e91e63 0%, #ad1457 100%);
+$secondary-gradient: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+$info-gradient: linear-gradient(310deg, #2152ff 0%, #21d4fd 100%);
+$success-gradient: linear-gradient(310deg, #17ad37 0%, #98ec2d 100%);
+$warning-gradient: linear-gradient(310deg, #f53939 0%, #fbcf33 100%);
+
+$white: #ffffff;
+$gray-100: #f8f9fa;
+$gray-200: #f0f2f5;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+$dark: #344767;
+$text: #67748e;
+$secondary: #8392ab;
+
+// Animations Creative Tim style
+@keyframes headerFloat {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px) rotate(0deg);
+    opacity: 0.6;
+  }
+  25% {
+    transform: translateY(-8px) translateX(4px) rotate(45deg);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateY(-15px) translateX(-3px) rotate(90deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateY(-8px) translateX(6px) rotate(135deg);
+    opacity: 0.9;
+  }
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes brandSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes userProfileSlide {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes headerShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+// Header principal style Creative Tim
+.app-header {
+  height: 72px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1.5rem;
+  background: $white;
+  color: $dark;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: saturate(200%) blur(30px);
+  transition: all 0.25s ease-in-out;
+  border-radius: 0;
+  box-shadow: 0 2px 9px -5px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif;
+
+  // Effet de bordure inférieure subtile
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+  }
+
+  // Particules d'arrière-plan
+  .header-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+
+    .header-particle {
+      position: absolute;
+      background: $primary-gradient;
+      border-radius: 50%;
+      animation: headerFloat 12s ease-in-out infinite;
+      opacity: 0.1;
+
+      &:nth-child(1) {
+        width: 4px;
+        height: 4px;
+        left: 10%;
+        top: 20%;
+        animation-delay: 0s;
+      }
+
+      &:nth-child(2) {
+        width: 6px;
+        height: 6px;
+        left: 80%;
+        top: 60%;
+        animation-delay: 3s;
+      }
+
+      &:nth-child(3) {
+        width: 3px;
+        height: 3px;
+        left: 60%;
+        top: 30%;
+        animation-delay: 6s;
+      }
+
+      &:nth-child(4) {
+        width: 5px;
+        height: 5px;
+        left: 30%;
+        top: 70%;
+        animation-delay: 9s;
+      }
+    }
+  }
+}
+
+// Branding style Creative Tim
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  z-index: 3;
+  animation: brandSlideIn 0.6s ease-out;
+
+  .logo-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .logo {
+      height: 35px;
+      width: auto;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+
+      &:hover {
+        transform: scale(1.02);
+      }
+    }
+
+    .logo-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 45px;
+      height: 45px;
+      background: radial-gradient(circle, rgba(233, 30, 99, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: logoGlow 4s ease-in-out infinite;
+      z-index: 1;
+    }
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    h1 {
+      font-size: 1.125rem;
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      color: $dark;
+      line-height: 1.2;
+      transition: all 0.2s ease;
+
+      &:hover {
+        color: #e91e63;
+      }
+    }
+
+    .brand-subtitle {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: $text;
+      letter-spacing: 0.0125em;
+      line-height: 1;
+      margin-top: 2px;
+    }
+  }
+}
+
+// Actions utilisateur style Creative Tim
+.header-actions {
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 3;
+  animation: userProfileSlide 0.6s ease-out;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  transition: all 0.15s ease-in-out;
+  border: 1px solid $gray-200;
+  box-shadow: 0 2px 9px -5px rgba(0, 0, 0, 0.12);
+
+  &:hover {
+    box-shadow: 0 3px 20px -5px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+  }
+
+  .user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: $gray-100;
+    border-radius: 0.5rem;
+    transition: all 0.15s ease-in-out;
+
+    .user-icon {
+      width: 16px;
+      height: 16px;
+      fill: $text;
+    }
+
+    &:hover {
+      background: $gray-200;
+    }
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+
+    .username {
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: $dark;
+      line-height: 1.2;
+    }
+
+    .user-role {
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: $text;
+      line-height: 1;
+    }
+  }
+
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: $white;
+    border: 1px solid $gray-200;
+    color: $text;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.75rem;
+    transition: all 0.15s ease-in-out;
+    font-family: 'Inter', sans-serif;
+
+    .logout-icon {
+      width: 12px;
+      height: 12px;
+      fill: currentColor;
+      transition: transform 0.15s ease;
+    }
+
+    span {
+      font-weight: 500;
+    }
+
+    &:hover {
+      background: #f8d7da;
+      border-color: #f1aeb5;
+      color: #721c24;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px -3px rgba(0, 0, 0, 0.15);
+
+      .logout-icon {
+        transform: translateX(1px);
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// Responsive Design style Creative Tim
+@media (max-width: 1199.98px) {
+  .app-header {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .app-header {
+    padding: 0 1rem;
+    height: 64px;
+  }
+
+  .header-brand {
+    gap: 0.5rem;
+
+    .brand-text h1 {
+      font-size: 1rem;
+    }
+
+    .brand-text .brand-subtitle {
+      font-size: 0.6875rem;
+    }
+
+    .logo-wrapper .logo {
+      height: 32px;
+    }
+  }
+
+  .user-profile {
+    padding: 0.375rem 0.75rem;
+    gap: 0.5rem;
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+
+      .user-icon {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    .user-info {
+      .username {
+        font-size: 0.8125rem;
+      }
+
+      .user-role {
+        font-size: 0.6875rem;
+      }
+    }
+
+    .logout-btn {
+      padding: 0.375rem 0.625rem;
+      font-size: 0.6875rem;
+
+      .logout-icon {
+        width: 11px;
+        height: 11px;
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .app-header {
+    padding: 0.75rem 1rem;
+    height: auto;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .header-brand {
+    flex: 1;
+    min-width: 0;
+
+    .brand-text h1 {
+      font-size: 0.9375rem;
+    }
+  }
+
+  .header-actions {
+    flex-shrink: 0;
+  }
+
+  .user-profile {
+    .user-info {
+      display: none;
+    }
+
+    .logout-btn span {
+      display: none;
+    }
+
+    .logout-btn {
+      padding: 0.5rem;
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .app-header {
+    padding: 0.75rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .header-brand {
+    justify-content: center;
+    order: 1;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-actions {
+    order: 2;
+    justify-content: center;
+  }
+
+  .user-profile {
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+    }
+
+    .logout-btn {
+      padding: 0.375rem;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+.modal {
+  display: block;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  .modal-content {
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  pre {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}

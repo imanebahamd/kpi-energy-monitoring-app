@@ -1,0 +1,47 @@
+<div class="container mt-4">
+  <h2>Visualisation des données électriques</h2>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Année:
+        <input type="number" [(ngModel)]="year" (change)="loadData()" min="2000" max="2100">
+      </label>
+    </div>
+
+    <div class="control-group">
+      <label>Type de graphique:
+        <select [(ngModel)]="chartType" (change)="changeChartType(chartType)">
+          <option value="line">Courbe</option>
+          <option value="bar">Barres</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="control-group">
+      <label>Données à afficher:
+        <select [(ngModel)]="graphType" (change)="changeGraphType(graphType)">
+          <option value="consumption">Consommation (kWh)</option>
+          <option value="powerFactor">Facteur de puissance</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-indicator">
+    <span class="spinner"></span> Chargement en cours...
+  </div>
+
+  <div *ngIf="error" class="error-message">
+    {{ error }}
+  </div>
+
+  <div class="chart-wrapper" *ngIf="!isLoading">
+    <div class="chart-container">
+      <canvas baseChart
+              [type]="chartType"
+              [data]="currentChartData"
+              [options]="currentChartOptions">
+      </canvas>
+    </div>
+  </div>
+</div>

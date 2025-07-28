@@ -1,0 +1,53 @@
+<div class="water-graphs-container">
+  <h2>Visualisation Mensuelle des Données d'Eau</h2>
+
+  <div class="controls">
+    <div class="control-group">
+      <label>Année: </label>
+      <p-dropdown [options]="years" [(ngModel)]="selectedYear" (onChange)="onYearChange()"
+                  [style]="{'width':'120px'}"></p-dropdown>
+    </div>
+  </div>
+
+  <p-tabView>
+    <p-tabPanel header="Tendance Mensuelle">
+      <div class="chart-container">
+        <p-chart type="line" [data]="monthlyTrendChart" [options]="chartOptions"></p-chart>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Comparaison Mensuelle">
+      <div class="chart-container">
+        <p-chart type="bar" [data]="monthlyComparisonChart" [options]="chartOptions"></p-chart>
+      </div>
+    </p-tabPanel>
+
+    <p-tabPanel header="Composition Annuelle">
+      <div class="chart-container">
+        <p-chart type="pie" [data]="compositionChart" [options]="chartOptions"></p-chart>
+      </div>
+    </p-tabPanel>
+  </p-tabView>
+
+  <div class="data-summary">
+    <h3>Résumé des Données pour {{selectedYear}}</h3>
+    <div *ngIf="monthlyData.length > 0" class="summary-cards">
+      <div class="summary-card">
+        <h4>Production Totale</h4>
+        <p>{{ getTotalProduction() | number:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Moyenne Mensuelle</h4>
+        <p>{{ getAverageProduction() | number:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Max Mensuel</h4>
+        <p>{{ getMaxProduction() | number:'1.2-2' }}</p>
+      </div>
+      <div class="summary-card">
+        <h4>Min Mensuel</h4>
+        <p>{{ getMinProduction() | number:'1.2-2' }}</p>
+      </div>
+    </div>
+  </div>
+</div>

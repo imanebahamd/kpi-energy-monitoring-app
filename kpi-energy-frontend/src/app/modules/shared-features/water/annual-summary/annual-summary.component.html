@@ -1,0 +1,37 @@
+<div class="container">
+  <h2>Tableau Annuel de Production d'Eau</h2>
+
+  <div class="year-selector">
+    <label>Année: </label>
+    <select [(ngModel)]="selectedYear" (change)="loadData()">
+      <option *ngFor="let year of years" [value]="year">{{year}}</option>
+    </select>
+  </div>
+
+  <table *ngIf="annualData.length > 0">
+    <thead>
+    <tr>
+      <th>Année</th>
+      <th>F3BIS</th>
+      <th>F3</th>
+      <th>SE2</th>
+      <th>SE3BIS</th>
+      <th>Total Production</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td>{{ annualData[0].year }}</td>
+      <td>{{ annualData[0].f3bis | number:'1.2-2' }}</td>
+      <td>{{ annualData[0].f3 | number:'1.2-2' }}</td>
+      <td>{{ annualData[0].se2 | number:'1.2-2' }}</td>
+      <td>{{ annualData[0].se3bis | number:'1.2-2' }}</td>
+      <td>{{ annualData[0].totalProduction | number:'1.2-2' }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="annualData.length === 0" class="no-data">
+    Aucune donnée disponible pour l'année sélectionnée
+  </div>
+</div>

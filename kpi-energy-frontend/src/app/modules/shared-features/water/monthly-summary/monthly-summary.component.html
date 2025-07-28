@@ -1,0 +1,32 @@
+<!-- monthly-summary.component.html -->
+<div class="container">
+  <h2>Tableau Mensuel de Production d'Eau</h2>
+
+  <div class="year-selector">
+    <label>Année: </label>
+    <input type="number" [(ngModel)]="year" (change)="loadData()" min="2000" max="2100">
+  </div>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Mois</th>
+      <th>F3BIS</th>
+      <th>F3</th>
+      <th>SE2</th>
+      <th>SE3BIS</th>
+      <th>Total Production</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let item of monthlyData">
+      <td>{{ getMonthName(item.month) }}</td>
+      <td>{{ item.f3bis | number:'1.2-2' }}</td>
+      <td>{{ item.f3 | number:'1.2-2' }}</td>
+      <td>{{ item.se2 | number:'1.2-2' }}</td>
+      <td>{{ item.se3bis | number:'1.2-2' }}</td>
+      <td>{{ item.totalProduction | number:'1.2-2' }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

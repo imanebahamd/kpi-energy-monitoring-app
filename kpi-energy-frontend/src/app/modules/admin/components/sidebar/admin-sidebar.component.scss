@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+// Palette de couleurs Creative Tim
+$primary-gradient: linear-gradient(310deg, #e91e63 0%, #ad1457 100%);
+$secondary-gradient: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+$info-gradient: linear-gradient(310deg, #2152ff 0%, #21d4fd 100%);
+$success-gradient: linear-gradient(310deg, #17ad37 0%, #98ec2d 100%);
+$warning-gradient: linear-gradient(310deg, #f53939 0%, #fbcf33 100%);
+
+$white: #ffffff;
+$gray-100: #f8f9fa;
+$gray-200: #f0f2f5;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+
+$dark: #344767;
+$text: #67748e;
+$secondary: #8392ab;
+
+// Animation d'entrée pour la sidebar
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes menuItemSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+// Sidebar principale style Creative Tim
+.sidebar {
+  width: 250px;
+  height: calc(100vh - 72px); // Ajusté pour la hauteur du header Creative Tim
+  position: fixed;
+  left: 0;
+  top: 72px; // Position sous le header
+  background: $white;
+  color: $dark;
+  z-index: 999;
+  box-shadow: 0 2px 13px -6px rgba(0, 0, 0, 0.12);
+  border-radius: 0 0.75rem 0.75rem 0;
+  transition: all 0.2s ease-in-out;
+  animation: slideInLeft 0.4s ease-out;
+  font-family: 'Inter', sans-serif;
+
+  // Bordure de couleur sur le côté
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: $primary-gradient;
+    border-radius: 0 0 0 0.75rem;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 20px -6px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar-menu {
+    list-style: none;
+    padding: 1rem 0;
+    margin: 0;
+
+    li {
+      margin: 0.125rem 1rem;
+      animation: menuItemSlide 0.5s ease-out forwards;
+
+      // Animation échelonnée pour chaque élément
+      @for $i from 1 through 10 {
+        &:nth-child(#{$i}) {
+          animation-delay: #{$i * 0.05}s;
+        }
+      }
+
+      a {
+        display: flex;
+        align-items: center;
+        padding: 0.625rem 1rem;
+        color: $text;
+        text-decoration: none;
+        border-radius: 0.5rem;
+        transition: all 0.15s ease-in-out;
+        font-weight: 400;
+        font-size: 0.875rem;
+        position: relative;
+        margin-bottom: 0.125rem;
+
+        &:hover {
+          background: $gray-100;
+          color: $dark;
+          transform: translateY(-1px);
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        i {
+          margin-right: 0.75rem;
+          font-size: 0.875rem;
+          transition: all 0.15s ease-in-out;
+          width: 15px;
+          text-align: center;
+          color: $secondary;
+          opacity: 0.8;
+        }
+
+        span {
+          flex: 1;
+          font-weight: 400;
+          line-height: 1.4;
+        }
+
+        &:hover i {
+          color: $dark;
+          opacity: 1;
+        }
+      }
+
+      // État actif style Creative Tim
+      a.active {
+        background: $white;
+        color: $dark;
+        font-weight: 500;
+        box-shadow: 0 2px 13px -6px rgba(0, 0, 0, 0.12);
+        border-radius: 0.5rem;
+        position: relative;
+
+        // Bordure colorée pour l'élément actif
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          width: 3px;
+          background: $primary-gradient;
+          border-radius: 0 0.25rem 0.25rem 0;
+        }
+
+        i {
+          color: #e91e63;
+          opacity: 1;
+          font-weight: 500;
+        }
+
+        span {
+          font-weight: 500;
+        }
+
+        &:hover {
+          background: $white;
+          box-shadow: 0 3px 20px -6px rgba(0, 0, 0, 0.15);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+/* Responsive - Style Creative Tim */
+@media (max-width: 1199.98px) {
+  .sidebar {
+    width: 230px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .sidebar {
+    width: 220px;
+    top: 64px; // Ajusté pour le header responsive
+    height: calc(100vh - 64px);
+    border-radius: 0 0.5rem 0.5rem 0;
+
+    .sidebar-menu {
+      padding: 0.75rem 0;
+
+      li {
+        margin: 0.0625rem 0.75rem;
+
+        a {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
+
+          i {
+            font-size: 0.8125rem;
+            margin-right: 0.625rem;
+            width: 14px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    width: 200px;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
+
+    &.sidebar-open {
+      transform: translateX(0);
+    }
+
+    .sidebar-menu {
+      li {
+        margin: 0.0625rem 0.5rem;
+
+        a {
+          padding: 0.5rem 0.75rem;
+          font-size: 0.8125rem;
+
+          i {
+            margin-right: 0.5rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .sidebar {
+    width: 180px;
+
+    .sidebar-menu {
+      li {
+        a {
+          padding: 0.4375rem 0.625rem;
+
+          span {
+            font-size: 0.75rem;
+          }
+
+          i {
+            font-size: 0.75rem;
+            width: 12px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Overlay pour mobile
+@media (max-width: 767.98px) {
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease-in-out;
+
+    &.show {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}

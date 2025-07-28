@@ -1,0 +1,147 @@
+.annual-summary-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+
+    h2 {
+      margin: 0;
+      color: #0d6efd;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  }
+
+  .filters {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    align-items: flex-end;
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+
+      label {
+        font-weight: 500;
+        margin-bottom: 5px;
+      }
+
+      input {
+        padding: 8px 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 120px;
+      }
+    }
+
+    button {
+      padding: 8px 16px;
+      background-color: #0d6efd;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .status-message {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &.loading {
+      background-color: rgba(13, 110, 253, 0.1);
+      color: #0d6efd;
+    }
+
+    &.error {
+      background-color: rgba(220, 53, 69, 0.1);
+      color: #dc3545;
+    }
+
+    &.info {
+      background-color: rgba(13, 202, 240, 0.1);
+      color: #0dcaf0;
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .summary-table {
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th, td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #dee2e6;
+      }
+
+      th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+      }
+
+      tfoot {
+        font-weight: bold;
+        background-color: #f8f9fa;
+      }
+
+      .total {
+        font-weight: bold;
+        background-color: rgba(13, 110, 253, 0.05);
+      }
+
+      .text-success {
+        color: #198754 !important;
+      }
+
+      .text-danger {
+        color: #dc3545 !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .annual-summary-container {
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+
+      .actions {
+        width: 100%;
+      }
+    }
+
+    .filters {
+      flex-wrap: wrap;
+    }
+  }
+}

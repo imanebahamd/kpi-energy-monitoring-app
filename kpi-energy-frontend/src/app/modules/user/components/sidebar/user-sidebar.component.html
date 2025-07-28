@@ -1,0 +1,35 @@
+<!-- src/app/modules/user/components/sidebar/user-sidebar.component.html -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="user-info">
+      <div class="avatar">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <div class="details">
+        <span class="name">{{ user?.nomComplet }}</span>
+        <span class="role">Utilisateur</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-menu">
+    <ng-container *ngFor="let item of menuItems">
+      <!-- Group Header -->
+      <div *ngIf="item.group" class="group-header" (click)="toggleGroup(item.group)">
+        <span>{{ item.group }}</span>
+        <i class="bi" [class.bi-chevron-down]="isGroupExpanded(item.group)"
+           [class.bi-chevron-right]="!isGroupExpanded(item.group)"></i>
+      </div>
+
+      <!-- Menu Items -->
+      <div *ngIf="!item.group || isGroupExpanded(item.group)">
+        <a [routerLink]="item.path"
+           routerLinkActive="active"
+           [routerLinkActiveOptions]="{exact: true}">
+          <i [class]="item.icon"></i>
+          <span>{{ item.label }}</span>
+        </a>
+      </div>
+    </ng-container>
+  </div>
+</div>
