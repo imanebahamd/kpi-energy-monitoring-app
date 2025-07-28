@@ -20,7 +20,7 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
-    "@ng-bootstrap/ng-bootstrap": "^14.1.0",
+    "@ng-bootstrap/ng-bootstrap": "^19.0.1",
     "@types/chart.js": "^2.9.41",
     "bootstrap": "^5.3.7",
     "bootstrap-icons": "^1.13.1",
