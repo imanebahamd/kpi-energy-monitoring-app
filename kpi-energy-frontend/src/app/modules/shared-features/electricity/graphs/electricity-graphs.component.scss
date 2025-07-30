@@ -4,6 +4,62 @@
   margin: 0 auto;
 }
 
+h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+
+    i.icon {
+      font-size: 1.1em;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+.info-message {
+  background-color: #f8f9fa;
+  border-left: 4px solid #3498db;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  i.icon {
+    color: #3498db;
+    font-size: 1.2em;
+    margin-top: 2px;
+  }
+
+  p {
+    margin: 0;
+    color: #495057;
+  }
+}
+
 .controls {
   display: flex;
   gap: 20px;
@@ -35,6 +91,10 @@
   position: relative;
   width: 100%;
   height: 500px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 15px;
 }
 
 .loading-indicator {
@@ -65,12 +125,74 @@
   margin: 20px 0;
 }
 
+.status {
+  padding: 15px;
+  border-radius: 4px;
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &.info {
+    background-color: #e7f5ff;
+    color: #1864ab;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,.1);
+    border-radius: 50%;
+    border-top-color: currentColor;
+    animation: spin 1s ease-in-out infinite;
+  }
+}
+
+.dynamic-alert {
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  &.success {
+    background-color: #ebfbee;
+    color: #2b8a3e;
+    border-left: 4px solid #2b8a3e;
+  }
+
+  &.error {
+    background-color: #fff5f5;
+    color: #c92a2a;
+    border-left: 4px solid #c92a2a;
+  }
+
+  &.info {
+    background-color: #e7f5ff;
+    color: #1864ab;
+    border-left: 4px solid #1864ab;
+  }
+
+  &.warning {
+    background-color: #fff9db;
+    color: #e67700;
+    border-left: 4px solid #e67700;
+  }
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {
   .controls {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header-actions {
     flex-direction: column;
     gap: 10px;
   }

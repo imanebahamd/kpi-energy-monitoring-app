@@ -1,32 +1,190 @@
-<!-- monthly-summary.component.html -->
 <div class="container">
-  <h2>Tableau Mensuel de Production d'Eau</h2>
-
-  <div class="year-selector">
-    <label>Année: </label>
-    <input type="number" [(ngModel)]="year" (change)="loadData()" min="2000" max="2100">
+  <!-- Alert message -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    {{ alertMessage }}
   </div>
 
-  <table>
-    <thead>
-    <tr>
-      <th>Mois</th>
-      <th>F3BIS</th>
-      <th>F3</th>
-      <th>SE2</th>
-      <th>SE3BIS</th>
-      <th>Total Production</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let item of monthlyData">
-      <td>{{ getMonthName(item.month) }}</td>
-      <td>{{ item.f3bis | number:'1.2-2' }}</td>
-      <td>{{ item.f3 | number:'1.2-2' }}</td>
-      <td>{{ item.se2 | number:'1.2-2' }}</td>
-      <td>{{ item.se3bis | number:'1.2-2' }}</td>
-      <td>{{ item.totalProduction | number:'1.2-2' }}</td>
-    </tr>
-    </tbody>
-  </table>
+  <div class="header">
+    <h2>Tableau Mensuel de Production d'Eau</h2>
+    <div class="header-actions">
+      <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="btn btn-primary">
+        <i class="icon add"></i> Saisir Nouvelles Données
+      </a>
+      <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="btn btn-secondary">
+        <i class="icon calendar"></i> Vue Annuelle
+      </a>
+      <a [routerLink]="[getRoutePrefix(), 'water-graphs']" class="btn btn-info">
+        <i class="icon chart"></i> Visualisation Graphique
+      </a>
+    </div>
+  </div>
+
+  <div class="info-message">
+    <i class="icon info"></i>
+    <p>Cette page vous permet de consulter les données de production d'eau mensuelles. Sélectionnez une année et un mois spécifique ou une période. Vous pouvez également modifier ou supprimer les données existantes.</p>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <label for="year">Année</label>
+      <select id="year" [(ngModel)]="selectedYear" (change)="onFilterChange()">
+        <option *ngFor="let y of years" [value]="y">{{ y }}</option>
+      </select>
+    </div>
+
+    <button (click)="toggleMonthSelection()" class="btn btn-secondary">
+      {{ showMonthSelection ? 'Annuler' : 'Afficher un mois précis' }}
+    </button>
+
+    <button (click)="togglePeriodSelection()" class="btn btn-secondary">
+      {{ showPeriodSelection ? 'Annuler' : 'Afficher une période' }}
+    </button>
+  </div>
+
+  <!-- Filtres pour un mois précis -->
+  <div *ngIf="showMonthSelection" class="month-filter">
+    <div class="filter-group">
+      <label>Mois</label>
+      <select [(ngModel)]="selectedMonth" (change)="onFilterChange()">
+        <option [ngValue]="null" disabled>Sélectionnez un mois</option>
+        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+      </select>
+    </div>
+
+    <button (click)="loadSingleMonthData()"
+            [disabled]="!selectedYear || !selectedMonth || isLoading"
+            class="btn btn-primary">
+      <span *ngIf="!isLoading">Afficher</span>
+      <span *ngIf="isLoading" class="spinner"></span>
+    </button>
+  </div>
+
+  <!-- Filtres pour une période -->
+  <div *ngIf="showPeriodSelection" class="period-filters">
+    <div class="filter-group">
+      <label>De</label>
+      <select [(ngModel)]="startMonth" (change)="onFilterChange()">
+        <option [ngValue]="null" disabled>Mois de début</option>
+        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>À</label>
+      <select [(ngModel)]="endMonth" (change)="onFilterChange()">
+        <option [ngValue]="null" disabled>Mois de fin</option>
+        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+      </select>
+    </div>
+
+    <button (click)="loadPeriodData()"
+            [disabled]="!selectedYear || !startMonth || !endMonth || isLoading"
+            class="btn btn-primary">
+      <span *ngIf="!isLoading">Afficher</span>
+      <span *ngIf="isLoading" class="spinner"></span>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="!filtersTouched" class="instruction">
+    <i class="icon info"></i>
+    <span>Veuillez sélectionner une année et un mois ou une période</span>
+  </div>
+
+  <div *ngIf="isLoading" class="status loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <div *ngIf="error && filtersTouched" class="status error">
+    <i class="icon warning"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Affichage pour un mois précis -->
+  <div *ngIf="singleMonthData && showMonthSelection" class="data-section">
+    <h3>Données pour {{ getMonthName(selectedMonth) }} {{ selectedYear }}</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Mois</th>
+        <th>F3BIS (m³)</th>
+        <th>F3 (m³)</th>
+        <th>SE2 (m³)</th>
+        <th>SE3BIS (m³)</th>
+        <th>Total Production (m³)</th>
+        <th *ngIf="isAdminUser">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>{{ getMonthName(singleMonthData.month) }}</td>
+        <td>{{ singleMonthData.f3bis | number:'1.2-2' }}</td>
+        <td>{{ singleMonthData.f3 | number:'1.2-2' }}</td>
+        <td>{{ singleMonthData.se2 | number:'1.2-2' }}</td>
+        <td>{{ singleMonthData.se3bis | number:'1.2-2' }}</td>
+        <td>{{ singleMonthData.totalProduction | number:'1.2-2' }}</td>
+        <td *ngIf="isAdminUser" class="actions">
+          <a [routerLink]="[getRoutePrefix(), 'water-saisie']"
+             [queryParams]="{year: singleMonthData.year, month: singleMonthData.month}"
+             class="btn btn-sm btn-warning">
+            <i class="icon edit"></i> Modifier
+          </a>
+          <button (click)="deleteData(singleMonthData.year, singleMonthData.month)"
+                  class="btn btn-sm btn-danger">
+            <i class="icon delete"></i> Supprimer
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Tableau pour une période spécifique -->
+  <div *ngIf="periodData.length > 0 && showPeriodSelection" class="data-section">
+    <h3>Période de {{ getMonthName(startMonth) }} à {{ getMonthName(endMonth) }} {{ selectedYear }}</h3>
+    <table>
+      <thead>
+      <tr>
+        <th>Mois</th>
+        <th>F3BIS (m³)</th>
+        <th>F3 (m³)</th>
+        <th>SE2 (m³)</th>
+        <th>SE3BIS (m³)</th>
+        <th>Total Production (m³)</th>
+        <th *ngIf="isAdminUser">Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of periodData">
+        <td>{{ getMonthName(item.month) }}</td>
+        <td>{{ item.f3bis | number:'1.2-2' }}</td>
+        <td>{{ item.f3 | number:'1.2-2' }}</td>
+        <td>{{ item.se2 | number:'1.2-2' }}</td>
+        <td>{{ item.se3bis | number:'1.2-2' }}</td>
+        <td>{{ item.totalProduction | number:'1.2-2' }}</td>
+        <td *ngIf="isAdminUser" class="actions">
+          <a [routerLink]="[getRoutePrefix(), 'water-saisie']"
+             [queryParams]="{year: item.year, month: item.month}"
+             class="btn btn-sm btn-warning">
+            <i class="icon edit"></i> Modifier
+          </a>
+          <button (click)="deleteData(item.year, item.month)"
+                  class="btn btn-sm btn-danger">
+            <i class="icon delete"></i> Supprimer
+          </button>
+        </td>
+      </tr>
+      <tr class="total-row">
+        <td><strong>Total Période</strong></td>
+        <td><strong>{{ calculateTotal(periodData).f3bis | number:'1.2-2' }}</strong></td>
+        <td><strong>{{ calculateTotal(periodData).f3 | number:'1.2-2' }}</strong></td>
+        <td><strong>{{ calculateTotal(periodData).se2 | number:'1.2-2' }}</strong></td>
+        <td><strong>{{ calculateTotal(periodData).se3bis | number:'1.2-2' }}</strong></td>
+        <td><strong>{{ calculateTotal(periodData).totalProduction | number:'1.2-2' }}</strong></td>
+        <td *ngIf="isAdminUser"></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

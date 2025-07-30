@@ -4,6 +4,8 @@ import { ChartConfiguration, ChartType } from 'chart.js';
 import {BaseChartDirective, NgChartsModule} from 'ng2-charts';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../../../core/services/auth.service';
+import { RouterModule } from '@angular/router';
 import {
   Chart,
   LinearScale,
@@ -32,7 +34,7 @@ Chart.register(
 @Component({
   selector: 'app-electricity-graphs',
   standalone: true,
-  imports: [NgChartsModule, CommonModule, FormsModule, NgChartsModule],
+  imports: [NgChartsModule, CommonModule, FormsModule, NgChartsModule, RouterModule],
   templateUrl: './electricity-graphs.component.html',
   styleUrls: ['./electricity-graphs.component.scss']
 })
@@ -44,7 +46,28 @@ export class ElectricityGraphsComponent implements OnInit, OnDestroy {
   graphType: 'consumption' | 'powerFactor' = 'consumption';
   isLoading = false;
   error = '';
+  noDataAvailable = false;
   months = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+
+  // Alert system
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
+  showAlert: boolean = false;
+  isAdminUser: boolean = false;
+
+  // Messages de validation
+  validationMessages = {
+    success: {
+      dataLoaded: '✅ Données chargées avec succès'
+    },
+    error: {
+      loadError: '❌ Erreur lors du chargement des données',
+      noData: '⚠️ Aucune donnée disponible pour cette période'
+    },
+    info: {
+      loading: '⏳ Chargement des données en cours...'
+    }
+  };
 
   // Options pour les graphiques de consommation
   public consumptionChartOptions: ChartConfiguration['options'] = {
@@ -150,9 +173,10 @@ export class ElectricityGraphsComponent implements OnInit, OnDestroy {
     ]
   };
 
-  constructor(private electricityService: ElectricityService) {}
+  constructor(private electricityService: ElectricityService,private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.isAdminUser = this.authService.isAdmin();
     this.loadData();
   }
 
@@ -169,17 +193,28 @@ export class ElectricityGraphsComponent implements OnInit, OnDestroy {
   loadData(): void {
     this.isLoading = true;
     this.error = '';
+    this.noDataAvailable = false;
+    this.showDynamicAlert(this.validationMessages.info.loading, 'info');
     this.destroyChart();
 
     this.electricityService.getAnnualSummary(this.year).subscribe({
       next: (data) => {
-        this.updateChartData(data);
+        if (data && data.length > 0) {
+          this.updateChartData(data);
+          this.showDynamicAlert(this.validationMessages.success.dataLoaded, 'success');
+          this.noDataAvailable = false;
+        } else {
+          this.noDataAvailable = true;
+          this.showDynamicAlert(this.validationMessages.error.noData, 'error');
+        }
         this.isLoading = false;
       },
       error: (err) => {
         console.error('Erreur:', err);
         this.error = 'Erreur lors du chargement des données';
+        this.showDynamicAlert(this.validationMessages.error.loadError, 'error');
         this.isLoading = false;
+        this.noDataAvailable = true;
       }
     });
   }
@@ -231,5 +266,18 @@ export class ElectricityGraphsComponent implements OnInit, OnDestroy {
     return this.graphType === 'consumption'
       ? this.consumptionChartOptions
       : this.powerFactorChartOptions;
+  }
+
+  private showDynamicAlert(message: string, type: 'success' | 'error' | 'info' | 'warning', duration: number = 5000): void {
+    this.alertMessage = message;
+    this.alertType = type;
+    this.showAlert = true;
+
+    setTimeout(() => {
+      this.showAlert = false;
+    }, duration);
+  }
+  getRoutePrefix(): string {
+    return this.isAdminUser ? '/admin' : '/user';
   }
 }

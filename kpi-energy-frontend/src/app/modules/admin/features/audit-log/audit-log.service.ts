@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface AuditLog {
@@ -36,12 +36,22 @@ export class AuditLogService {
 
   constructor(private http: HttpClient) { }
 
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   getLogs(page: number = 0, size: number = 10): Observable<PageResponse<AuditLog>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<PageResponse<AuditLog>>(this.apiUrl, { params });
+    return this.http.get<PageResponse<AuditLog>>(this.apiUrl, {
+      params,
+      headers: this.getHeaders()
+    });
   }
 
   searchLogs(
@@ -63,6 +73,9 @@ export class AuditLogService {
     if (startDate) params = params.set('startDate', startDate);
     if (endDate) params = params.set('endDate', endDate);
 
-    return this.http.get<PageResponse<AuditLog>>(`${this.apiUrl}/search`, { params });
+    return this.http.get<PageResponse<AuditLog>>(`${this.apiUrl}/search`, {
+      params,
+      headers: this.getHeaders()
+    });
   }
 }

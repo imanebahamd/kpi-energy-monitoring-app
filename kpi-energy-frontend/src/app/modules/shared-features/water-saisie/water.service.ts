@@ -13,6 +13,12 @@ export interface WaterData {
   totalProduction?: number;
 }
 
+export interface WaterResponse {
+  totalProduction: number;
+  message: string;
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -60,4 +66,25 @@ export class WaterService {
 
     return this.http.get<WaterData[]>(`${this.apiUrl}/annual/${startYear}/${endYear}`, { headers });
   }
+
+  deleteWaterData(year: number, month: number): Observable<void> {
+    const token = this.tokenStorage.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.delete<void>(`${this.apiUrl}/${year}/${month}`, { headers });
+  }
+
+  getWaterDataForEdit(year: number, month: number): Observable<WaterData> {
+    const token = this.tokenStorage.getToken();
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<WaterData>(`${this.apiUrl}/${year}/${month}/edit`, { headers });
+  }
+
+
+
 }

@@ -1,5 +1,27 @@
 <div class="container mt-4">
-  <h2>Visualisation des données électriques</h2>
+  <h2>Tableau de Bord Électrique - Visualisation Graphique</h2>
+
+  <!-- Alert message -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    {{ alertMessage }}
+  </div>
+
+  <div class="header-actions">
+    <a [routerLink]="[getRoutePrefix(), 'electricity-saisie']" class="btn btn-primary">
+      <i class="icon add"></i> Saisir Nouvelles Données
+    </a>
+    <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="btn btn-secondary">
+      <i class="icon calendar-month"></i> Consulter Tableau Mensuel
+    </a>
+    <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="btn btn-secondary">
+      <i class="icon calendar"></i> Consulter Tableau Annuel
+    </a>
+  </div>
+
+  <div class="info-message">
+    <i class="icon info"></i>
+    <p>Cette interface vous permet de visualiser les données électriques sous forme graphique. Sélectionnez une année et le type de données à afficher.</p>
+  </div>
 
   <div class="controls">
     <div class="control-group">
@@ -35,7 +57,12 @@
     {{ error }}
   </div>
 
-  <div class="chart-wrapper" *ngIf="!isLoading">
+  <div *ngIf="noDataAvailable && !error && !isLoading" class="status info">
+    <i class="icon info"></i>
+    <span>Aucune donnée disponible pour l'année {{ year }}</span>
+  </div>
+
+  <div class="chart-wrapper" *ngIf="!isLoading && !noDataAvailable">
     <div class="chart-container">
       <canvas baseChart
               [type]="chartType"

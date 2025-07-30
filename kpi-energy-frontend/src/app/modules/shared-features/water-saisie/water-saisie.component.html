@@ -1,35 +1,174 @@
-<div class="form-container">
-  <form [formGroup]="waterForm" (ngSubmit)="onSubmit()">
-    <label>Année:
-      <input type="number" formControlName="year" min="2000" max="2100">
-    </label>
+<div class="container">
+  <!-- En-tête principal -->
+  <div class="main-header">
+    <h2>Saisie des données de production d'eau</h2>
+  </div>
 
-    <label>Mois:
-      <select formControlName="month">
-        <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">{{ m }}</option>
-      </select>
-    </label>
+  <!-- Alerte dynamique -->
+  <div *ngIf="showAlert"
+       class="dynamic-alert"
+       [ngClass]="alertType">
+    {{ alertMessage }}
+  </div>
 
-    <fieldset>
-      <legend>Données de production d'eau</legend>
-      <label>F3BIS:
-        <input type="number" formControlName="f3bis" min="0" step="any">
-      </label>
-      <label>F3:
-        <input type="number" formControlName="f3" min="0" step="any">
-      </label>
-      <label>SE2:
-        <input type="number" formControlName="se2" min="0" step="any">
-      </label>
-      <label>SE3BIS:
-        <input type="number" formControlName="se3bis" min="0" step="any">
-      </label>
-    </fieldset>
+  <!-- Conteneur du formulaire -->
+  <div class="form-container" [ngClass]="{'visible': isFormVisible}">
+    <form [formGroup]="waterForm" (ngSubmit)="onSubmit()">
 
-    <button type="submit" [disabled]="waterForm.invalid">Enregistrer</button>
-  </form>
+      <!-- Sélecteur de date -->
+      <div class="date-selector">
+        <div class="date-header">
+          <div class="icon">📅</div>
+          <h4>Période de saisie</h4>
+        </div>
 
-  <div *ngIf="message" class="message">
-    {{ message }}
+        <div class="date-fields-row">
+          <div class="form-group compact-field">
+            <label class="form-label">Année</label>
+            <input type="number"
+                   class="form-control"
+                   formControlName="year"
+                   min="2000"
+                   max="2100"
+                   [ngClass]="{'error': waterForm.get('year')?.invalid && waterForm.get('year')?.touched}">
+            <div *ngIf="waterForm.get('year')?.invalid && waterForm.get('year')?.touched"
+                 class="error-message">
+              Entre 2000 et 2100
+            </div>
+          </div>
+
+          <div class="form-group compact-field">
+            <label class="form-label">Mois</label>
+            <select class="form-select"
+                    formControlName="month"
+                    [ngClass]="{'error': waterForm.get('month')?.invalid && waterForm.get('month')?.touched}">
+              <option *ngFor="let month of months" [value]="month.value">{{month.name}}</option>
+            </select>
+            <div *ngIf="waterForm.get('month')?.invalid && waterForm.get('month')?.touched"
+                 class="error-message">
+              Sélection requise
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Données de production -->
+      <div class="data-card">
+        <div class="card-header">
+          <div class="header-content">
+            <div class="data-icon">💧</div>
+            <h3>Données de production d'eau</h3>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="inputs-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <span>🏭</span> F3BIS (m³)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="f3bis"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la production F3BIS..."
+                     [ngClass]="{'error': waterForm.get('f3bis')?.invalid && waterForm.get('f3bis')?.touched}">
+              <div *ngIf="waterForm.get('f3bis')?.invalid && waterForm.get('f3bis')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>🏭</span> F3 (m³)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="f3"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la production F3..."
+                     [ngClass]="{'error': waterForm.get('f3')?.invalid && waterForm.get('f3')?.touched}">
+              <div *ngIf="waterForm.get('f3')?.invalid && waterForm.get('f3')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>🏭</span> SE2 (m³)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="se2"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la production SE2..."
+                     [ngClass]="{'error': waterForm.get('se2')?.invalid && waterForm.get('se2')?.touched}">
+              <div *ngIf="waterForm.get('se2')?.invalid && waterForm.get('se2')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>🏭</span> SE3BIS (m³)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="se3bis"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la production SE3BIS..."
+                     [ngClass]="{'error': waterForm.get('se3bis')?.invalid && waterForm.get('se3bis')?.touched}">
+              <div *ngIf="waterForm.get('se3bis')?.invalid && waterForm.get('se3bis')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boutons d'action -->
+      <div class="action-buttons">
+        <div class="primary-actions">
+          <button type="submit"
+                  class="btn btn-primary"
+                  [disabled]="waterForm.invalid || isLoading">
+            <span *ngIf="!isLoading">
+              💾 Enregistrer les données
+            </span>
+            <span *ngIf="isLoading">
+              <div class="loading-spinner"></div>
+              Enregistrement en cours...
+            </span>
+          </button>
+
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="resetForm()"
+                  [disabled]="isLoading">
+            🗑️ Réinitialiser
+          </button>
+        </div>
+
+        <div class="secondary-actions">
+          <a [routerLink]="getRoutePrefix() + '/water-monthly'" class="btn btn-outline-info">
+            📊 Tableau Mensuel
+          </a>
+          <a [routerLink]="getRoutePrefix() + '/water-annual'" class="btn btn-outline-info">
+            📅 Rapport Annuel
+          </a>
+          <a [routerLink]="getRoutePrefix() + '/water-graphs'" class="btn btn-outline-info">
+            📈 Visualisations
+          </a>
+        </div>
+      </div>
+    </form>
   </div>
 </div>

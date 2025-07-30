@@ -1,21 +1,72 @@
 <div class="report-container">
-  <h2>Génération de Rapport PDF</h2>
+  <h2>Génération de Rapports</h2>
 
-  <div class="form-group">
-    <label for="year">Année:</label>
-    <input type="number" id="year" [(ngModel)]="year" min="2000" max="2100">
+  <div class="report-type-selector">
+    <button
+      [class.active]="reportType === 'monthly'"
+      (click)="reportType = 'monthly'">
+      Rapport Mensuel
+    </button>
+    <button
+      [class.active]="reportType === 'yearly'"
+      (click)="reportType = 'yearly'">
+      Rapport Annuel
+    </button>
+    <button
+      [class.active]="reportType === 'period'"
+      (click)="reportType = 'period'">
+      Rapport Périodique
+    </button>
   </div>
 
-  <div class="form-group">
-    <label for="month">Mois:</label>
-    <select id="month" [(ngModel)]="month">
-      <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
-        {{ getMonthName(m) }}
-      </option>
-    </select>
+  <div class="form-container">
+    <!-- Formulaire pour rapport mensuel -->
+    <div *ngIf="reportType === 'monthly'" class="form-group">
+      <label for="year-monthly">Année:</label>
+      <input type="number" id="year-monthly" [(ngModel)]="year" min="2000" max="2100">
+
+      <label for="month">Mois:</label>
+      <select id="month" [(ngModel)]="month">
+        <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
+          {{ getMonthName(m) }}
+        </option>
+      </select>
+    </div>
+
+    <!-- Formulaire pour rapport annuel -->
+    <div *ngIf="reportType === 'yearly'" class="form-group">
+      <label for="year-yearly">Année:</label>
+      <input type="number" id="year-yearly" [(ngModel)]="year" min="2000" max="2100">
+    </div>
+
+    <!-- Formulaire pour rapport périodique -->
+    <div *ngIf="reportType === 'period'" class="form-group">
+      <label for="year-period">Année:</label>
+      <input type="number" id="year-period" [(ngModel)]="year" min="2000" max="2100">
+
+      <div class="period-range">
+        <div>
+          <label for="start-month">De:</label>
+          <select id="start-month" [(ngModel)]="startMonth">
+            <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
+              {{ getMonthName(m) }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label for="end-month">À:</label>
+          <select id="end-month" [(ngModel)]="endMonth">
+            <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">
+              {{ getMonthName(m) }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <button (click)="generateReport()" [disabled]="isLoading">
+  <button (click)="generateReport()" [disabled]="isLoading" class="generate-btn">
     <span *ngIf="!isLoading">Générer le Rapport</span>
     <span *ngIf="isLoading">Génération en cours...</span>
   </button>

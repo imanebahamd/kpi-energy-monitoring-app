@@ -1,19 +1,90 @@
-.modal {
-  display: block;
-  background-color: rgba(0, 0, 0, 0.5);
+.audit-container {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
 
-  .modal-content {
-    border: none;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  .header {
+    margin-bottom: 24px;
+
+    h2 {
+      color: #2c3e50;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 24px;
+    }
+
+    p {
+      color: #7f8c8d;
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+.search-card, .results-card {
+  margin-bottom: 24px;
+}
+
+.search-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.search-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.total-items {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-left: auto;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.user-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  mat-icon {
+    font-size: 18px;
+    height: 18px;
+    width: 18px;
+    margin-right: 8px;
   }
 
-  pre {
-    background-color: #f8f9fa;
-    padding: 10px;
-    border-radius: 4px;
-    max-height: 300px;
-    overflow-y: auto;
-    white-space: pre-wrap;
-    word-wrap: break-word;
+  .user-email {
+    font-size: 12px;
+    color: #7f8c8d;
+    margin-left: 26px;
+  }
+}
+
+.action-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: white;
+
+  &.create {
+    background-color: #27ae60;
+  }
+
+  &.update {
+    background-color: #2980b9;
+  }
+
+  &.delete {
+    background-color: #e74c3c;
   }
 }

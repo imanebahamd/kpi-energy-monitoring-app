@@ -1,157 +1,284 @@
-<div class="container mt-4">
-  <h2>Saisie des données électriques</h2>
+<div class="container">
+  <!-- En-tête principal -->
+  <div class="main-header">
+    <h2>Saisie et monitoring des données énergétiques</h2>
+  </div>
 
-  <form [formGroup]="electricityForm" (ngSubmit)="onSubmit()" class="mt-4">
-    <div class="row mb-3">
-      <div class="col-md-3">
-        <label class="form-label">Année</label>
-        <input type="number" class="form-control" formControlName="year" min="2000" max="2100">
-        <div *ngIf="electricityForm.get('year')?.invalid && electricityForm.get('year')?.touched" class="text-danger">
-          L'année doit être entre 2000 et 2100
-        </div>
-      </div>
+  <!-- Alerte dynamique -->
+  <div *ngIf="showAlert"
+       class="dynamic-alert"
+       [ngClass]="alertType">
+    {{ alertMessage }}
+  </div>
 
-      <div class="col-md-3">
-        <label class="form-label">Mois</label>
-        <select class="form-select" formControlName="month">
-          <option *ngFor="let m of [1,2,3,4,5,6,7,8,9,10,11,12]" [value]="m">{{ m }}</option>
-        </select>
-        <div *ngIf="electricityForm.get('month')?.invalid && electricityForm.get('month')?.touched" class="text-danger">
-          Sélectionnez un mois valide
-        </div>
-      </div>
-    </div>
+  <!-- Conteneur du formulaire -->
+  <div class="form-container" [ngClass]="{'visible': isFormVisible}">
+    <form [formGroup]="electricityForm" (ngSubmit)="onSubmit()">
 
-    <!-- 60KV Network -->
-    <div class="card mb-4">
-      <div class="card-header bg-primary text-white">
-        Réseau 60KV
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-4">
-            <label class="form-label">Énergie Active (KWh)</label>
-            <input type="number" class="form-control" formControlName="network60kvActiveEnergy" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network60kvActiveEnergy')?.invalid && electricityForm.get('network60kvActiveEnergy')?.touched" class="text-danger">
-              Valeur positive requise
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label">Énergie Réactive (KVARh)</label>
-            <input type="number" class="form-control" formControlName="network60kvReactiveEnergy" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network60kvReactiveEnergy')?.invalid && electricityForm.get('network60kvReactiveEnergy')?.touched" class="text-danger">
-              Valeur positive requise
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label">Pointe du mois (KW)</label>
-            <input type="number" class="form-control" formControlName="network60kvPeak" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network60kvPeak')?.invalid && electricityForm.get('network60kvPeak')?.touched" class="text-danger">
-              Valeur positive requise
-            </div>
-          </div>
+      <!-- Sélecteur de date -->
+      <!-- Sélecteur de date -->
+      <div class="date-selector">
+        <div class="date-header">
+          <div class="icon">📅</div>
+          <h4>Période de saisie</h4>
         </div>
 
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <div class="alert alert-info">
-              <strong>Facteur de puissance (cosφ):</strong>
-              {{ calculated60kvPowerFactor ? (calculated60kvPowerFactor | number:'1.3-3') : '--' }}
+        <div class="date-fields-row">
+          <div class="form-group compact-field">
+            <label class="form-label">Année</label>
+            <input type="number"
+                   class="form-control"
+                   formControlName="year"
+                   min="2000"
+                   max="2100"
+                   [ngClass]="{'error': electricityForm.get('year')?.invalid && electricityForm.get('year')?.touched}">
+            <div *ngIf="electricityForm.get('year')?.invalid && electricityForm.get('year')?.touched"
+                 class="error-message">
+              Entre 2000 et 2100
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="alert alert-warning">
-              <strong>Limite cosφ:</strong> ≥ 0.9
+
+          <div class="form-group compact-field">
+            <label class="form-label">Mois</label>
+            <select class="form-select"
+                    formControlName="month"
+                    [ngClass]="{'error': electricityForm.get('month')?.invalid && electricityForm.get('month')?.touched}">
+              <option *ngFor="let month of months" [value]="month.value">{{month.name}}</option>
+            </select>
+            <div *ngIf="electricityForm.get('month')?.invalid && electricityForm.get('month')?.touched"
+                 class="error-message">
+              Sélection requise
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- 22KV Network -->
-    <div class="card mb-4">
-      <div class="card-header bg-success text-white">
-        Réseau 22KV
-      </div>
-      <div class="card-body">
-        <div class="row">
-          <div class="col-md-4">
-            <label class="form-label">Énergie Active (KWh)</label>
-            <input type="number" class="form-control" formControlName="network22kvActiveEnergy" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network22kvActiveEnergy')?.invalid && electricityForm.get('network22kvActiveEnergy')?.touched" class="text-danger">
-              Valeur positive requise
+      <!-- Réseau 60KV -->
+      <div class="network-card network-60kv"
+           [ngClass]="{'animate-in': networkAnimationState['60kv']}">
+        <div class="card-header network-60kv">
+          <div class="header-content">
+            <div class="network-icon">⚡</div>
+            <h3>Réseau Haute Tension 60KV</h3>
+          </div>
+          <button type="button"
+                  class="reset-btn"
+                  (click)="resetNetwork60kv()"
+                  title="Réinitialiser les données 60KV">
+            🔄 Réinitialiser
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="inputs-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <span>💡</span> Énergie Active (KWh)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network60kvActiveEnergy"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir l'énergie active..."
+                     [ngClass]="{'error': electricityForm.get('network60kvActiveEnergy')?.invalid && electricityForm.get('network60kvActiveEnergy')?.touched}">
+              <div *ngIf="electricityForm.get('network60kvActiveEnergy')?.invalid && electricityForm.get('network60kvActiveEnergy')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>🔋</span> Énergie Réactive (KVARh)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network60kvReactiveEnergy"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir l'énergie réactive..."
+                     [ngClass]="{'error': electricityForm.get('network60kvReactiveEnergy')?.invalid && electricityForm.get('network60kvReactiveEnergy')?.touched}">
+              <div *ngIf="electricityForm.get('network60kvReactiveEnergy')?.invalid && electricityForm.get('network60kvReactiveEnergy')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>📊</span> Pointe du mois (KW)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network60kvPeak"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la pointe..."
+                     [ngClass]="{'error': electricityForm.get('network60kvPeak')?.invalid && electricityForm.get('network60kvPeak')?.touched}">
+              <div *ngIf="electricityForm.get('network60kvPeak')?.invalid && electricityForm.get('network60kvPeak')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
             </div>
           </div>
 
-          <div class="col-md-4">
-            <label class="form-label">Énergie Réactive (KVARh)</label>
-            <input type="number" class="form-control" formControlName="network22kvReactiveEnergy" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network22kvReactiveEnergy')?.invalid && electricityForm.get('network22kvReactiveEnergy')?.touched" class="text-danger">
-              Valeur positive requise
-            </div>
-          </div>
-
-          <div class="col-md-4">
-            <label class="form-label">Pointe du mois (KW)</label>
-            <input type="number" class="form-control" formControlName="network22kvPeak" step="0.01" min="0">
-            <div *ngIf="electricityForm.get('network22kvPeak')?.invalid && electricityForm.get('network22kvPeak')?.touched" class="text-danger">
-              Valeur positive requise
+          <div class="metrics-grid">
+            <div class="metric-card" [ngClass]="powerFactor60Class">
+              <div class="metric-label">
+                ⚡ Facteur de puissance (cos φ)
+              </div>
+              <div class="metric-value">
+                {{ calculated60kvPowerFactor ? (calculated60kvPowerFactor | number:'1.3-3') : '--' }}
+              </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="row mt-2">
-          <div class="col-md-6">
-            <div class="alert alert-info">
-              <strong>Facteur de puissance (cosφ):</strong>
-              {{ calculated22kvPowerFactor ? (calculated22kvPowerFactor | number:'1.3-3') : '--' }}
+      <!-- Réseau 22KV -->
+      <div class="network-card network-22kv"
+           [ngClass]="{'animate-in': networkAnimationState['22kv']}">
+        <div class="card-header network-22kv">
+          <div class="header-content">
+            <div class="network-icon">🔌</div>
+            <h3>Réseau Moyenne Tension 22KV</h3>
+          </div>
+          <button type="button"
+                  class="reset-btn"
+                  (click)="resetNetwork22kv()"
+                  title="Réinitialiser les données 22KV">
+            🔄 Réinitialiser
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="inputs-grid">
+            <div class="form-group">
+              <label class="form-label">
+                <span>💡</span> Énergie Active (KWh)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network22kvActiveEnergy"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir l'énergie active..."
+                     [ngClass]="{'error': electricityForm.get('network22kvActiveEnergy')?.invalid && electricityForm.get('network22kvActiveEnergy')?.touched}">
+              <div *ngIf="electricityForm.get('network22kvActiveEnergy')?.invalid && electricityForm.get('network22kvActiveEnergy')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>🔋</span> Énergie Réactive (KVARh)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network22kvReactiveEnergy"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir l'énergie réactive..."
+                     [ngClass]="{'error': electricityForm.get('network22kvReactiveEnergy')?.invalid && electricityForm.get('network22kvReactiveEnergy')?.touched}">
+              <div *ngIf="electricityForm.get('network22kvReactiveEnergy')?.invalid && electricityForm.get('network22kvReactiveEnergy')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                <span>📊</span> Pointe du mois (KW)
+              </label>
+              <input type="number"
+                     class="form-control"
+                     formControlName="network22kvPeak"
+                     step="0.01"
+                     min="0"
+                     placeholder="Saisir la pointe..."
+                     [ngClass]="{'error': electricityForm.get('network22kvPeak')?.invalid && electricityForm.get('network22kvPeak')?.touched}">
+              <div *ngIf="electricityForm.get('network22kvPeak')?.invalid && electricityForm.get('network22kvPeak')?.touched"
+                   class="error-message">
+                ⚠️ Veuillez saisir une valeur positive
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="alert alert-warning">
-              <strong>Limite cosφ:</strong> ≥ 0.8
+
+          <div class="metrics-grid">
+            <div class="metric-card" [ngClass]="powerFactor22Class">
+              <div class="metric-label">
+                ⚡ Facteur de puissance (cos φ)
+              </div>
+              <div class="metric-value">
+                {{ calculated22kvPowerFactor ? (calculated22kvPowerFactor | number:'1.3-3') : '--' }}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Total -->
-    <div class="card mb-4">
-      <div class="card-header bg-secondary text-white">
-        Total
-      </div>
-      <div class="card-body">
-        <div class="alert alert-primary">
-          <strong>Total énergie active:</strong>
-          {{ totalActiveEnergy ? (totalActiveEnergy | number:'1.2-2') + ' KWh' : '--' }}
+      <!-- Carte de synthèse totale -->
+      <div class="network-card total-card"
+           [ngClass]="{'animate-in': networkAnimationState['total']}">
+        <div class="card-header total-card">
+          <div class="header-content">
+            <div class="network-icon">📈</div>
+            <h3>Synthèse Énergétique Globale</h3>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="metrics-grid">
+            <div class="metric-card" [ngClass]="totalEnergyClass">
+              <div class="metric-label">
+                ⚡ Total énergie active consommée
+              </div>
+              <div class="metric-value">
+                {{ totalActiveEnergy ? (totalActiveEnergy | number:'1.2-2') : '--' }}
+                <span class="metric-unit">KWh</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="d-flex justify-content-between mt-4">
-      <button type="submit" class="btn btn-primary" [disabled]="electricityForm.invalid || isLoading">
-        <span *ngIf="!isLoading">Enregistrer</span>
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
-      </button>
+      <!-- Boutons d'action -->
+      <div class="action-buttons">
+        <div class="primary-actions">
+          <button type="submit"
+                  class="btn btn-primary"
+                  [disabled]="electricityForm.invalid || isLoading">
+            <span *ngIf="!isLoading">
+              💾 Enregistrer les données
+            </span>
+            <span *ngIf="isLoading">
+              <div class="loading-spinner"></div>
+              Enregistrement en cours...
+            </span>
+          </button>
 
-      <div>
-        <a routerLink="/admin/electricity-monthly" class="btn btn-outline-info me-2">
-          Consulter le tableau mensuel
-        </a>
-        <a routerLink="/admin/electricity-annual" class="btn btn-outline-info me-2">
-          Consulter le tableau annuel
-        </a>
-        <a routerLink="/admin/electricity-graphs" class="btn btn-outline-success">
-          Visualisation graphique
-        </a>
+          <button type="button"
+                  class="btn btn-outline-secondary"
+                  (click)="resetAll()"
+                  [disabled]="isLoading">
+            🗑️ Tout réinitialiser
+          </button>
+        </div>
+
+        <div class="secondary-actions">
+          <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="btn btn-outline-info">
+            📊 Tableau Mensuel
+          </a>
+          <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="btn btn-outline-info">
+            📅 Rapport Annuel
+          </a>
+          <a [routerLink]="[getRoutePrefix(), 'electricity-graphs']" class="btn btn-outline-info">
+            📈 Visualisations
+          </a>
+        </div>
       </div>
-    </div>
-
-    <div *ngIf="message" class="alert mt-3" [ngClass]="{'alert-success': !isLoading, 'alert-danger': isLoading && message.includes('Erreur')}">
-      {{ message }}
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

@@ -1,60 +1,567 @@
-.form-container {
-  max-width: 500px;
-  margin: 1rem auto;
-  padding: 1rem;
-  background: #f0f8ff;
-  border-radius: 8px;
-  box-shadow: 0 0 6px #ccc;
-}
+@use "sass:color";
 
-h2 {
-  text-align: center;
-  margin-bottom: 1rem;
-}
+// Variables de couleurs
+$primary-color: #5D9CEC;
+$primary-dark: #4A89DC;
+$primary-darker: #3B7DDD;
+$secondary-color: #7FB2F0;
+$background-dark: #F5F7FA;
+$background-medium: #EBEFF5;
+$background-light: #E1E8F0;
+$text-dark: #2C3E50;
+$text-light: #7F8C8D;
+$text-placeholder: #CCD1D9;
+$border-color: #E0E6ED;
+$white: #FFFFFF;
+$light-bg: #F8FAFD;
+$error-color: #FF6B6B;
+$error-light: #FFE5E5;
+$success-color: #4CAF50;
+$warning-color: #FFA726;
+$danger-color: #EF5350;
 
-label {
+// Variables d'animation
+$transition-smooth: all 0.3s ease;
+$shadow-light: 0 2px 10px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+// Styles principaux
+:host {
   display: block;
-  margin-top: 0.5rem;
+  min-height: 100vh;
+  background-color: $white;
+  padding: 2rem 0;
 }
 
-input, select {
-  width: 100%;
-  padding: 0.4rem;
-  font-size: 1rem;
-  margin-top: 0.2rem;
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
 }
 
-fieldset {
-  border: 1px solid #bbb;
-  margin-top: 1rem;
-  padding: 1rem;
-  border-radius: 4px;
-}
+// En-tête principal
+.main-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.6s ease-out;
 
-legend {
-  font-weight: bold;
-}
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: $primary-darker;
+    margin-bottom: 0.5rem;
+  }
 
-button {
-  margin-top: 1.5rem;
-  width: 100%;
-  padding: 0.7rem;
-  background-color: #007bff;
-  color: white;
-  font-weight: 600;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-
-  &:disabled {
-    background-color: #9ec5fe;
-    cursor: not-allowed;
+  .subtitle {
+    color: $text-light;
+    font-size: 1.1rem;
+    font-weight: 500;
   }
 }
 
-.message {
-  margin-top: 1rem;
-  color: green;
-  text-align: center;
-  font-weight: bold;
+// Alerte dynamique
+.dynamic-alert {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  z-index: 1100;
+  min-width: 350px;
+  padding: 1.2rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: $shadow-medium;
+  font-weight: 500;
+  animation: slideInRight 0.5s ease-out;
+  transition: $transition-smooth;
+  display: flex;
+  align-items: center;
+
+  &.success {
+    background-color: $success-color;
+    color: $white;
+    border-left: 4px solid color.adjust($success-color, $lightness: -10%);
+  }
+
+  &.error {
+    background-color: $error-color;
+    color: $white;
+    border-left: 4px solid color.adjust($error-color, $lightness: -10%);
+  }
+
+  &.warning {
+    background-color: $warning-color;
+    color: $white;
+    border-left: 4px solid color.adjust($warning-color, $lightness: -10%);
+  }
+
+  &.info {
+    background-color: $primary-color;
+    color: $white;
+    border-left: 4px solid $primary-darker;
+  }
+}
+
+// Conteneur du formulaire
+.form-container {
+  opacity: 0;
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+// Sélecteurs de date
+.date-selector {
+  background: $white;
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: $shadow-light;
+  margin-bottom: 1.5rem;
+  border: 1px solid $border-color;
+
+  .date-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    .icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: $primary-color;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 0.75rem;
+      color: $white;
+      font-size: 0.9rem;
+    }
+
+    h4 {
+      color: $text-dark;
+      font-weight: 600;
+      margin: 0;
+      font-size: 1rem;
+    }
+  }
+
+  .date-fields-row {
+    display: flex;
+    gap: 1.5rem;
+
+    @media (max-width: 576px) {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+  }
+
+  .form-group.compact-field {
+    flex: 1;
+    margin-bottom: 0;
+
+    label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+      color: $text-dark;
+      font-size: 0.85rem;
+    }
+
+    .form-control, .form-select {
+      width: 100%;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid $border-color;
+      border-radius: 5px;
+      font-size: 0.9rem;
+      transition: $transition-smooth;
+      background: $white;
+      height: 38px;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+      }
+
+      &.error {
+        border-color: $error-color;
+      }
+    }
+
+    .error-message {
+      color: $error-color;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      font-weight: 500;
+    }
+  }
+}
+
+// Cards de réseau
+.network-card {
+  background: $white;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  box-shadow: $shadow-light;
+  border: 1px solid $border-color;
+  transition: $transition-smooth;
+  opacity: 0;
+  transform: translateY(20px);
+
+  &.animate-in {
+    animation: slideInUp 0.6s ease-out forwards;
+  }
+
+  &.network-60kv {
+    border-top: 4px solid $primary-color;
+  }
+
+  &.network-22kv {
+    border-top: 4px solid $success-color;
+  }
+
+  &.total-card {
+    border-top: 4px solid $primary-darker;
+  }
+
+  .card-header {
+    padding: 1.25rem 1.5rem;
+    color: $white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    &.network-60kv {
+      background: $primary-color;
+    }
+
+    &.network-22kv {
+      background: $success-color;
+    }
+
+    &.total-card {
+      background: $primary-darker;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+
+      .network-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+      }
+
+      h3 {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.2rem;
+      }
+    }
+
+    .reset-btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: $white;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: $transition-smooth;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+
+    .inputs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+
+      @media (max-width: 992px) {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-group {
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: $text-dark;
+        font-size: 0.95rem;
+
+        span {
+          margin-right: 0.5rem;
+        }
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: $transition-smooth;
+        background: $white;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-color;
+          box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        }
+
+        &.error {
+          border-color: $error-color;
+          background-color: $error-light;
+        }
+      }
+
+      .error-message {
+        color: $error-color;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        font-weight: 500;
+      }
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .metric-card {
+      padding: 1rem;
+      border-radius: 8px;
+      transition: $transition-smooth;
+      border: 1px solid $border-color;
+      background: $light-bg;
+
+      &.excellent {
+        border-color: $success-color;
+        background-color: rgba($success-color, 0.1);
+        color: color.adjust($success-color, $lightness: -20%);
+      }
+
+      &.good {
+        border-color: $primary-color;
+        background-color: rgba($primary-color, 0.1);
+        color: $primary-darker;
+      }
+
+      &.warning {
+        border-color: $warning-color;
+        background-color: rgba($warning-color, 0.1);
+        color: color.adjust($warning-color, $lightness: -20%);
+      }
+
+      &.neutral {
+        border-color: $border-color;
+        background-color: $light-bg;
+        color: $text-light;
+      }
+
+      &.high {
+        border-color: $error-color;
+        background-color: rgba($error-color, 0.1);
+        color: $error-color;
+      }
+
+      &.medium {
+        border-color: $warning-color;
+        background-color: rgba($warning-color, 0.1);
+        color: color.adjust($warning-color, $lightness: -15%);
+      }
+
+      &.low {
+        border-color: $success-color;
+        background-color: rgba($success-color, 0.1);
+        color: color.adjust($success-color, $lightness: -15%);
+      }
+
+      .metric-label {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .metric-value {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+
+      .metric-unit {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-left: 0.25rem;
+      }
+    }
+  }
+}
+
+// Boutons d'action
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: $white;
+  border-radius: 10px;
+  box-shadow: $shadow-light;
+
+  .primary-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .secondary-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: $transition-smooth;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+
+    &.btn-primary {
+      background: $primary-color;
+      color: $white;
+
+      &:hover {
+        background: $primary-dark;
+        transform: translateY(-2px);
+      }
+
+      &:disabled {
+        background: $text-light;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+
+    &.btn-outline-secondary {
+      background: transparent;
+      color: $text-light;
+      border: 1px solid $border-color;
+
+      &:hover {
+        background: $background-light;
+      }
+    }
+
+    &.btn-outline-info {
+      background: transparent;
+      color: $primary-color;
+      border: 1px solid $primary-color;
+
+      &:hover {
+        background: rgba($primary-color, 0.1);
+      }
+    }
+  }
+}
+
+// Spinner de chargement
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: $white;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+// Keyframes d'animation
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .network-card .card-body .inputs-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+
+    .primary-actions,
+    .secondary-actions {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .dynamic-alert {
+    left: 1rem;
+    right: 1rem;
+    min-width: auto;
+  }
 }

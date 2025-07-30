@@ -16,7 +16,10 @@ import { lastValueFrom } from 'rxjs';
 export class ReportGeneratorComponent {
   year: number = new Date().getFullYear();
   month: number = new Date().getMonth() + 1;
+  startMonth: number = 1;
+  endMonth: number = 12;
   isLoading = false;
+  reportType: 'monthly' | 'yearly' | 'period' = 'monthly';
 
   constructor(
     private electricityService: ElectricityService,
@@ -30,33 +33,32 @@ export class ReportGeneratorComponent {
     return monthNames[month - 1];
   }
 
+  getMonthNames(): string[] {
+    return Array.from({length: 12}, (_, i) => this.getMonthName(i + 1));
+  }
+
   async generateReport(): Promise<void> {
     this.isLoading = true;
 
     try {
-      const [electricityData, waterData] = await Promise.all([
-        lastValueFrom(this.electricityService.getMonthlySummary(this.year, this.month)),
-        lastValueFrom(this.waterService.getWaterData(this.year, this.month))
-      ]);
+      let pdfBlob: Blob;
 
-      if (!electricityData || !waterData) {
-        throw new Error('Données manquantes');
+      switch (this.reportType) {
+        case 'monthly':
+          pdfBlob = await this.generateMonthlyReport();
+          break;
+        case 'yearly':
+          pdfBlob = await this.generateYearlyReport();
+          break;
+        case 'period':
+          pdfBlob = await this.generatePeriodReport();
+          break;
+        default:
+          throw new Error('Type de rapport non supporté');
       }
 
-      const pdfBlob = await this.pdfService.generateElectricityWaterReport(
-        electricityData,
-        waterData,
-        this.year,
-        this.month
-      );
-
       // Téléchargement du PDF
-      const url = window.URL.createObjectURL(pdfBlob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `rapport_energie_eau_${this.getMonthName(this.month)}_${this.year}.pdf`;
-      a.click();
-      window.URL.revokeObjectURL(url);
+      this.downloadPdf(pdfBlob);
 
     } catch (error) {
       console.error('Erreur:', error);
@@ -64,5 +66,105 @@ export class ReportGeneratorComponent {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  private async generateMonthlyReport(): Promise<Blob> {
+    const [electricityData, waterData] = await Promise.all([
+      lastValueFrom(this.electricityService.getMonthlySummary(this.year, this.month)),
+      lastValueFrom(this.waterService.getWaterData(this.year, this.month))
+    ]);
+
+    if (!electricityData || !waterData) {
+      throw new Error('Données manquantes pour le mois sélectionné');
+    }
+
+    return this.pdfService.generateMonthlyReport(
+      electricityData,
+      waterData,
+      this.year,
+      this.month
+    );
+  }
+
+  private async generateYearlyReport(): Promise<Blob> {
+    const monthlyData = [];
+
+    for (let month = 1; month <= 12; month++) {
+      const [electricityData, waterData] = await Promise.all([
+        lastValueFrom(this.electricityService.getMonthlySummary(this.year, month)),
+        lastValueFrom(this.waterService.getWaterData(this.year, month))
+      ]);
+
+      if (electricityData && waterData) {
+        monthlyData.push({
+          month,
+          electricityData,
+          waterData
+        });
+      }
+    }
+
+    if (monthlyData.length === 0) {
+      throw new Error('Aucune donnée disponible pour cette année');
+    }
+
+    return this.pdfService.generateYearlyReport(monthlyData, this.year);
+  }
+
+  private async generatePeriodReport(): Promise<Blob> {
+    if (this.startMonth > this.endMonth) {
+      throw new Error('Le mois de début doit être antérieur au mois de fin');
+    }
+
+    const periodData = [];
+
+    for (let month = this.startMonth; month <= this.endMonth; month++) {
+      const [electricityData, waterData] = await Promise.all([
+        lastValueFrom(this.electricityService.getMonthlySummary(this.year, month)),
+        lastValueFrom(this.waterService.getWaterData(this.year, month))
+      ]);
+
+      if (electricityData && waterData) {
+        periodData.push({
+          month,
+          electricityData,
+          waterData
+        });
+      }
+    }
+
+    if (periodData.length === 0) {
+      throw new Error('Aucune donnée disponible pour cette période');
+    }
+
+    return this.pdfService.generatePeriodReport(
+      periodData,
+      this.year,
+      this.startMonth,
+      this.endMonth
+    );
+  }
+
+  private downloadPdf(pdfBlob: Blob): void {
+    let fileName = '';
+
+    switch (this.reportType) {
+      case 'monthly':
+        fileName = `rapport_mensuel_${this.getMonthName(this.month)}_${this.year}.pdf`;
+        break;
+      case 'yearly':
+        fileName = `rapport_annuel_${this.year}.pdf`;
+        break;
+      case 'period':
+        fileName = `rapport_periode_${this.getMonthName(this.startMonth)}_a_${this.getMonthName(this.endMonth)}_${this.year}.pdf`;
+        break;
+    }
+
+    const url = window.URL.createObjectURL(pdfBlob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
   }
 }

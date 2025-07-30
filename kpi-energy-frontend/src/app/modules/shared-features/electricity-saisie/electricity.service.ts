@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, throwError } from 'rxjs';
 import { TokenStorageService } from '../../../core/services/token-storage.service';
 
 interface ElectricitySummary {
@@ -15,7 +15,16 @@ interface ElectricitySummary {
   cosphiLimit60kv: number;
   cosphiLimit22kv: number;
 }
-
+interface ElectricityDataDto {
+  year: number;
+  month: number;
+  network60kvActiveEnergy: number;
+  network60kvReactiveEnergy: number;
+  network60kvPeak: number;
+  network22kvActiveEnergy: number;
+  network22kvReactiveEnergy: number;
+  network22kvPeak: number;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -64,5 +73,16 @@ export class ElectricityService {
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
+  }
+
+  deleteMonthlyData(year: number, month: number): Observable<void> {
+    if (!year || !month) {
+      return throwError(() => new Error('Invalid parameters'));
+    }
+    return this.http.delete<void>(`${this.apiUrl}/${year}/${month}`);
+  }
+
+  getMonthlyDataForEdit(year: number, month: number): Observable<ElectricityDataDto> {
+    return this.http.get<ElectricityDataDto>(`${this.apiUrl}/${year}/${month}/edit`);
   }
 }

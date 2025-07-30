@@ -3,6 +3,8 @@ import { ElectricityService } from '../../electricity-saisie/electricity.service
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+
 
 @Component({
   selector: 'app-annual-summary',
@@ -17,16 +19,20 @@ export class AnnualSummaryComponent implements OnInit {
   isLoading = false;
   error: string | null = null;
   noDataAvailable = false;
-
+  alertMessage: string = '';
+  alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
+  showAlert: boolean = false;
+  isAdminUser: boolean = false;
   // Calculated values
   total60kvConsumption = 0;
   total22kvConsumption = 0;
   averagePowerFactor60kv = 0;
   averagePowerFactor22kv = 0;
 
-  constructor(private electricityService: ElectricityService) {}
+  constructor(private electricityService: ElectricityService,private authService: AuthService) {}
 
   ngOnInit(): void {
+    this.isAdminUser = this.authService.isAdmin();
     this.loadSummary();
   }
 
@@ -42,8 +48,10 @@ export class AnnualSummaryComponent implements OnInit {
           this.summaries = data;
           this.calculateTotals();
           this.noDataAvailable = false;
+          this.showAlertMessage(`Données pour l'année ${this.year} chargées avec succès`, 'success');
         } else {
           this.noDataAvailable = true;
+          this.showAlertMessage(`Aucune donnée disponible pour l'année ${this.year}`, 'info');
         }
         this.isLoading = false;
       },
@@ -51,6 +59,7 @@ export class AnnualSummaryComponent implements OnInit {
         this.error = this.getErrorMessage(err);
         this.isLoading = false;
         this.noDataAvailable = true;
+        this.showAlertMessage(this.error, 'error');
       }
     });
   }
@@ -70,6 +79,16 @@ export class AnnualSummaryComponent implements OnInit {
       : 0;
   }
 
+  private showAlertMessage(message: string, type: 'success' | 'error' | 'info' | 'warning'): void {
+    this.alertMessage = message;
+    this.alertType = type;
+    this.showAlert = true;
+
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 5000);
+  }
+
   private getErrorMessage(error: any): string {
     if (error.status === 404) {
       return `Aucune donnée disponible pour l'année ${this.year}`;
@@ -84,10 +103,23 @@ export class AnnualSummaryComponent implements OnInit {
   }
 
   getCosphiStatus60kv(value: number): string {
-    return value >= 0.9 ? 'text-success' : 'text-danger';
+    return value >= 0.9 ? 'optimal' : 'critical';
   }
 
   getCosphiStatus22kv(value: number): string {
-    return value >= 0.8 ? 'text-success' : 'text-danger';
+    return value >= 0.8 ? 'optimal' : 'critical';
+  }
+
+  getStatusIcon(status: string): string {
+    switch(status) {
+      case 'optimal': return 'check';
+      case 'warning': return 'warning';
+      case 'critical': return 'error';
+      default: return 'help';
+    }
+  }
+
+  getRoutePrefix(): string {
+    return this.isAdminUser ? '/admin' : '/user';
   }
 }
