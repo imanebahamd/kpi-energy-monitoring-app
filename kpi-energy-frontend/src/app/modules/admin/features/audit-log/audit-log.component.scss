@@ -1,90 +1,395 @@
+@use "sass:color";
+
+// =============================================
+// VARIABLES (identiques à user-management)
+// =============================================
+$primary-color: #4361ee;
+$secondary-color: #7FB2F0;
+$success-color: #4CAF50;
+$success-dark: #45a049;
+$accent-color: #4895ef;
+$light-bg: #f8f9fa;
+$dark-bg: #2b2d42;
+$text-dark: #2b2d42;
+$text-light: #6c757d;
+$white: #ffffff;
+$hover-bg: rgba(76, 175, 80, 0.08);
+$active-bg: rgba(76, 175, 80, 0.15);
+$border-color: #e9ecef;
+
+$tertiary-color: #3a86ff;
+$quaternary-color: #8338ec;
+$warning-color: #ff9e00;
+$error-color: #f44336;
+$info-color: #2196f3;
+
+$text-primary: $text-dark;
+$text-secondary: $text-light;
+$text-muted: #adb5bd;
+
+$background-primary: $white;
+$background-secondary: $light-bg;
+$background-card: $white;
+
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$border-radius-large: 16px;
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// =============================================
+// STYLES DU COMPOSANT
+// =============================================
 .audit-container {
-  padding: 24px;
-  max-width: 1200px;
+  padding: $spacing-xl;
+  max-width: 1400px;
   margin: 0 auto;
+  min-height: calc(100vh - 80px);
   font-family: 'Roboto', 'Helvetica Neue', sans-serif;
 
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+  }
+
+  // ===============================
+  // HEADER
+  // ===============================
   .header {
-    margin-bottom: 24px;
+    margin-bottom: $spacing-xl;
+    animation: slideInDown 0.5s ease-out;
 
     h2 {
-      color: #2c3e50;
-      margin-bottom: 8px;
-      font-weight: 500;
-      font-size: 24px;
+      color: $text-dark;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: $spacing-sm;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+
+      @media (max-width: 768px) {
+        font-size: 1.8rem;
+      }
     }
 
     p {
-      color: #7f8c8d;
+      color: $text-secondary;
       margin: 0;
-      font-size: 14px;
+      font-size: 1.1rem;
+      opacity: 0.9;
     }
   }
-}
 
-.search-card, .results-card {
-  margin-bottom: 24px;
-}
+  // ===============================
+  // CARDS
+  // ===============================
+  .search-card, .results-card {
+    background: $white;
+    border-radius: $border-radius-large;
+    box-shadow: $shadow-heavy;
+    margin-bottom: $spacing-xl;
+    overflow: hidden;
+    animation: slideInUp 0.6s ease-out;
 
-.search-fields {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 16px;
-  margin-bottom: 16px;
-}
+    mat-card-header {
+      background: linear-gradient(135deg, $primary-color, $secondary-color);
+      padding: $spacing-lg $spacing-xl;
+      color: $white;
 
-.search-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-}
+      mat-card-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
 
-.total-items {
-  color: #7f8c8d;
-  font-size: 14px;
-  margin-left: auto;
-}
+        mat-icon {
+          font-size: 1.4rem;
+          background: rgba($white, 0.2);
+          padding: $spacing-xs;
+          border-radius: $border-radius-sm;
+        }
+      }
+    }
 
-.table-container {
-  overflow-x: auto;
-}
+    mat-card-content {
+      padding: $spacing-xl;
 
-.user-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-
-  mat-icon {
-    font-size: 18px;
-    height: 18px;
-    width: 18px;
-    margin-right: 8px;
+      @media (max-width: 768px) {
+        padding: $spacing-lg;
+      }
+    }
   }
 
-  .user-email {
-    font-size: 12px;
-    color: #7f8c8d;
-    margin-left: 26px;
-  }
-}
+  // ===============================
+  // SEARCH FORM
+  // ===============================
+  .search-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-lg;
 
-.action-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  color: white;
+    mat-form-field {
+      width: 100%;
 
-  &.create {
-    background-color: #27ae60;
-  }
-
-  &.update {
-    background-color: #2980b9;
+      .mat-form-field-outline {
+        background-color: $background-secondary;
+        border-radius: $border-radius;
+      }
+    }
   }
 
-  &.delete {
-    background-color: #e74c3c;
+  .search-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $spacing-md;
+    padding-top: $spacing-lg;
+    border-top: 1px solid $border-color;
+
+    button {
+      padding: $spacing-md $spacing-lg;
+      border-radius: $border-radius;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm;
+      min-width: 150px;
+      justify-content: center;
+      box-shadow: $shadow-light;
+
+      &[color="primary"] {
+        background: linear-gradient(45deg, $primary-color, $secondary-color);
+        color: $white;
+
+        &:hover:not(:disabled) {
+          background: linear-gradient(45deg,
+            color.adjust($primary-color, $lightness: -10%),
+            color.adjust($secondary-color, $lightness: -10%));
+          transform: translateY(-2px);
+          box-shadow: $shadow-medium;
+        }
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      mat-icon {
+        font-size: 1.2rem;
+      }
+    }
+  }
+
+  // ===============================
+  // RESULTS SECTION
+  // ===============================
+  .total-items {
+    color: $text-secondary;
+    font-size: 0.95rem;
+    margin-left: auto;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    margin-top: $spacing-lg;
+    border-radius: $border-radius;
+    box-shadow: $shadow-light;
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        background: linear-gradient(135deg, $primary-color, $secondary-color);
+        color: $white;
+        padding: $spacing-md $spacing-lg;
+        text-align: left;
+        font-weight: 600;
+        position: relative;
+      }
+
+      td {
+        padding: $spacing-md $spacing-lg;
+        border-bottom: 1px solid $border-color;
+        vertical-align: middle;
+      }
+
+      tr:hover {
+        background: $hover-bg;
+      }
+    }
+
+    mat-paginator {
+      margin-top: $spacing-lg;
+      border-radius: 0 0 $border-radius $border-radius;
+      background: $background-secondary;
+    }
+  }
+
+  .user-cell {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-xs;
+
+    mat-icon {
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+      margin-right: $spacing-sm;
+      color: $primary-color;
+    }
+
+    .user-email {
+      font-size: 0.85rem;
+      color: $text-secondary;
+      margin-left: calc(1.2rem + #{$spacing-sm});
+    }
+  }
+
+  .action-badge {
+    display: inline-block;
+    padding: $spacing-xs $spacing-sm;
+    border-radius: $border-radius-sm;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: $white;
+    box-shadow: $shadow-light;
+
+    &.create {
+      background: linear-gradient(45deg, $success-color, $success-dark);
+    }
+
+    &.update {
+      background: linear-gradient(45deg, $tertiary-color, color.adjust($tertiary-color, $lightness: -10%));
+    }
+
+    &.delete {
+      background: linear-gradient(45deg, $error-color, color.adjust($error-color, $lightness: -10%));
+    }
+  }
+
+  // ===============================
+  // ANIMATIONS
+  // ===============================
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  // ===============================
+  // RESPONSIVE DESIGN
+  // ===============================
+  @media (max-width: 992px) {
+    .search-fields {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+
+    .search-card, .results-card {
+      border-radius: $border-radius;
+
+      mat-card-content {
+        padding: $spacing-lg;
+      }
+    }
+
+    .search-fields {
+      grid-template-columns: 1fr;
+    }
+
+    .search-actions {
+      flex-direction: column;
+
+      button {
+        width: 100%;
+      }
+    }
+
+    .table-container {
+      table {
+        display: block;
+
+        thead {
+          display: none;
+        }
+
+        tbody, tr, td {
+          display: block;
+          width: 100%;
+        }
+
+        tr {
+          padding: $spacing-md;
+          border-bottom: 1px solid $border-color;
+        }
+
+        td {
+          padding: $spacing-xs 0;
+          border: none;
+
+          &:before {
+            content: attr(data-label) ': ';
+            font-weight: 600;
+            color: $primary-color;
+            display: inline-block;
+            width: 120px;
+          }
+        }
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: $spacing-sm;
+
+    .header {
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .search-card, .results-card {
+      mat-card-header {
+        padding: $spacing-md;
+      }
+
+      mat-card-content {
+        padding: $spacing-md;
+      }
+    }
   }
 }

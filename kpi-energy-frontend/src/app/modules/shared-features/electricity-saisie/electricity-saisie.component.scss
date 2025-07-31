@@ -1,128 +1,210 @@
-@use "sass:color";
-
-// Variables de couleurs
-$primary-color: #5D9CEC;
-$primary-dark: #4A89DC;
-$primary-darker: #3B7DDD;
+// Variables de couleurs précalculées
+$primary-color: #4361ee;
+$primary-dark: #3a56d4;
 $secondary-color: #7FB2F0;
-$background-dark: #F5F7FA;
-$background-medium: #EBEFF5;
-$background-light: #E1E8F0;
-$text-dark: #2C3E50;
-$text-light: #7F8C8D;
-$text-placeholder: #CCD1D9;
-$border-color: #E0E6ED;
-$white: #FFFFFF;
-$light-bg: #F8FAFD;
-$error-color: #FF6B6B;
-$error-light: #FFE5E5;
 $success-color: #4CAF50;
-$warning-color: #FFA726;
-$danger-color: #EF5350;
+$success-dark: #3d8b40;
+$accent-color: #4895ef;
+$light-bg: #f8f9fa;
+$dark-bg: #2b2d42;
+$text-dark: #2b2d42;
+$text-light: #6c757d;
+$white: #ffffff;
+$hover-bg: rgba(76, 175, 80, 0.08);
+$active-bg: rgba(76, 175, 80, 0.15);
+$border-color: #e9ecef;
 
-// Variables d'animation
-$transition-smooth: all 0.3s ease;
-$shadow-light: 0 2px 10px rgba(0, 0, 0, 0.08);
-$shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
+$tertiary-color: #3a86ff;
+$quaternary-color: #8338ec;
+$warning-color: #ff9e00;
+$warning-dark: #e68a00;
+$error-color: #f44336;
+$error-dark: #d32f2f;
+$info-color: #2196f3;
+$info-dark: #1a7fd8;
 
-// Styles principaux
-:host {
-  display: block;
+$text-primary: $text-dark;
+$text-secondary: $text-light;
+$text-muted: #adb5bd;
+
+$background-primary: $white;
+$background-secondary: $light-bg;
+$background-card: $white;
+
+// Variables d'espacement
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// Variables de bordures
+$border-radius: 12px;
+$border-radius-large: 16px;
+
+// Variables d'ombre
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+// Styles de base
+.electricity-container {
   min-height: 100vh;
-  background-color: $white;
-  padding: 2rem 0;
-}
+  background: $white;
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1.5rem;
-}
+  .electricity-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-xl;
 
-// En-tête principal
-.main-header {
-  text-align: center;
-  margin-bottom: 3rem;
-  animation: fadeIn 0.6s ease-out;
-
-  h2 {
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: $primary-darker;
-    margin-bottom: 0.5rem;
-  }
-
-  .subtitle {
-    color: $text-light;
-    font-size: 1.1rem;
-    font-weight: 500;
+    @media (max-width: 768px) {
+      padding: $spacing-md;
+    }
   }
 }
 
-// Alerte dynamique
-.dynamic-alert {
-  position: fixed;
-  top: 2rem;
-  right: 2rem;
-  z-index: 1100;
-  min-width: 350px;
-  padding: 1.2rem 1.5rem;
-  border-radius: 8px;
-  box-shadow: $shadow-medium;
-  font-weight: 500;
-  animation: slideInRight 0.5s ease-out;
-  transition: $transition-smooth;
+// En-tête
+.electricity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: $spacing-xxl;
+  padding-bottom: $spacing-lg;
+  border-bottom: 2px solid $border-color;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-lg;
+  }
+
+  .header-content {
+    .electricity-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0 0 $spacing-sm 0;
+      line-height: 1.2;
+
+      @media (max-width: 768px) {
+        font-size: 2rem;
+      }
+    }
+
+    .electricity-subtitle {
+      font-size: 1.1rem;
+      color: $text-secondary;
+      margin: 0;
+      font-weight: 400;
+    }
+  }
+}
+
+// Alertes
+.alert-container {
+  margin-bottom: $spacing-lg;
+  border-radius: $border-radius;
+  overflow: hidden;
+  box-shadow: $shadow-light;
+
+  &[data-type="success"] {
+    background-color: rgba($success-color, 0.05);
+    color: $success-dark;
+    border-left: 4px solid $success-color;
+
+    .alert-indicator {
+      background-color: $success-color;
+    }
+  }
+
+  &[data-type="error"] {
+    background-color: rgba($error-color, 0.05);
+    color: $error-dark;
+    border-left: 4px solid $error-color;
+
+    .alert-indicator {
+      background-color: $error-color;
+    }
+  }
+
+  &[data-type="warning"] {
+    background-color: rgba($warning-color, 0.05);
+    color: $warning-dark;
+    border-left: 4px solid $warning-color;
+
+    .alert-indicator {
+      background-color: $warning-color;
+    }
+  }
+
+  &[data-type="info"] {
+    background-color: rgba($info-color, 0.05);
+    color: $info-dark;
+    border-left: 4px solid $info-color;
+
+    .alert-indicator {
+      background-color: $info-color;
+    }
+  }
+
+  .alert-content {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    padding: $spacing-lg;
+
+    .alert-indicator {
+      width: 8px;
+      height: 40px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .alert-message {
+      font-weight: 500;
+      font-size: 1rem;
+    }
+  }
+}
+
+// Chargement
+.loading-container {
   display: flex;
   align-items: center;
+  justify-content: center;
+  gap: $spacing-lg;
+  padding: $spacing-xxl;
 
-  &.success {
-    background-color: $success-color;
-    color: $white;
-    border-left: 4px solid color.adjust($success-color, $lightness: -10%);
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba($secondary-color, 0.1);
+    border-top: 4px solid $secondary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
   }
 
-  &.error {
-    background-color: $error-color;
-    color: $white;
-    border-left: 4px solid color.adjust($error-color, $lightness: -10%);
-  }
-
-  &.warning {
-    background-color: $warning-color;
-    color: $white;
-    border-left: 4px solid color.adjust($warning-color, $lightness: -10%);
-  }
-
-  &.info {
-    background-color: $primary-color;
-    color: $white;
-    border-left: 4px solid $primary-darker;
+  .loading-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: $text-secondary;
   }
 }
 
-// Conteneur du formulaire
-.form-container {
-  opacity: 0;
-  animation: fadeIn 0.8s ease-out 0.2s forwards;
-
-  &.visible {
-    opacity: 1;
-  }
-}
-
-// Sélecteurs de date
+// Sélecteur de date
 .date-selector {
   background: $white;
-  border-radius: 10px;
-  padding: 1rem;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
   box-shadow: $shadow-light;
-  margin-bottom: 1.5rem;
+  margin-bottom: $spacing-xl;
   border: 1px solid $border-color;
 
   .date-header {
     display: flex;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: $spacing-lg;
 
     .icon {
       width: 32px;
@@ -132,7 +214,7 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 0.75rem;
+      margin-right: $spacing-md;
       color: $white;
       font-size: 0.9rem;
     }
@@ -141,76 +223,72 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
       color: $text-dark;
       font-weight: 600;
       margin: 0;
-      font-size: 1rem;
+      font-size: 1.1rem;
     }
   }
 
   .date-fields-row {
     display: flex;
-    gap: 1.5rem;
+    gap: $spacing-lg;
 
     @media (max-width: 576px) {
       flex-direction: column;
-      gap: 0.75rem;
+      gap: $spacing-md;
     }
   }
 
-  .form-group.compact-field {
+  .form-group {
     flex: 1;
     margin-bottom: 0;
 
     label {
       display: block;
-      margin-bottom: 0.3rem;
+      margin-bottom: $spacing-sm;
       font-weight: 600;
       color: $text-dark;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
     }
 
     .form-control, .form-select {
       width: 100%;
-      padding: 0.5rem 0.75rem;
+      padding: $spacing-md;
       border: 1px solid $border-color;
-      border-radius: 5px;
-      font-size: 0.9rem;
-      transition: $transition-smooth;
+      border-radius: $border-radius;
+      font-size: 1rem;
+      transition: all 0.3s ease;
       background: $white;
-      height: 38px;
+      height: auto;
 
       &:focus {
         outline: none;
         border-color: $primary-color;
-        box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
       }
 
       &.error {
         border-color: $error-color;
+        background-color: rgba($error-color, 0.05);
       }
     }
 
     .error-message {
       color: $error-color;
-      font-size: 0.75rem;
-      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      margin-top: $spacing-xs;
       font-weight: 500;
     }
   }
 }
 
-// Cards de réseau
+// Cartes de réseau
 .network-card {
   background: $white;
-  border-radius: 10px;
-  margin-bottom: 2rem;
+  border-radius: $border-radius-large;
+  margin-bottom: $spacing-xl;
   box-shadow: $shadow-light;
   border: 1px solid $border-color;
-  transition: $transition-smooth;
-  opacity: 0;
-  transform: translateY(20px);
-
-  &.animate-in {
-    animation: slideInUp 0.6s ease-out forwards;
-  }
+  transition: all 0.3s ease;
+  overflow: hidden;
 
   &.network-60kv {
     border-top: 4px solid $primary-color;
@@ -221,11 +299,11 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   &.total-card {
-    border-top: 4px solid $primary-darker;
+    border-top: 4px solid $tertiary-color;
   }
 
   .card-header {
-    padding: 1.25rem 1.5rem;
+    padding: $spacing-lg;
     color: $white;
     display: flex;
     justify-content: space-between;
@@ -240,29 +318,17 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
     &.total-card {
-      background: $primary-darker;
+      background: $tertiary-color;
     }
 
     .header-content {
       display: flex;
       align-items: center;
 
-      .network-icon {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        font-size: 1.2rem;
-      }
-
       h3 {
         margin: 0;
         font-weight: 600;
-        font-size: 1.2rem;
+        font-size: 1.3rem;
       }
     }
 
@@ -270,11 +336,12 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
       background: rgba(255, 255, 255, 0.2);
       border: none;
       color: $white;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
+      padding: $spacing-sm $spacing-md;
+      border-radius: $border-radius;
       font-weight: 500;
-      transition: $transition-smooth;
+      transition: all 0.3s ease;
       cursor: pointer;
+      font-size: 0.9rem;
 
       &:hover {
         background: rgba(255, 255, 255, 0.3);
@@ -283,19 +350,23 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   .card-body {
-    padding: 1.5rem;
+    padding: $spacing-xl;
+
+    @media (max-width: 768px) {
+      padding: $spacing-lg;
+    }
 
     .inputs-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-      margin-bottom: 1.5rem;
+      gap: $spacing-lg;
+      margin-bottom: $spacing-xl;
 
       @media (max-width: 992px) {
         grid-template-columns: repeat(2, 1fr);
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 576px) {
         grid-template-columns: 1fr;
       }
     }
@@ -303,23 +374,19 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
     .form-group {
       label {
         display: block;
-        margin-bottom: 0.5rem;
+        margin-bottom: $spacing-sm;
         font-weight: 600;
         color: $text-dark;
         font-size: 0.95rem;
-
-        span {
-          margin-right: 0.5rem;
-        }
       }
 
       .form-control {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: $spacing-md;
         border: 1px solid $border-color;
-        border-radius: 6px;
+        border-radius: $border-radius;
         font-size: 1rem;
-        transition: $transition-smooth;
+        transition: all 0.3s ease;
         background: $white;
 
         &:focus {
@@ -330,14 +397,14 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
 
         &.error {
           border-color: $error-color;
-          background-color: $error-light;
+          background-color: rgba($error-color, 0.05);
         }
       }
 
       .error-message {
         color: $error-color;
         font-size: 0.85rem;
-        margin-top: 0.5rem;
+        margin-top: $spacing-xs;
         font-weight: 500;
       }
     }
@@ -345,32 +412,32 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
     .metrics-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: $spacing-md;
     }
 
     .metric-card {
-      padding: 1rem;
-      border-radius: 8px;
-      transition: $transition-smooth;
+      padding: $spacing-lg;
+      border-radius: $border-radius;
+      transition: all 0.3s ease;
       border: 1px solid $border-color;
       background: $light-bg;
 
       &.excellent {
         border-color: $success-color;
         background-color: rgba($success-color, 0.1);
-        color: color.adjust($success-color, $lightness: -20%);
+        color: $success-dark;
       }
 
       &.good {
         border-color: $primary-color;
         background-color: rgba($primary-color, 0.1);
-        color: $primary-darker;
+        color: $primary-dark;
       }
 
       &.warning {
         border-color: $warning-color;
         background-color: rgba($warning-color, 0.1);
-        color: color.adjust($warning-color, $lightness: -20%);
+        color: $warning-dark;
       }
 
       &.neutral {
@@ -382,36 +449,36 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
       &.high {
         border-color: $error-color;
         background-color: rgba($error-color, 0.1);
-        color: $error-color;
+        color: $error-dark;
       }
 
       &.medium {
         border-color: $warning-color;
         background-color: rgba($warning-color, 0.1);
-        color: color.adjust($warning-color, $lightness: -15%);
+        color: $warning-dark;
       }
 
       &.low {
         border-color: $success-color;
         background-color: rgba($success-color, 0.1);
-        color: color.adjust($success-color, $lightness: -15%);
+        color: $success-dark;
       }
 
       .metric-label {
         font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        margin-bottom: $spacing-xs;
       }
 
       .metric-value {
-        font-size: 1.25rem;
+        font-size: 1.5rem;
         font-weight: 700;
       }
 
       .metric-unit {
         font-size: 0.85rem;
         opacity: 0.8;
-        margin-left: 0.25rem;
+        margin-left: $spacing-xs;
       }
     }
   }
@@ -423,37 +490,47 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 2rem;
-  padding: 1.5rem;
+  gap: $spacing-md;
+  margin-top: $spacing-xl;
+  padding: $spacing-lg;
   background: $white;
-  border-radius: 10px;
+  border-radius: $border-radius;
   box-shadow: $shadow-light;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
   .primary-actions {
     display: flex;
-    gap: 1rem;
+    gap: $spacing-md;
     flex-wrap: wrap;
   }
 
   .secondary-actions {
     display: flex;
-    gap: 0.75rem;
+    gap: $spacing-md;
     flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+      justify-content: flex-start;
+    }
   }
 
   .btn {
-    padding: 0.75rem 1.5rem;
-    border-radius: 6px;
+    padding: $spacing-md $spacing-lg;
+    border-radius: $border-radius;
     font-weight: 600;
     text-decoration: none;
     border: none;
     cursor: pointer;
-    transition: $transition-smooth;
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
     font-size: 0.95rem;
+    min-width: 180px;
 
     &.btn-primary {
       background: $primary-color;
@@ -462,32 +539,35 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
       &:hover {
         background: $primary-dark;
         transform: translateY(-2px);
+        box-shadow: $shadow-medium;
       }
 
       &:disabled {
         background: $text-light;
         cursor: not-allowed;
         transform: none;
+        box-shadow: none;
       }
     }
 
     &.btn-outline-secondary {
       background: transparent;
-      color: $text-light;
+      color: $text-dark;
       border: 1px solid $border-color;
 
       &:hover {
-        background: $background-light;
+        background: $background-secondary;
+        border-color: $text-muted;
       }
     }
 
     &.btn-outline-info {
       background: transparent;
-      color: $primary-color;
-      border: 1px solid $primary-color;
+      color: $tertiary-color;
+      border: 1px solid $tertiary-color;
 
       &:hover {
-        background: rgba($primary-color, 0.1);
+        background: rgba($tertiary-color, 0.1);
       }
     }
   }
@@ -502,66 +582,26 @@ $shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.1);
   border-radius: 50%;
   border-top-color: $white;
   animation: spin 1s linear infinite;
-  margin-right: 0.5rem;
+  margin-right: $spacing-xs;
 }
 
-// Keyframes d'animation
+// Animations
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
-}
-
-@keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-// Responsive design
+// Responsive
 @media (max-width: 768px) {
-  .container {
-    padding: 0 1rem;
+  .electricity-content {
+    padding: $spacing-md;
   }
 
   .network-card .card-body .inputs-grid {
     grid-template-columns: 1fr;
-  }
-
-  .action-buttons {
-    flex-direction: column;
-
-    .primary-actions,
-    .secondary-actions {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-}
-
-@media (max-width: 576px) {
-  .dynamic-alert {
-    left: 1rem;
-    right: 1rem;
-    min-width: auto;
   }
 }

@@ -91,6 +91,7 @@ export class MonthlySummaryComponent implements OnInit {
           this.error = this.getErrorMessage(err);
           this.noDataAvailable = true;
           this.showAlertMessage(this.error, 'error');
+          this.isLoading = false; // Ajouté pour garantir l'arrêt du spinner en cas d'erreur
         }
       });
   }
@@ -113,26 +114,35 @@ export class MonthlySummaryComponent implements OnInit {
       monthsToLoad.push(month);
     }
 
+    let completedRequests = 0;
+    const totalRequests = monthsToLoad.length;
+
     monthsToLoad.forEach(month => {
       this.electricityService.getMonthlySummary(this.year!, month)
-        .pipe(finalize(() => {
-          if (month === this.endMonth) this.isLoading = false;
-        }))
         .subscribe({
           next: (data) => {
             if (data) {
               this.periodSummaries.push(data);
-              if (month === this.endMonth) {
-                this.showAlertMessage(`Données pour la période chargées avec succès`, 'success');
-              }
             } else {
               this.error = `Aucune donnée disponible pour ${this.getMonthName(month)} ${this.year}`;
               this.showAlertMessage(this.error, 'warning');
+            }
+
+            completedRequests++;
+            if (completedRequests === totalRequests) {
+              this.isLoading = false;
+              if (this.periodSummaries.length > 0) {
+                this.showAlertMessage(`Données pour la période chargées avec succès`, 'success');
+              }
             }
           },
           error: (err) => {
             this.error = this.getErrorMessage(err);
             this.showAlertMessage(this.error, 'error');
+            completedRequests++;
+            if (completedRequests === totalRequests) {
+              this.isLoading = false;
+            }
           }
         });
     });

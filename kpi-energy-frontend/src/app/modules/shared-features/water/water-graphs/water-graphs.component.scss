@@ -1,256 +1,391 @@
+// Variables de couleurs précalculées
+$primary-color: #4361ee;
+$primary-dark: #3a56d4;
+$secondary-color: #7FB2F0;
+$success-color: #4CAF50;
+$success-dark: #3d8b40;
+$accent-color: #4895ef;
+$light-bg: #f8f9fa;
+$dark-bg: #2b2d42;
+$text-dark: #2b2d42;
+$text-light: #6c757d;
+$white: #ffffff;
+$hover-bg: rgba(76, 175, 80, 0.08);
+$active-bg: rgba(76, 175, 80, 0.15);
+$border-color: #e9ecef;
+
+$tertiary-color: #3a86ff;
+$quaternary-color: #8338ec;
+$warning-color: #ff9e00;
+$warning-dark: #e68a00;
+$error-color: #f44336;
+$error-dark: #d32f2f;
+$info-color: #2196f3;
+$info-dark: #1a7fd8;
+
+$text-primary: $text-dark;
+$text-secondary: $text-light;
+$text-muted: #adb5bd;
+
+$background-primary: $white;
+$background-secondary: $light-bg;
+$background-card: $white;
+
+// Variables d'espacement
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+
+// Variables de bordures
+$border-radius: 12px;
+$border-radius-large: 16px;
+
+// Variables d'ombre
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+// Styles de base
 .water-graphs-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background: $white;
 
-  .header {
+  .water-graphs-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-xl;
+
+    @media (max-width: 768px) {
+      padding: $spacing-md;
+    }
+  }
+}
+
+// En-tête
+.graphs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-xl;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid $border-color;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-md;
+  }
+
+  .header-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: $text-primary;
+    margin: 0;
+
+    @media (max-width: 768px) {
+      font-size: 1.75rem;
+    }
+  }
+
+  .header-actions {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
+    gap: $spacing-md;
     flex-wrap: wrap;
-    gap: 15px;
 
-    h2 {
-      color: #2c3e50;
-      margin: 0;
-    }
-
-    .header-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-
-      .btn {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 8px 12px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 14px;
-        transition: all 0.3s ease;
-
-        &.btn-primary {
-          background-color: #007bff;
-          color: white;
-          border: 1px solid #007bff;
-
-          &:hover {
-            background-color: #0069d9;
-            border-color: #0062cc;
-          }
-        }
-
-        &.btn-secondary {
-          background-color: #6c757d;
-          color: white;
-          border: 1px solid #6c757d;
-
-          &:hover {
-            background-color: #5a6268;
-            border-color: #545b62;
-          }
-        }
-
-        &.btn-info {
-          background-color: #17a2b8;
-          color: white;
-          border: 1px solid #17a2b8;
-
-          &:hover {
-            background-color: #138496;
-            border-color: #117a8b;
-          }
-        }
-
-        i.icon {
-          font-style: normal;
-        }
-      }
+    @media (max-width: 768px) {
+      width: 100%;
     }
   }
+}
 
-  .dynamic-alert {
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin-bottom: 20px;
+// Alerte dynamique
+.alert-container {
+  margin-bottom: $spacing-lg;
+  border-radius: $border-radius;
+  overflow: hidden;
+  box-shadow: $shadow-light;
+
+  &[data-type="success"] {
+    background-color: rgba($success-color, 0.05);
+    color: $success-dark;
+    border-left: 4px solid $success-color;
+  }
+
+  &[data-type="error"] {
+    background-color: rgba($error-color, 0.05);
+    color: $error-dark;
+    border-left: 4px solid $error-color;
+  }
+
+  &[data-type="info"] {
+    background-color: rgba($info-color, 0.05);
+    color: $info-dark;
+    border-left: 4px solid $info-color;
+  }
+
+  &[data-type="warning"] {
+    background-color: rgba($warning-color, 0.05);
+    color: $warning-dark;
+    border-left: 4px solid $warning-color;
+  }
+
+  .alert-content {
+    padding: $spacing-md;
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 14px;
-
-    &.success {
-      background-color: #d4edda;
-      color: #155724;
-      border-left: 4px solid #28a745;
-    }
-
-    &.error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border-left: 4px solid #dc3545;
-    }
-
-    &.info {
-      background-color: #d1ecf1;
-      color: #0c5460;
-      border-left: 4px solid #17a2b8;
-    }
-
-    &.warning {
-      background-color: #fff3cd;
-      color: #856404;
-      border-left: 4px solid #ffc107;
-    }
+    gap: $spacing-md;
   }
+}
 
-  .controls {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
+.year-selector {
+  background: $white;
+  border-radius: $border-radius;
+  padding: $spacing-lg;
+  box-shadow: $shadow-light;
+  margin-bottom: $spacing-xl;
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
 
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      label {
-        font-weight: 500;
-        color: #495057;
-      }
-
-      .loading-spinner {
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        border-radius: 50%;
-        border-top: 2px solid #007bff;
-        width: 16px;
-        height: 16px;
-        animation: spin 1s linear infinite;
-      }
-    }
-  }
-
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  .loading-message {
-    padding: 15px;
-    text-align: center;
-    color: #17a2b8;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: #f8f9fa;
-    border-radius: 4px;
-    margin: 20px 0;
-  }
-
-  .no-data {
-    padding: 20px;
-    text-align: center;
-    color: #856404;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background-color: #fff3cd;
-    border-radius: 4px;
-    margin: 20px 0;
-  }
-
-  .chart-container {
-    position: relative;
-    height: 500px;
-    margin-bottom: 30px;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    padding: 15px;
-    background-color: white;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  }
-
-  .data-summary {
-    margin-top: 30px;
-
-    h3 {
-      color: #2c3e50;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 10px;
-      margin-bottom: 20px;
-    }
-
-    .summary-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-
-      .summary-card {
-        mat-card-header {
-          padding-bottom: 10px;
-          border-bottom: 1px solid #eee;
-          margin-bottom: 10px;
-
-          mat-card-title {
-            font-size: 1rem;
-            color: #495057;
-            margin: 0;
-          }
-        }
-
-        mat-card-content {
-          p {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 0;
-            text-align: center;
-          }
-        }
-      }
-    }
-  }
-
-  /* Styles pour mat-select */
-  mat-select {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 5px 10px;
-    background: white;
-    min-width: 120px;
-  }
-
-  /* Styles pour mat-tabs */
-  mat-tab-group {
-    margin-top: 20px;
-  }
-
-  ::ng-deep .mat-tab-label {
-    font-weight: 500;
-    color: #495057;
-    opacity: 1 !important;
-    min-width: 120px !important;
-  }
-
-  ::ng-deep .mat-tab-label-active {
-    color: #2196F3;
+  label {
     font-weight: 600;
+    color: $text-dark;
+    font-size: 0.95rem;
   }
 
-  ::ng-deep .mat-ink-bar {
-    background-color: #2196F3 !important;
-    height: 3px !important;
+  select {
+    padding: $spacing-sm $spacing-md;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: $white;
+    min-width: 120px;
+
+    &:focus {
+      outline: none;
+      border-color: $primary-color;
+      box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
   }
 
-  ::ng-deep .mat-tab-body-wrapper {
-    padding: 15px 0;
+  .loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba($primary-color, 0.1);
+    border-top: 3px solid $primary-color;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+// Onglets
+.tabs-container {
+  margin-top: $spacing-xl;
+}
+
+// Conteneurs de graphiques
+.chart-container {
+  background: $white;
+  border-radius: $border-radius;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-xl;
+  box-shadow: $shadow-light;
+  height: 500px;
+  position: relative;
+
+  @media (max-width: 768px) {
+    height: 400px;
+    padding: $spacing-md;
+  }
+}
+
+// Messages d'état
+.status-message {
+  padding: $spacing-md;
+  border-radius: $border-radius;
+  margin-bottom: $spacing-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-md;
+
+  &.loading {
+    background-color: rgba($info-color, 0.1);
+    color: $info-dark;
+  }
+
+  &.no-data {
+    background-color: rgba($warning-color, 0.1);
+    color: $warning-dark;
+    border-left: 4px solid $warning-color;
+  }
+}
+
+// Résumé des données
+.data-summary {
+  margin-top: $spacing-xl;
+
+  .summary-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin-bottom: $spacing-lg;
+    padding-bottom: $spacing-sm;
+    border-bottom: 1px solid $border-color;
+  }
+
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: $spacing-lg;
+
+    .summary-card {
+      background: $white;
+      border-radius: $border-radius;
+      padding: $spacing-lg;
+      box-shadow: $shadow-light;
+      border: 1px solid $border-color;
+
+      .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: $text-dark;
+        margin-bottom: $spacing-md;
+        padding-bottom: $spacing-xs;
+        border-bottom: 1px solid $border-color;
+      }
+
+      .card-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: $primary-color;
+        text-align: center;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Boutons
+.btn {
+  padding: $spacing-sm $spacing-md;
+  border-radius: $border-radius;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  white-space: nowrap;
+
+  &.btn-primary {
+    background: $primary-color;
+    color: $white;
+
+    &:hover {
+      background: $primary-dark;
+      transform: translateY(-2px);
+      box-shadow: $shadow-medium;
+    }
+  }
+
+  &.btn-secondary {
+    background: transparent;
+    color: $text-dark;
+    border: 1px solid $border-color;
+
+    &:hover {
+      background: $background-secondary;
+      border-color: $text-muted;
+    }
+  }
+
+  &.btn-info {
+    background: transparent;
+    color: $tertiary-color;
+    border: 1px solid $tertiary-color;
+
+    &:hover {
+      background: rgba($tertiary-color, 0.1);
+    }
+  }
+}
+
+// Styles pour mat-select
+::ng-deep .mat-select {
+  .mat-select-value {
+    color: $text-dark;
+  }
+
+  .mat-select-arrow {
+    color: $text-muted;
+  }
+}
+
+::ng-deep .mat-select-panel {
+  border-radius: $border-radius !important;
+  box-shadow: $shadow-heavy !important;
+  margin-top: $spacing-sm !important;
+
+  .mat-option {
+    padding: $spacing-sm $spacing-md;
+
+    &.mat-selected:not(.mat-option-multiple) {
+      background-color: rgba($primary-color, 0.1);
+    }
+  }
+}
+
+// Styles pour mat-tabs
+::ng-deep .mat-tab-group {
+  margin-top: $spacing-xl;
+}
+
+::ng-deep .mat-tab-label {
+  font-weight: 500;
+  color: $text-muted;
+  opacity: 1 !important;
+  min-width: 120px !important;
+  padding: 0 $spacing-lg !important;
+}
+
+::ng-deep .mat-tab-label-active {
+  color: $primary-color !important;
+  font-weight: 600;
+}
+
+::ng-deep .mat-ink-bar {
+  background-color: $primary-color !important;
+  height: 3px !important;
+}
+
+::ng-deep .mat-tab-body-wrapper {
+  padding: $spacing-lg 0;
+}
+
+// Animations
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .water-graphs-content {
+    padding: $spacing-md;
+  }
+
+  .controls-section {
+    justify-content: flex-start;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr !important;
   }
 }

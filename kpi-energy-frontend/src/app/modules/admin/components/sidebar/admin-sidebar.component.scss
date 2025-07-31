@@ -1,287 +1,343 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-// Palette de couleurs Creative Tim
-$primary-gradient: linear-gradient(310deg, #e91e63 0%, #ad1457 100%);
-$secondary-gradient: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
-$info-gradient: linear-gradient(310deg, #2152ff 0%, #21d4fd 100%);
-$success-gradient: linear-gradient(310deg, #17ad37 0%, #98ec2d 100%);
-$warning-gradient: linear-gradient(310deg, #f53939 0%, #fbcf33 100%);
-
+// Variables
+$primary-color: #4361ee;
+$secondary-color: #7FB2F0;
+$success-color: #4CAF50;
+$success-dark: #45a049; // Remplace darken($success-color, 10%)
+$accent-color: #4895ef;
+$light-bg: #f8f9fa;
+$dark-bg: #2b2d42;
+$text-dark: #2b2d42;
+$text-light: #6c757d;
 $white: #ffffff;
-$gray-100: #f8f9fa;
-$gray-200: #f0f2f5;
-$gray-300: #dee2e6;
-$gray-400: #ced4da;
-$gray-500: #adb5bd;
-$gray-600: #6c757d;
-$gray-700: #495057;
-$gray-800: #343a40;
-$gray-900: #212529;
+$hover-bg: rgba(76, 175, 80, 0.08);
+$active-bg: rgba(76, 175, 80, 0.15);
+$border-color: #e9ecef;
+$menu-spacing: 8px;
+$transition-speed: 0.3s;
+$sidebar-width: 300px; // Augmenté pour occuper plus d'espace
 
-$dark: #344767;
-$text: #67748e;
-$secondary: #8392ab;
-
-// Animation d'entrée pour la sidebar
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes menuItemSlide {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-// Sidebar principale style Creative Tim
+// Base styles
 .sidebar {
-  width: 250px;
-  height: calc(100vh - 72px); // Ajusté pour la hauteur du header Creative Tim
+  width: $sidebar-width;
+  height: calc(100vh - 70px); // Ajusté pour ne pas dépasser le header
   position: fixed;
   left: 0;
-  top: 72px; // Position sous le header
+  top: 70px;
   background: $white;
-  color: $dark;
-  z-index: 999;
-  box-shadow: 0 2px 13px -6px rgba(0, 0, 0, 0.12);
-  border-radius: 0 0.75rem 0.75rem 0;
-  transition: all 0.2s ease-in-out;
-  animation: slideInLeft 0.4s ease-out;
-  font-family: 'Inter', sans-serif;
+  color: $text-dark;
+  z-index: 100;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
+  border-right: 1px solid $border-color;
+  transition: all $transition-speed ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: 'Segoe UI', 'Roboto', sans-serif;
+  padding: 20px 0; // Augmenté le padding vertical
 
-  // Bordure de couleur sur le côté
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 3px;
-    height: 100%;
-    background: $primary-gradient;
-    border-radius: 0 0 0 0.75rem;
-  }
-
-  &:hover {
-    box-shadow: 0 2px 20px -6px rgba(0, 0, 0, 0.15);
-  }
-
-  .sidebar-menu {
-    list-style: none;
-    padding: 1rem 0;
-    margin: 0;
-
-    li {
-      margin: 0.125rem 1rem;
-      animation: menuItemSlide 0.5s ease-out forwards;
-
-      // Animation échelonnée pour chaque élément
-      @for $i from 1 through 10 {
-        &:nth-child(#{$i}) {
-          animation-delay: #{$i * 0.05}s;
-        }
-      }
-
-      a {
-        display: flex;
-        align-items: center;
-        padding: 0.625rem 1rem;
-        color: $text;
-        text-decoration: none;
-        border-radius: 0.5rem;
-        transition: all 0.15s ease-in-out;
-        font-weight: 400;
-        font-size: 0.875rem;
-        position: relative;
-        margin-bottom: 0.125rem;
-
-        &:hover {
-          background: $gray-100;
-          color: $dark;
-          transform: translateY(-1px);
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        }
-
-        &:active {
-          transform: translateY(0);
-        }
-
-        i {
-          margin-right: 0.75rem;
-          font-size: 0.875rem;
-          transition: all 0.15s ease-in-out;
-          width: 15px;
-          text-align: center;
-          color: $secondary;
-          opacity: 0.8;
-        }
-
-        span {
-          flex: 1;
-          font-weight: 400;
-          line-height: 1.4;
-        }
-
-        &:hover i {
-          color: $dark;
-          opacity: 1;
-        }
-      }
-
-      // État actif style Creative Tim
-      a.active {
-        background: $white;
-        color: $dark;
-        font-weight: 500;
-        box-shadow: 0 2px 13px -6px rgba(0, 0, 0, 0.12);
-        border-radius: 0.5rem;
-        position: relative;
-
-        // Bordure colorée pour l'élément actif
-        &::before {
-          content: '';
-          position: absolute;
-          left: 0;
-          top: 0;
-          bottom: 0;
-          width: 3px;
-          background: $primary-gradient;
-          border-radius: 0 0.25rem 0.25rem 0;
-        }
-
-        i {
-          color: #e91e63;
-          opacity: 1;
-          font-weight: 500;
-        }
-
-        span {
-          font-weight: 500;
-        }
-
-        &:hover {
-          background: $white;
-          box-shadow: 0 3px 20px -6px rgba(0, 0, 0, 0.15);
-          transform: translateY(-1px);
-        }
-      }
-    }
-  }
-}
-
-/* Responsive - Style Creative Tim */
-@media (max-width: 1199.98px) {
-  .sidebar {
-    width: 230px;
-  }
-}
-
-@media (max-width: 991.98px) {
-  .sidebar {
-    width: 220px;
-    top: 64px; // Ajusté pour le header responsive
-    height: calc(100vh - 64px);
-    border-radius: 0 0.5rem 0.5rem 0;
-
-    .sidebar-menu {
-      padding: 0.75rem 0;
-
-      li {
-        margin: 0.0625rem 0.75rem;
-
-        a {
-          padding: 0.5rem 0.75rem;
-          font-size: 0.8125rem;
-
-          i {
-            font-size: 0.8125rem;
-            margin-right: 0.625rem;
-            width: 14px;
-          }
-        }
-      }
-    }
-  }
-}
-
-@media (max-width: 767.98px) {
-  .sidebar {
-    width: 200px;
+  &.mobile-sidebar {
     transform: translateX(-100%);
-    transition: transform 0.3s ease-in-out;
+    z-index: 1000;
+    top: 0;
+    height: 100vh;
+    width: 280px;
 
-    &.sidebar-open {
+    &.show {
       transform: translateX(0);
     }
+  }
+}
 
-    .sidebar-menu {
-      li {
-        margin: 0.0625rem 0.5rem;
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px; // Espacement entre les éléments
+}
 
-        a {
-          padding: 0.5rem 0.75rem;
-          font-size: 0.8125rem;
+.menu-item {
+  margin: 0;
+  padding: 0 16px; // Augmenté le padding horizontal
 
-          i {
-            margin-right: 0.5rem;
-          }
+  > a, > .menu-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px; // Augmenté le padding pour occuper plus d'espace
+    color: $text-dark;
+    text-decoration: none;
+    transition: all $transition-speed ease;
+    font-size: 0.95rem; // Légèrement augmenté
+    font-weight: 500;
+    border-radius: 8px; // Coins plus arrondis
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    min-height: 52px; // Hauteur minimale pour les boutons
+    box-sizing: border-box;
+
+    &:hover {
+      background: $hover-bg;
+      color: $success-dark;
+      transform: translateX(2px); // Effet de glissement subtil
+
+      .expand-icon {
+        color: $success-color;
+        transform: scale(1.1);
+      }
+    }
+
+    .menu-label {
+      flex-grow: 1;
+      font-weight: 500;
+    }
+
+    .expand-icon {
+      font-size: 0.75rem;
+      color: $text-light;
+      transition: all $transition-speed;
+      margin-left: 12px;
+      transform-origin: center;
+    }
+  }
+
+  > a.active {
+    background: $active-bg;
+    color: $success-color;
+    font-weight: 600;
+    transform: translateX(2px);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 70%;
+      width: 4px; // Légèrement plus épais
+      background: $success-color;
+      border-radius: 0 4px 4px 0;
+    }
+  }
+
+  > .menu-group {
+    font-weight: 600;
+    color: $text-dark;
+
+    &.clickable {
+      cursor: pointer;
+
+      &:hover {
+        color: $success-color;
+      }
+    }
+
+    &.always-expanded {
+      cursor: default;
+      // Pas de style spécial - on garde l'apparence normale
+    }
+
+    &.expanded:not(.always-expanded) {
+      background: $hover-bg;
+      color: $success-color;
+
+      .expand-icon {
+        transform: rotate(90deg) scale(1.1);
+        color: $success-color;
+      }
+    }
+  }
+}
+
+// Submenu wrapper avec animation fluide
+.submenu-wrapper {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.expanded {
+    max-height: 800px; // Suffisant pour le contenu
+  }
+}
+
+// Submenu styles améliorés
+.submenu {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0 0 0 28px; // Indentation plus marquée
+  border-left: 2px solid rgba($success-color, 0.15);
+  background: rgba($light-bg, 0.3);
+  border-radius: 0 6px 6px 0;
+
+  .submenu-item {
+    margin: 2px 0;
+    position: relative;
+
+    > a, > .submenu-group {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px; // Padding augmenté
+      font-size: 0.88rem;
+      color: $text-dark;
+      text-decoration: none;
+      transition: all $transition-speed ease;
+      border-radius: 6px;
+      background: transparent;
+      min-height: 44px; // Hauteur minimale
+      margin: 0 8px; // Marge latérale
+
+      &:hover {
+        background: $hover-bg;
+        color: $success-color;
+        transform: translateX(3px);
+      }
+
+      .submenu-label {
+        flex-grow: 1;
+        font-weight: 450;
+      }
+
+      .expand-icon {
+        font-size: 0.7rem;
+        color: $text-light;
+        transition: all $transition-speed;
+        margin-left: 10px;
+      }
+    }
+
+    > a.active {
+      background: $active-bg;
+      color: $success-color;
+      font-weight: 550;
+      transform: translateX(3px);
+    }
+
+    > .submenu-group {
+      font-weight: 500;
+      color: $text-dark;
+
+      &.expanded {
+        background: $hover-bg;
+        color: $success-color;
+
+        .expand-icon {
+          transform: rotate(90deg);
+          color: $success-color;
         }
       }
     }
   }
 }
 
-@media (max-width: 575.98px) {
-  .sidebar {
-    width: 180px;
+// Nested submenu wrapper
+.nested-submenu-wrapper {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
 
-    .sidebar-menu {
-      li {
-        a {
-          padding: 0.4375rem 0.625rem;
+  &.expanded {
+    max-height: 400px;
+  }
+}
 
-          span {
-            font-size: 0.75rem;
-          }
+// Nested submenu (niveau 2) amélioré
+.nested-submenu {
+  list-style: none;
+  padding: 6px 0;
+  margin: 0 0 0 20px;
+  border-left: 2px solid rgba($success-color, 0.1);
+  background: rgba($light-bg, 0.2);
+  border-radius: 0 4px 4px 0;
 
-          i {
-            font-size: 0.75rem;
-            width: 12px;
-          }
-        }
+  .nested-item {
+    margin: 1px 0;
+
+    > a {
+      display: block;
+      padding: 10px 18px; // Padding augmenté
+      font-size: 0.83rem;
+      color: $text-light;
+      text-decoration: none;
+      transition: all $transition-speed ease;
+      border-radius: 5px;
+      min-height: 38px;
+      margin: 0 6px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        color: $success-color;
+        background: $hover-bg;
+        transform: translateX(2px);
+      }
+
+      &.active {
+        color: $success-color;
+        font-weight: 500;
+        background: $active-bg;
+        transform: translateX(2px);
+      }
+
+      .nested-label {
+        font-weight: 400;
       }
     }
   }
 }
 
 // Overlay pour mobile
-@media (max-width: 767.98px) {
-  .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 998;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease-in-out;
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all $transition-speed;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Responsive styles
+@media (max-width: 1200px) {
+  .sidebar {
+    width: 280px; // Réduit légèrement sur les écrans moyens
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    width: 260px;
 
     &.show {
-      opacity: 1;
-      visibility: visible;
+      transform: translateX(0);
     }
+  }
+}
+
+// Scrollbar personnalisée pour webkit
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba($text-light, 0.3);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba($text-light, 0.5);
   }
 }

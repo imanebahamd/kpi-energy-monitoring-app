@@ -1,35 +1,62 @@
-<!-- src/app/modules/user/components/sidebar/user-sidebar.component.html -->
-<div class="sidebar">
-  <div class="sidebar-header">
-    <div class="user-info">
-      <div class="avatar">
-        <i class="bi bi-person-circle"></i>
-      </div>
-      <div class="details">
-        <span class="name">{{ user?.nomComplet }}</span>
-        <span class="role">Utilisateur</span>
-      </div>
-    </div>
-  </div>
+<div class="sidebar" [class.mobile-sidebar]="isMobile" [class.show]="sidebarOpen">
 
-  <div class="sidebar-menu">
+  <ul class="sidebar-menu">
     <ng-container *ngFor="let item of menuItems">
-      <!-- Group Header -->
-      <div *ngIf="item.group" class="group-header" (click)="toggleGroup(item.group)">
-        <span>{{ item.group }}</span>
-        <i class="bi" [class.bi-chevron-down]="isGroupExpanded(item.group)"
-           [class.bi-chevron-right]="!isGroupExpanded(item.group)"></i>
-      </div>
+      <li class="menu-item">
+        <ng-container *ngIf="!item.children; else hasChildren">
+          <a [routerLink]="item.path" routerLinkActive="active">
+            <span class="menu-label">{{ item.label }}</span>
+          </a>
+        </ng-container>
 
-      <!-- Menu Items -->
-      <div *ngIf="!item.group || isGroupExpanded(item.group)">
-        <a [routerLink]="item.path"
-           routerLinkActive="active"
-           [routerLinkActiveOptions]="{exact: true}">
-          <i [class]="item.icon"></i>
-          <span>{{ item.label }}</span>
-        </a>
-      </div>
+        <ng-template #hasChildren>
+          <div class="menu-group"
+               (click)="!item.alwaysExpanded && toggleExpand(item.label)"
+               [class.expanded]="isExpanded[item.label]"
+               [class.always-expanded]="item.alwaysExpanded"
+               [class.clickable]="!item.alwaysExpanded">
+            <span class="menu-label">{{ item.label }}</span>
+            <span class="expand-icon" *ngIf="!item.alwaysExpanded">
+              {{ isExpanded[item.label] ? '▼' : '►' }}
+            </span>
+          </div>
+
+          <div class="submenu-wrapper" [class.expanded]="isExpanded[item.label]">
+            <ul class="submenu">
+              <ng-container *ngFor="let child of item.children">
+                <li *ngIf="!child.children; else hasGrandChildren" class="submenu-item">
+                  <a [routerLink]="child.path" routerLinkActive="active">
+                    <span class="submenu-label">{{ child.label }}</span>
+                  </a>
+                </li>
+
+                <ng-template #hasGrandChildren>
+                  <li class="submenu-item">
+                    <div class="submenu-group"
+                         (click)="toggleExpand(child.label)"
+                         [class.expanded]="isExpanded[child.label]">
+                      <span class="submenu-label">{{ child.label }}</span>
+                      <span class="expand-icon">
+                        {{ isExpanded[child.label] ? '▼' : '►' }}
+                      </span>
+                    </div>
+
+                    <div class="nested-submenu-wrapper" [class.expanded]="isExpanded[child.label]">
+                      <ul class="nested-submenu">
+                        <li *ngFor="let grandChild of child.children" class="nested-item">
+                          <a [routerLink]="grandChild.path" routerLinkActive="active">
+                            <span class="nested-label">{{ grandChild.label }}</span>
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </li>
+                </ng-template>
+              </ng-container>
+            </ul>
+          </div>
+        </ng-template>
+      </li>
     </ng-container>
-  </div>
+  </ul>
 </div>

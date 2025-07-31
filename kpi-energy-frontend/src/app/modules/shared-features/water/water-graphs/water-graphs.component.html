@@ -1,101 +1,92 @@
 <div class="water-graphs-container">
-  <!-- Alert message -->
-  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
-    {{ alertMessage }}
-  </div>
-
-  <div class="header">
-    <h2>Visualisation Graphique de la Production d'Eau</h2>
-    <div class="header-actions">
-      <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="btn btn-primary">
-        <i class="icon">➕</i> Saisir Nouvelles Données
-      </a>
-      <a [routerLink]="[getRoutePrefix(), 'water-monthly']" class="btn btn-secondary">
-        <i class="icon">📅</i> Tableau Mensuel
-      </a>
-      <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="btn btn-info">
-        <i class="icon">📊</i> Tableau Annuel
-      </a>
+  <div class="water-graphs-content">
+    <!-- Alerte dynamique -->
+    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
+      <div class="alert-content">
+        {{ alertMessage }}
+      </div>
     </div>
-  </div>
 
-  <div class="controls">
-    <div class="control-group">
-      <label>Année: </label>
-      <mat-select [(value)]="selectedYear" (selectionChange)="onYearChange()" [disabled]="isLoading">
-        <mat-option *ngFor="let year of years" [value]="year">{{ year }}</mat-option>
-      </mat-select>
+    <!-- En-tête -->
+    <header class="graphs-header">
+      <h1 class="header-title">Visualisation de la Production d'Eau</h1>
+
+      <div class="header-actions">
+        <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="btn btn-primary">
+          Saisir Nouvelles Données
+        </a>
+        <a [routerLink]="[getRoutePrefix(), 'water-monthly']" class="btn btn-secondary">
+          Tableau Mensuel
+        </a>
+        <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="btn btn-info">
+          Tableau Annuel
+        </a>
+      </div>
+    </header>
+
+    <!-- Sélecteur d'année -->
+    <div class="year-selector">
+      <label>Année:</label>
+      <select [(ngModel)]="selectedYear" (change)="loadData()" [disabled]="isLoading">
+        <option *ngFor="let year of years" [value]="year">{{year}}</option>
+      </select>
       <span *ngIf="isLoading" class="loading-spinner"></span>
     </div>
-  </div>
 
-  <div *ngIf="isLoading" class="loading-message">
-    <i class="icon">⏳</i> Chargement des données en cours...
-  </div>
+    <!-- Messages d'état -->
+    <div *ngIf="isLoading" class="status-message loading">
+      Chargement des données en cours...
+    </div>
 
-  <mat-tab-group *ngIf="!isLoading && monthlyData.length > 0">
-    <mat-tab label="Tendance Mensuelle">
-      <div class="chart-container">
-        <p-chart type="line" [data]="monthlyTrendChart" [options]="chartOptions"></p-chart>
+    <div *ngIf="!isLoading && monthlyData.length === 0" class="status-message no-data">
+      Aucune donnée disponible pour l'année sélectionnée
+    </div>
+
+    <!-- Onglets et graphiques -->
+    <mat-tab-group *ngIf="!isLoading && monthlyData.length > 0">
+      <mat-tab label="Tendance Mensuelle">
+        <div class="chart-container">
+          <p-chart type="line" [data]="monthlyTrendChart" [options]="chartOptions"></p-chart>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Comparaison Mensuelle">
+        <div class="chart-container">
+          <p-chart type="bar" [data]="monthlyComparisonChart" [options]="chartOptions"></p-chart>
+        </div>
+      </mat-tab>
+
+      <mat-tab label="Composition Annuelle">
+        <div class="chart-container">
+          <p-chart type="pie" [data]="compositionChart" [options]="chartOptions"></p-chart>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+
+    <!-- Résumé des données -->
+    <div *ngIf="!isLoading && monthlyData.length > 0" class="data-summary">
+      <h2 class="summary-title">Résumé des Données pour {{selectedYear}}</h2>
+      <div class="summary-cards">
+        <div class="summary-card">
+          <h3 class="card-title">Production Totale</h3>
+          <p class="card-value">{{ getTotalProduction() | number:'1.2-2' }} m³</p>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="card-title">Moyenne Mensuelle</h3>
+          <p class="card-value">{{ getAverageProduction() | number:'1.2-2' }} m³</p>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="card-title">Max Mensuel</h3>
+          <p class="card-value">{{ getMaxProduction() | number:'1.2-2' }} m³</p>
+        </div>
+
+        <div class="summary-card">
+          <h3 class="card-title">Min Mensuel</h3>
+          <p class="card-value">{{ getMinProduction() | number:'1.2-2' }} m³</p>
+        </div>
       </div>
-    </mat-tab>
-
-    <mat-tab label="Comparaison Mensuelle">
-      <div class="chart-container">
-        <p-chart type="bar" [data]="monthlyComparisonChart" [options]="chartOptions"></p-chart>
-      </div>
-    </mat-tab>
-
-    <mat-tab label="Composition Annuelle">
-      <div class="chart-container">
-        <p-chart type="pie" [data]="compositionChart" [options]="chartOptions"></p-chart>
-      </div>
-    </mat-tab>
-  </mat-tab-group>
-
-  <div *ngIf="!isLoading && monthlyData.length === 0" class="no-data">
-    <i class="icon">⚠️</i>
-    <span>Aucune donnée disponible pour l'année sélectionnée</span>
-  </div>
-
-  <div *ngIf="!isLoading && monthlyData.length > 0" class="data-summary">
-    <h3>Résumé des Données pour {{selectedYear}}</h3>
-    <div class="summary-cards">
-      <mat-card class="summary-card">
-        <mat-card-header>
-          <mat-card-title>Production Totale</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ getTotalProduction() | number:'1.2-2' }} m³</p>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="summary-card">
-        <mat-card-header>
-          <mat-card-title>Moyenne Mensuelle</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ getAverageProduction() | number:'1.2-2' }} m³</p>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="summary-card">
-        <mat-card-header>
-          <mat-card-title>Max Mensuel</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ getMaxProduction() | number:'1.2-2' }} m³</p>
-        </mat-card-content>
-      </mat-card>
-
-      <mat-card class="summary-card">
-        <mat-card-header>
-          <mat-card-title>Min Mensuel</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          <p>{{ getMinProduction() | number:'1.2-2' }} m³</p>
-        </mat-card-content>
-      </mat-card>
     </div>
   </div>
 </div>

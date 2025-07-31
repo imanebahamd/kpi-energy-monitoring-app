@@ -1,65 +1,106 @@
 /* user-management.component.scss */
 
+@use "sass:color";
+
+// Variables de couleurs
+$primary-color: #4361ee;
+$secondary-color: #7FB2F0;
+$success-color: #4CAF50;
+$success-dark: #45a049;
+$accent-color: #4895ef;
+$light-bg: #f8f9fa;
+$dark-bg: #2b2d42;
+$text-dark: #2b2d42;
+$text-light: #6c757d;
+$white: #ffffff;
+$hover-bg: rgba(76, 175, 80, 0.08);
+$active-bg: rgba(76, 175, 80, 0.15);
+$border-color: #e9ecef;
+
+$tertiary-color: #3a86ff;
+$quaternary-color: #8338ec;
+$warning-color: #ff9e00;
+$error-color: #f44336;
+$info-color: #2196f3;
+
+$text-primary: $text-dark;
+$text-secondary: $text-light;
+$text-muted: #adb5bd;
+
+$background-primary: $white;
+$background-secondary: $light-bg;
+$background-card: $white;
+
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
+$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+
+$border-radius: 12px;
+$border-radius-sm: 8px;
+$border-radius-large: 16px;
+$spacing-xs: 0.5rem;
+$spacing-sm: 0.75rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-xxl: 3rem;
+$warning-dark: #e69500;
 .user-management-container {
-  padding: 2rem;
+  padding: $spacing-xl;
   max-width: 1400px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #f8fffe 0%, #f0f9ff 100%);
   min-height: calc(100vh - 80px);
+
+  @media (max-width: 768px) {
+    padding: $spacing-md;
+  }
 
   // ===============================
   // PAGE HEADER
   // ===============================
   .page-header {
-    background: linear-gradient(135deg, #2c7a2c, #4caf50, #81c784);
-    border-radius: 20px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    color: white;
-    box-shadow: 0 8px 32px rgba(44, 122, 44, 0.3);
-    backdrop-filter: blur(10px);
+    background: linear-gradient(135deg, $primary-color, $secondary-color);
+    border-radius: $border-radius-large;
+    padding: $spacing-xl;
+    margin-bottom: $spacing-xl;
+    color: $white;
+    box-shadow: $shadow-heavy;
     position: relative;
     overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -50%;
-      right: -10%;
-      width: 200px;
-      height: 200px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      animation: float 6s ease-in-out infinite;
-    }
 
     .header-content {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 2rem;
+      gap: $spacing-lg;
       position: relative;
       z-index: 1;
+
+      @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+      }
     }
 
     .title-section {
-      flex: 1;
-
       .page-title {
         font-size: 2.5rem;
         font-weight: 700;
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 $spacing-sm 0;
         display: flex;
         align-items: center;
-        gap: 1rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        gap: $spacing-md;
+
+        @media (max-width: 768px) {
+          font-size: 2rem;
+          justify-content: center;
+        }
 
         i {
           font-size: 2.2rem;
-          background: rgba(255, 255, 255, 0.2);
-          padding: 0.5rem;
-          border-radius: 15px;
-          backdrop-filter: blur(5px);
+          background: rgba($white, 0.2);
+          padding: $spacing-sm;
+          border-radius: $border-radius;
         }
       }
 
@@ -72,39 +113,32 @@
     }
 
     .btn-add-user {
-      background: linear-gradient(45deg, #ffffff, #e8f5e8);
-      color: #2c7a2c;
+      background: $white;
+      color: $primary-color;
       border: none;
-      padding: 1rem 2rem;
-      border-radius: 15px;
+      padding: $spacing-md $spacing-xl;
+      border-radius: $border-radius;
       font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(5px);
-
-      i {
-        font-size: 1.2rem;
-      }
+      gap: $spacing-sm;
+      box-shadow: $shadow-medium;
 
       &:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        background: linear-gradient(45deg, #f0f8f0, #e0f0e0);
-      }
-
-      &:active {
-        transform: translateY(-1px);
+        box-shadow: $shadow-heavy;
       }
 
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-        transform: none;
+      }
+
+      i {
+        font-size: 1.2rem;
       }
     }
   }
@@ -113,18 +147,17 @@
   // ALERTS
   // ===============================
   .alerts-container {
-    margin-bottom: 2rem;
+    margin-bottom: $spacing-xl;
 
     .alert {
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      margin-bottom: 1rem;
+      padding: $spacing-md $spacing-lg;
+      border-radius: $border-radius;
+      margin-bottom: $spacing-md;
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: $spacing-md;
       font-weight: 500;
       animation: slideInDown 0.5s ease-out;
-      position: relative;
 
       i {
         font-size: 1.3rem;
@@ -141,7 +174,7 @@
         color: currentColor;
         font-size: 1.2rem;
         cursor: pointer;
-        padding: 0.2rem;
+        padding: $spacing-xs;
         border-radius: 50%;
         transition: all 0.2s ease;
 
@@ -153,13 +186,13 @@
       &.alert-success {
         background: linear-gradient(45deg, #d4edda, #c3e6cb);
         color: #155724;
-        border-left: 4px solid #28a745;
+        border-left: 4px solid $success-color;
       }
 
       &.alert-error {
         background: linear-gradient(45deg, #f8d7da, #f5c6cb);
         color: #721c24;
-        border-left: 4px solid #dc3545;
+        border-left: 4px solid $error-color;
       }
     }
   }
@@ -168,17 +201,17 @@
   // FORM CARD
   // ===============================
   .form-card {
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
+    background: $white;
+    border-radius: $border-radius-large;
+    box-shadow: $shadow-heavy;
+    margin-bottom: $spacing-xl;
     overflow: hidden;
     animation: slideInUp 0.6s ease-out;
 
     .card-header {
-      background: linear-gradient(135deg, #2c7a2c, #4caf50);
-      padding: 1.5rem 2rem;
-      color: white;
+      background: linear-gradient(135deg, $primary-color, $secondary-color);
+      padding: $spacing-lg $spacing-xl;
+      color: $white;
 
       .card-title {
         margin: 0;
@@ -186,136 +219,134 @@
         font-weight: 600;
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: $spacing-md;
 
         i {
           font-size: 1.4rem;
-          background: rgba(255, 255, 255, 0.2);
-          padding: 0.4rem;
-          border-radius: 8px;
+          background: rgba($white, 0.2);
+          padding: $spacing-xs;
+          border-radius: $border-radius-sm;
         }
       }
     }
 
     .card-body {
-      padding: 2rem;
+      padding: $spacing-xl;
 
       .form-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2rem;
+        gap: $spacing-lg;
+        margin-bottom: $spacing-xl;
       }
 
       .form-group {
         .form-label {
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: $spacing-sm;
           font-weight: 600;
-          color: #2c7a2c;
-          margin-bottom: 0.5rem;
+          color: $primary-color;
+          margin-bottom: $spacing-sm;
           font-size: 0.95rem;
 
           i {
             font-size: 1rem;
-            color: #4caf50;
+            color: $secondary-color;
           }
 
           .required {
-            color: #e74c3c;
+            color: $error-color;
             font-weight: 700;
           }
         }
 
         .form-control {
           width: 100%;
-          padding: 0.8rem 1rem;
-          border: 2px solid #e1f5fe;
-          border-radius: 10px;
+          padding: $spacing-md;
+          border: 2px solid $border-color;
+          border-radius: $border-radius;
           font-size: 1rem;
           transition: all 0.3s ease;
-          background: #fafafa;
+          background: $background-secondary;
 
           &:focus {
             outline: none;
-            border-color: #4caf50;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-          }
-
-          &:invalid {
-            border-color: #f44336;
+            border-color: $primary-color;
+            background: $white;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
           }
 
           &::placeholder {
-            color: #999;
-            font-style: italic;
+            color: $text-muted;
           }
         }
 
         select.form-control {
           cursor: pointer;
-          background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%234caf50" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%234361ee' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
           background-repeat: no-repeat;
-          background-position: right 1rem center;
+          background-position: right $spacing-md center;
           background-size: 12px;
-          padding-right: 2.5rem;
+          padding-right: $spacing-xxl;
         }
       }
 
       .form-actions {
         display: flex;
         justify-content: flex-end;
-        gap: 1rem;
-        padding-top: 1.5rem;
-        border-top: 1px solid #eee;
+        gap: $spacing-md;
+        padding-top: $spacing-lg;
+        border-top: 1px solid $border-color;
 
         .btn {
-          padding: 0.8rem 2rem;
+          padding: $spacing-md $spacing-xl;
           border: none;
-          border-radius: 10px;
+          border-radius: $border-radius;
           font-weight: 600;
           font-size: 1rem;
           cursor: pointer;
           transition: all 0.3s ease;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
-          min-width: 120px;
+          gap: $spacing-sm;
+          min-width: 150px;
           justify-content: center;
 
           &.btn-cancel {
-            background: linear-gradient(45deg, #6c757d, #495057);
-            color: white;
+            background: linear-gradient(45deg, $text-light, $text-secondary);
+            color: $white;
 
             &:hover {
-              background: linear-gradient(45deg, #5a6268, #343a40);
+              background: linear-gradient(45deg, $text-secondary, $text-dark);
               transform: translateY(-2px);
-              box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+              box-shadow: $shadow-medium;
             }
           }
 
           &.btn-submit {
-            background: linear-gradient(45deg, #4caf50, #2c7a2c);
-            color: white;
+            background: linear-gradient(45deg, $primary-color, $secondary-color);
+            color: $white;
 
             &:hover:not(:disabled) {
-              background: linear-gradient(45deg, #45a049, #2d5a2d);
+              background: linear-gradient(45deg, color.adjust($primary-color, $lightness: -10%), color.adjust($secondary-color, $lightness: -10%));
               transform: translateY(-2px);
-              box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+              box-shadow: $shadow-medium;
             }
 
             &:disabled {
               opacity: 0.6;
               cursor: not-allowed;
-              transform: none;
             }
 
             .loading {
               display: flex;
               align-items: center;
-              gap: 0.5rem;
+              gap: $spacing-sm;
+
+              .spin {
+                animation: spin 1s linear infinite;
+              }
             }
           }
         }
@@ -328,29 +359,26 @@
   // ===============================
   .users-section {
     .section-header {
-      margin-bottom: 1.5rem;
+      margin-bottom: $spacing-xl;
 
       .section-title {
         font-size: 1.8rem;
         font-weight: 700;
-        color: #2c7a2c;
+        color: $primary-color;
         margin: 0;
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: $spacing-md;
 
         i {
-          background: linear-gradient(45deg, #4caf50, #81c784);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          color: $secondary-color;
         }
 
         .users-count {
-          background: linear-gradient(45deg, #4caf50, #2c7a2c);
-          color: white;
-          padding: 0.2rem 0.8rem;
-          border-radius: 20px;
+          background: $primary-color;
+          color: $white;
+          padding: $spacing-xs $spacing-md;
+          border-radius: $border-radius-large;
           font-size: 0.9rem;
           font-weight: 500;
         }
@@ -359,13 +387,13 @@
 
     .loading-state {
       text-align: center;
-      padding: 4rem 2rem;
-      color: #666;
+      padding: $spacing-xxl;
+      color: $text-secondary;
 
       .loading-spinner {
         font-size: 3rem;
-        color: #4caf50;
-        margin-bottom: 1rem;
+        color: $primary-color;
+        margin-bottom: $spacing-md;
 
         .spin {
           animation: spin 1s linear infinite;
@@ -374,9 +402,9 @@
     }
 
     .users-table-container {
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      background: $white;
+      border-radius: $border-radius-large;
+      box-shadow: $shadow-heavy;
       overflow: hidden;
 
       .table-wrapper {
@@ -388,11 +416,11 @@
         border-collapse: collapse;
 
         thead {
-          background: linear-gradient(135deg, #2c7a2c, #4caf50);
-          color: white;
+          background: linear-gradient(135deg, $primary-color, $secondary-color);
+          color: $white;
 
           th {
-            padding: 1.2rem 1rem;
+            padding: $spacing-lg;
             text-align: left;
             font-weight: 600;
             font-size: 0.95rem;
@@ -400,46 +428,35 @@
             position: relative;
 
             i {
-              margin-right: 0.5rem;
+              margin-right: $spacing-sm;
               opacity: 0.8;
-            }
-
-            &:not(:last-child)::after {
-              content: '';
-              position: absolute;
-              right: 0;
-              top: 25%;
-              height: 50%;
-              width: 1px;
-              background: rgba(255, 255, 255, 0.2);
             }
           }
         }
 
         tbody {
           .user-row {
-            border-bottom: 1px solid #f0f0f0;
+            border-bottom: 1px solid $border-color;
             transition: all 0.3s ease;
 
             &:hover {
-              background: linear-gradient(90deg, rgba(76, 175, 80, 0.05), rgba(129, 199, 132, 0.05));
-              transform: scale(1.01);
+              background: $hover-bg;
             }
 
             td {
-              padding: 1.2rem 1rem;
+              padding: $spacing-lg;
               vertical-align: middle;
             }
 
             .user-info {
               display: flex;
               align-items: center;
-              gap: 1rem;
+              gap: $spacing-lg;
 
               .user-avatar {
                 i {
                   font-size: 2.5rem;
-                  color: #4caf50;
+                  color: $primary-color;
                 }
               }
 
@@ -447,14 +464,13 @@
                 .user-name {
                   font-weight: 600;
                   font-size: 1rem;
-                  color: #333;
-                  margin-bottom: 0.2rem;
+                  color: $text-dark;
+                  margin-bottom: $spacing-xs;
                 }
 
                 .user-function {
                   font-size: 0.85rem;
-                  color: #666;
-                  font-style: italic;
+                  color: $text-secondary;
                 }
               }
             }
@@ -463,22 +479,13 @@
               .email, .phone {
                 display: flex;
                 align-items: center;
-                gap: 0.5rem;
-                margin-bottom: 0.3rem;
+                gap: $spacing-sm;
+                margin-bottom: $spacing-xs;
                 font-size: 0.9rem;
 
                 i {
-                  color: #4caf50;
-                  width: 16px;
+                  color: $primary-color;
                 }
-
-                &:last-child {
-                  margin-bottom: 0;
-                }
-              }
-
-              .phone {
-                color: #666;
               }
             }
 
@@ -486,36 +493,35 @@
               .role-badge {
                 display: inline-flex;
                 align-items: center;
-                gap: 0.5rem;
-                padding: 0.4rem 1rem;
-                border-radius: 20px;
+                gap: $spacing-sm;
+                padding: $spacing-xs $spacing-md;
+                border-radius: $border-radius-large;
                 font-size: 0.85rem;
                 font-weight: 600;
 
                 &.role-admin {
-                  background: linear-gradient(45deg, #ff9800, #f57c00);
-                  color: white;
+                  background: linear-gradient(45deg, $warning-color, $warning-dark);
+                  color: $white;
                 }
 
                 &.role-user {
-                  background: linear-gradient(45deg, #2196f3, #1976d2);
-                  color: white;
+                  background: linear-gradient(45deg, $tertiary-color, color.adjust($tertiary-color, $lightness: -10%));
+                  color: $white;
                 }
               }
             }
 
             .department-info {
               .department-name {
-                background: #f8f9fa;
-                padding: 0.3rem 0.8rem;
-                border-radius: 15px;
+                background: $background-secondary;
+                padding: $spacing-xs $spacing-md;
+                border-radius: $border-radius;
                 font-size: 0.85rem;
-                color: #495057;
-                border: 1px solid #dee2e6;
+                color: $text-dark;
               }
 
               .no-department {
-                color: #999;
+                color: $text-muted;
                 font-style: italic;
                 font-size: 0.85rem;
               }
@@ -525,20 +531,20 @@
               .status-badge {
                 display: inline-flex;
                 align-items: center;
-                gap: 0.5rem;
-                padding: 0.4rem 1rem;
-                border-radius: 20px;
+                gap: $spacing-sm;
+                padding: $spacing-xs $spacing-md;
+                border-radius: $border-radius-large;
                 font-size: 0.85rem;
                 font-weight: 600;
 
                 &.status-active {
-                  background: linear-gradient(45deg, #4caf50, #2e7d32);
-                  color: white;
+                  background: linear-gradient(45deg, $success-color, $success-dark);
+                  color: $white;
                 }
 
                 &.status-inactive {
-                  background: linear-gradient(45deg, #f44336, #c62828);
-                  color: white;
+                  background: linear-gradient(45deg, $error-color, color.adjust($error-color, $lightness: -10%));
+                  color: $white;
                 }
               }
             }
@@ -546,13 +552,13 @@
             .actions {
               .action-buttons {
                 display: flex;
-                gap: 0.5rem;
+                gap: $spacing-sm;
 
                 .btn-action {
                   width: 36px;
                   height: 36px;
                   border: none;
-                  border-radius: 8px;
+                  border-radius: $border-radius-sm;
                   cursor: pointer;
                   transition: all 0.3s ease;
                   display: flex;
@@ -561,42 +567,39 @@
                   font-size: 0.9rem;
 
                   &.btn-edit {
-                    background: linear-gradient(45deg, #2196f3, #1976d2);
-                    color: white;
+                    background: linear-gradient(45deg, $tertiary-color, color.adjust($tertiary-color, $lightness: -10%));
+                    color: $white;
 
                     &:hover {
-                      background: linear-gradient(45deg, #1976d2, #1565c0);
                       transform: translateY(-2px);
+                      box-shadow: $shadow-light;
                     }
                   }
 
-                  &.btn-activate {
-                    background: linear-gradient(45deg, #4caf50, #2e7d32);
-                    color: white;
-
-                    &:hover {
-                      background: linear-gradient(45deg, #388e3c, #2e7d32);
-                      transform: translateY(-2px);
+                  &.btn-toggle {
+                    &.btn-activate {
+                      background: linear-gradient(45deg, $success-color, $success-dark);
+                      color: $white;
                     }
-                  }
 
-                  &.btn-deactivate {
-                    background: linear-gradient(45deg, #ff9800, #f57c00);
-                    color: white;
+                    &.btn-deactivate {
+                      background: linear-gradient(45deg, $warning-color, $warning-dark);
+                      color: $white;
+                    }
 
                     &:hover {
-                      background: linear-gradient(45deg, #f57c00, #ef6c00);
                       transform: translateY(-2px);
+                      box-shadow: $shadow-light;
                     }
                   }
 
                   &.btn-delete {
-                    background: linear-gradient(45deg, #f44336, #c62828);
-                    color: white;
+                    background: linear-gradient(45deg, $error-color, color.adjust($error-color, $lightness: -10%));
+                    color: $white;
 
                     &:hover {
-                      background: linear-gradient(45deg, #d32f2f, #b71c1c);
                       transform: translateY(-2px);
+                      box-shadow: $shadow-light;
                     }
                   }
                 }
@@ -606,46 +609,44 @@
         }
       }
 
-      // État vide
       .empty-state {
         text-align: center;
-        padding: 4rem 2rem;
-        color: #666;
+        padding: $spacing-xxl;
+        color: $text-secondary;
 
         .empty-icon {
           font-size: 4rem;
-          color: #ddd;
-          margin-bottom: 1.5rem;
+          color: $border-color;
+          margin-bottom: $spacing-lg;
         }
 
         h3 {
-          color: #333;
-          margin-bottom: 1rem;
+          color: $text-dark;
+          margin-bottom: $spacing-md;
           font-size: 1.5rem;
         }
 
         p {
-          margin-bottom: 2rem;
+          margin-bottom: $spacing-xl;
           font-size: 1.1rem;
         }
 
         .btn-add-first {
-          background: linear-gradient(45deg, #4caf50, #2c7a2c);
-          color: white;
+          background: linear-gradient(45deg, $primary-color, $secondary-color);
+          color: $white;
           border: none;
-          padding: 1rem 2rem;
-          border-radius: 15px;
+          padding: $spacing-md $spacing-xl;
+          border-radius: $border-radius;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: $spacing-sm;
 
           &:hover {
-            background: linear-gradient(45deg, #45a049, #2d5a2d);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+            box-shadow: $shadow-medium;
           }
         }
       }
@@ -678,15 +679,6 @@
   }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
 @keyframes spin {
   from {
     transform: rotate(0deg);
@@ -701,23 +693,10 @@
 // ===============================
 @media (max-width: 1200px) {
   .user-management-container {
-    padding: 1.5rem;
+    padding: $spacing-lg;
 
-    .form-card .card-body .form-grid {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .users-table {
-      font-size: 0.9rem;
-
-      thead th {
-        padding: 1rem 0.8rem;
-      }
-
-      tbody td {
-        padding: 1rem 0.8rem;
-      }
+    .form-card .card-body {
+      padding: $spacing-lg;
     }
   }
 }
@@ -725,26 +704,17 @@
 @media (max-width: 992px) {
   .user-management-container {
     .page-header {
-      padding: 1.5rem;
-
       .header-content {
         flex-direction: column;
-        gap: 1.5rem;
         text-align: center;
       }
 
       .title-section .page-title {
-        font-size: 2rem;
+        justify-content: center;
       }
     }
 
     .users-table {
-      .contact-info {
-        .phone {
-          display: none;
-        }
-      }
-
       .department-info {
         display: none;
       }
@@ -754,109 +724,83 @@
 
 @media (max-width: 768px) {
   .user-management-container {
-    padding: 1rem;
+    padding: $spacing-md;
 
     .page-header {
-      padding: 1rem;
-      border-radius: 15px;
+      padding: $spacing-lg;
+      border-radius: $border-radius;
 
       .title-section .page-title {
         font-size: 1.8rem;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-
-      .btn-add-user {
-        padding: 0.8rem 1.5rem;
-        font-size: 0.9rem;
       }
     }
 
     .form-card {
-      border-radius: 15px;
+      border-radius: $border-radius;
 
       .card-body {
-        padding: 1.5rem;
+        padding: $spacing-lg;
 
         .form-grid {
           grid-template-columns: 1fr;
-          gap: 1rem;
         }
 
         .form-actions {
           flex-direction: column;
-          gap: 0.8rem;
 
           .btn {
             width: 100%;
-            justify-content: center;
           }
         }
       }
     }
 
     .users-table-container {
-      border-radius: 15px;
-    }
+      border-radius: $border-radius;
 
-    .users-table {
-      thead {
-        display: none;
-      }
+      .users-table {
+        thead {
+          display: none;
+        }
 
-      tbody {
-        .user-row {
-          display: block;
-          background: white;
-          border: 1px solid #eee;
-          border-radius: 15px;
-          margin-bottom: 1rem;
-          padding: 1rem;
-          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-          &:hover {
-            transform: none;
-          }
-
-          td {
+        tbody {
+          .user-row {
             display: block;
-            padding: 0.5rem 0;
-            border: none;
+            padding: $spacing-lg;
+            border-bottom: 1px solid $border-color;
 
-            &:before {
-              content: attr(data-label) ': ';
-              font-weight: 600;
-              color: #4caf50;
-              display: inline-block;
-              width: 100px;
-            }
+            td {
+              display: block;
+              padding: $spacing-sm 0;
 
-            &.user-info {
               &:before {
-                display: none;
+                content: attr(data-label) ': ';
+                font-weight: 600;
+                color: $primary-color;
+                display: inline-block;
+                width: 120px;
               }
 
-              border-bottom: 1px solid #eee;
-              padding-bottom: 1rem;
-              margin-bottom: 0.5rem;
-            }
-
-            &.actions {
-              &:before {
-                display: none;
+              &.user-info {
+                &:before {
+                  display: none;
+                }
+                padding-bottom: $spacing-md;
+                margin-bottom: $spacing-sm;
+                border-bottom: 1px solid $border-color;
               }
 
-              margin-top: 1rem;
-              padding-top: 1rem;
-              border-top: 1px solid #eee;
+              &.actions {
+                &:before {
+                  display: none;
+                }
+                padding-top: $spacing-md;
+                margin-top: $spacing-sm;
+                border-top: 1px solid $border-color;
 
-              .action-buttons {
-                justify-content: center;
-                gap: 1rem;
-
-                .btn-action {
-                  width: 40px;
-                  height: 40px;
+                .action-buttons {
+                  justify-content: center;
+                  gap: $spacing-md;
                 }
               }
             }
@@ -864,27 +808,15 @@
         }
       }
     }
-
-    .empty-state {
-      padding: 2rem 1rem;
-
-      .empty-icon {
-        font-size: 3rem;
-      }
-
-      h3 {
-        font-size: 1.3rem;
-      }
-    }
   }
 }
 
 @media (max-width: 480px) {
   .user-management-container {
-    padding: 0.5rem;
+    padding: $spacing-sm;
 
     .page-header {
-      margin-bottom: 1rem;
+      padding: $spacing-md;
 
       .title-section .page-title {
         font-size: 1.5rem;
@@ -892,18 +824,7 @@
     }
 
     .form-card .card-body {
-      padding: 1rem;
-    }
-
-    .users-table tbody .user-row {
-      padding: 0.8rem;
-
-      td {
-        &:before {
-          width: 80px;
-          font-size: 0.85rem;
-        }
-      }
+      padding: $spacing-md;
     }
   }
 }

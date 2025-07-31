@@ -1,14 +1,13 @@
-// src/app/modules/user/components/sidebar/user-sidebar.component.ts
-import { Component } from '@angular/core';
+import { Component ,Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
 interface MenuItem {
-  path: string;
-  icon: string;
+  path?: string;
   label: string;
-  group?: string;
+  children?: MenuItem[];
+  alwaysExpanded?: boolean;
 }
 
 @Component({
@@ -19,82 +18,55 @@ interface MenuItem {
   styleUrls: ['./user-sidebar.component.scss']
 })
 export class UserSidebarComponent {
+  @Input() isMobile: boolean = false;
+  @Input() sidebarOpen: boolean = false;
   menuItems: MenuItem[] = [
-    { path: '/user/dashboard', icon: 'bi-speedometer2', label: 'Dashboard' },
-
-    // Section Électricité
+    { path: '/user/dashboard', label: 'Vue d\'ensemble' },
+    { path: '/user/electricity-saisie', label: 'Saisie Énergie' },
+    { path: '/user/water-saisie', label: 'Saisie Production' },
     {
-      path: '/user/electricity-saisie',
-      icon: 'bi-lightning-charge-fill',
-      label: 'Saisie Électricité',
-      group: 'Électricité'
+      label: 'Tableaux Synthétiques',
+      alwaysExpanded: true,
+      children: [
+        {
+          label: 'Production',
+          children: [
+            { path: '/user/water-monthly', label: 'Synthèse Mensuelle' },
+            { path: '/user/water-annual', label: 'Synthèse Annuelle' }
+          ]
+        },
+        {
+          label: 'Énergie',
+          children: [
+            { path: '/user/electricity-monthly', label: 'Synthèse Mensuelle' },
+            { path: '/user/electricity-annual', label: 'Synthèse Annuelle' }
+          ]
+        }
+      ]
     },
     {
-      path: '/user/electricity-monthly',
-      icon: 'bi-calendar-month',
-      label: 'Synthèse Mensuelle',
-      group: 'Électricité'
+      label: 'Visualisation',
+      alwaysExpanded: true,
+      children: [
+        { path: '/user/water-graphs', label: 'Production' },
+        { path: '/user/electricity-graphs', label: 'Énergie' }
+      ]
     },
-    {
-      path: '/user/electricity-annual',
-      icon: 'bi-calendar-year',
-      label: 'Synthèse Annuelle',
-      group: 'Électricité'
-    },
-    {
-      path: '/user/electricity-graphs',
-      icon: 'bi-graph-up',
-      label: 'Visualisation Graphique',
-      group: 'Électricité'
-    },
-
-    // Section Eau
-    {
-      path: '/user/water-saisie',
-      icon: 'bi-droplet-fill',
-      label: 'Saisie Eau',
-      group: 'Eau'
-    },
-    {
-      path: '/user/water-monthly',
-      icon: 'bi-calendar-month',
-      label: 'Synthèse Mensuelle',
-      group: 'Eau'
-    },
-    {
-      path: '/user/water-annual',
-      icon: 'bi-calendar-year',
-      label: 'Synthèse Annuelle',
-      group: 'Eau'
-    },
-    {
-      path: '/user/water-graphs',
-      icon: 'bi-graph-up',
-      label: 'Visualisation Graphique',
-      group: 'Eau'
-    },
-
-    // Rapports
-    {
-      path: '/user/reports',
-      icon: 'bi-file-earmark-pdf-fill',
-      label: 'Générer Rapports'
-    }
+    { path: '/user/reports', label: 'Rapports' }
   ];
 
-  currentGroup: string | null = null;
+  isExpanded: {[key: string]: boolean} = {};
 
-  constructor(private authService: AuthService) {}
-
-  get user() {
-    return this.authService.getCurrentUser();
+  constructor(public authService: AuthService) {
+    // Initialiser les sections alwaysExpanded comme ouvertes
+    this.menuItems.forEach(item => {
+      if (item.alwaysExpanded) {
+        this.isExpanded[item.label] = true;
+      }
+    });
   }
 
-  toggleGroup(group: string): void {
-    this.currentGroup = this.currentGroup === group ? null : group;
-  }
-
-  isGroupExpanded(group: string): boolean {
-    return this.currentGroup === group;
+  toggleExpand(label: string): void {
+    this.isExpanded[label] = !this.isExpanded[label];
   }
 }

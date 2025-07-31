@@ -1,4 +1,3 @@
-// src/app/modules/user/layout/user-layout.component.ts
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
@@ -10,41 +9,54 @@ import { UserSidebarComponent } from '../components/sidebar/user-sidebar.compone
   standalone: true,
   imports: [CommonModule, RouterOutlet, HeaderComponent, UserSidebarComponent],
   template: `
-    <app-header></app-header>
-    <app-user-sidebar></app-user-sidebar>
-    <main class="content">
+    <app-header (toggleSidebar)="toggleSidebar()"></app-header>
+    <app-user-sidebar
+      [isMobile]="isMobile"
+      [sidebarOpen]="sidebarOpen"
+      >
+    </app-user-sidebar>
+    <main class="user-content">
       <router-outlet></router-outlet>
     </main>
   `,
   styles: [`
-    :host {
-      display: flex;
-      min-height: 100vh;
-      flex-direction: column;
-    }
-
-    app-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1100;
-    }
-
-    .content {
-      margin-left: 250px;
-      margin-top: 80px;
-      padding: 30px;
-      flex: 1;
-      background: #f5f7fa;
-      min-height: calc(100vh - 80px);
+    .user-content {
+      margin-left: 300px;
+      padding: 2rem;
+      min-height: calc(100vh - 70px);
+      margin-top: 70px;
+      transition: all 0.3s ease;
+      background: #ffffff;
     }
 
     @media (max-width: 768px) {
-      .content {
+      .user-content {
         margin-left: 0;
       }
     }
   `]
 })
-export class UserLayoutComponent {}
+export class UserLayoutComponent {
+  sidebarOpen: boolean = false;
+  isMobile: boolean = false;
+
+  constructor() {
+    this.checkIfMobile();
+    window.addEventListener('resize', () => this.checkIfMobile());
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpen = !this.sidebarOpen;
+  }
+
+  closeSidebar(): void {
+    this.sidebarOpen = false;
+  }
+
+  private checkIfMobile(): void {
+    this.isMobile = window.innerWidth < 768;
+    if (!this.isMobile) {
+      this.sidebarOpen = false;
+    }
+  }
+}

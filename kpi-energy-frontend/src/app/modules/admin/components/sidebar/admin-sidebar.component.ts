@@ -1,98 +1,81 @@
-// src/app/modules/admin/components/sidebar/admin-sidebar.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
+import { RouterLink, Router, RouterLinkActive } from '@angular/router';
 
 interface MenuItem {
-  path: string;
-  icon: string;
+  path?: string;
   label: string;
-  group?: string; // Optionnel: pour grouper les éléments visuellement
+  children?: MenuItem[];
+  alwaysExpanded?: boolean;
 }
 
 @Component({
   selector: 'app-admin-sidebar',
   standalone: true,
   templateUrl: './admin-sidebar.component.html',
-  imports: [
-    RouterLink,
-    CommonModule
-  ],
+  imports: [RouterLink, CommonModule, RouterLinkActive],
   styleUrls: ['./admin-sidebar.component.scss']
 })
 export class AdminSidebarComponent {
+  @Output() closeSidebar = new EventEmitter<void>();
+  @Input() isMobile: boolean = false;
+  @Input() sidebarOpen: boolean = false;
+
   menuItems: MenuItem[] = [
-    { path: '/admin/dashboard', icon: 'bi-speedometer2', label: 'Dashboard' },
-    { path: '/admin/users', icon: 'bi-people-fill', label: 'Gestion Utilisateurs' },
-
-    // Section Électricité
+    { path: '/admin/dashboard', label: 'Vue d\'ensemble' },
+    { path: '/admin/electricity-saisie', label: 'Saisie Énergie' },
+    { path: '/admin/water-saisie', label: 'Saisie Production' },
     {
-      path: '/admin/electricity-saisie',
-      icon: 'bi-lightning-charge',
-      label: 'Saisie Électricité',
-      group: 'Électricité'
+      label: 'Tableaux Synthétiques',
+      alwaysExpanded: true,
+      children: [
+        {
+          label: 'Production',
+          children: [
+            { path: '/admin/water-monthly', label: 'Synthèse Mensuelle' },
+            { path: '/admin/water-annual', label: 'Synthèse Annuelle' }
+          ]
+        },
+        {
+          label: 'Énergie',
+          children: [
+            { path: '/admin/electricity-monthly', label: 'Synthèse Mensuelle' },
+            { path: '/admin/electricity-annual', label: 'Synthèse Annuelle' }
+          ]
+        }
+      ]
     },
     {
-      path: '/admin/electricity-monthly',
-      icon: 'bi-calendar-month',
-      label: 'Tableau Mensuel',
-      group: 'Électricité'
+      label: 'Visualisation',
+      alwaysExpanded: true,
+      children: [
+        { path: '/admin/water-graphs', label: 'Production' },
+        { path: '/admin/electricity-graphs', label: 'Énergie' }
+      ]
     },
-    {
-      path: '/admin/electricity-annual',
-      icon: 'bi-calendar-year',
-      label: 'Tableau Annuel',
-      group: 'Électricité'
-    },
-    {
-      path: '/admin/electricity-graphs',
-      icon: 'bi-graph-up',
-      label: 'Visualisation Graphique',
-      group: 'Électricité'
-    },
-
-    // Section Eau
-    {
-      path: '/admin/water-saisie',
-      icon: 'bi-droplet',
-      label: 'Saisie Eau',
-      group: 'Eau'
-    },
-
-
-
-    {
-      path: '/admin/water-monthly',
-      icon: 'bi-calendar-month',
-      label: 'Tableau Mensuel Eau',
-      group: 'Eau'
-    },
-    {
-      path: '/admin/water-annual',
-      icon: 'bi-calendar-year',
-      label: 'Tableau Annuel Eau',
-      group: 'Eau'
-    },
-    {
-      path: '/admin/water-graphs',
-      icon: 'bi-graph-up',
-      label: 'Graphiques Eau',
-      group: 'Eau'
-    },
-    {
-      path: '/admin/reports',
-      icon: 'bi-file-earmark-pdf',
-      label: 'Générer Rapports',
-      group: 'Administration'
-    },
-    {
-      path: '/admin/audit-log',
-      icon: 'bi-clipboard2-data',
-      label: 'Journal d\'Audit',
-      group: 'Administration'
-    },
-
+    { path: '/admin/reports', label: 'Rapports' },
+    { path: '/admin/users', label: 'Utilisateurs' },
+    { path: '/admin/audit-log', label: 'Journal Audit' }
   ];
 
+  isExpanded: {[key: string]: boolean} = {};
 
+  constructor(private router: Router) {
+    // Initialiser les sections alwaysExpanded comme ouvertes
+    this.menuItems.forEach(item => {
+      if (item.alwaysExpanded) {
+        this.isExpanded[item.label] = true;
+      }
+    });
+  }
+
+  toggleExpand(label: string): void {
+    this.isExpanded[label] = !this.isExpanded[label];
+  }
+
+  closeOnMobile(): void {
+    if (this.isMobile) {
+      this.closeSidebar.emit();
+    }
+  }
 }
