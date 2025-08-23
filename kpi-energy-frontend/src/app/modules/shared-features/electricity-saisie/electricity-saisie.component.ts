@@ -4,6 +4,7 @@ import { ElectricityService } from './electricity.service';
 import {Router, RouterLink, RouterModule} from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import {CommonModule, DecimalPipe, NgClass} from '@angular/common';
+import { AnomalyService } from '../../../core/services/anomaly.service';
 
 @Component({
   selector: 'app-electricity-saisie',
@@ -41,7 +42,8 @@ export class ElectricitySaisieComponent implements OnInit {
     private fb: FormBuilder,
     private electricityService: ElectricityService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private anomalyService: AnomalyService
   ) {
     this.electricityForm = this.fb.group({
       year: [new Date().getFullYear(), [Validators.required, Validators.min(2000), Validators.max(2100)]],
@@ -117,7 +119,36 @@ export class ElectricitySaisieComponent implements OnInit {
     this.showAlertMessage('Formulaire réinitialisé', 'success');
   }
 
+
+  validateDataWithAI(): void {
+    if (this.electricityForm.valid) {
+      const formData = this.electricityForm.value;
+      const validationData = {
+        data_type: 'electricity',
+        ...formData
+      };
+
+      this.anomalyService.validateData(validationData).subscribe({
+        next: (response: { is_anomaly: boolean; message: string }) => { // Ajoutez le type
+          if (response.is_anomaly) {
+            this.showAlertMessage(`⚠️ ${response.message}`, 'warning');
+          }
+        },
+        error: (err: any) => console.error('Erreur validation AI', err) // Ajoutez le type
+      });
+    }
+  }
+
+
+
   onSubmit(): void {
+    this.validateDataWithAI();
+
+    if (this.electricityForm.invalid) {
+      this.showAlertMessage('Veuillez corriger les erreurs', 'error');
+      return;
+    }
+
     if (this.electricityForm.invalid) {
       this.showAlertMessage('Veuillez corriger les erreurs dans le formulaire', 'error');
       return;

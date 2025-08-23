@@ -5,6 +5,8 @@ import { PdfService } from '../../../core/services/pdf.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { lastValueFrom } from 'rxjs';
+import { TokenStorageService } from '../../../core/services/token-storage.service';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-report-generator',
@@ -20,11 +22,15 @@ export class ReportGeneratorComponent {
   endMonth: number = 12;
   isLoading = false;
   reportType: 'monthly' | 'yearly' | 'period' = 'monthly';
+  exportFormat: 'pdf' | 'csv' = 'pdf'; // Removed 'excel' option
+  dataType: 'electricity' | 'water' | 'combined' = 'combined';
 
   constructor(
     private electricityService: ElectricityService,
     private waterService: WaterService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private tokenStorage: TokenStorageService,
+    private http: HttpClient
   ) {}
 
   getMonthName(month: number): string {
@@ -41,30 +47,88 @@ export class ReportGeneratorComponent {
     this.isLoading = true;
 
     try {
-      let pdfBlob: Blob;
-
-      switch (this.reportType) {
-        case 'monthly':
-          pdfBlob = await this.generateMonthlyReport();
-          break;
-        case 'yearly':
-          pdfBlob = await this.generateYearlyReport();
-          break;
-        case 'period':
-          pdfBlob = await this.generatePeriodReport();
-          break;
-        default:
-          throw new Error('Type de rapport non supporté');
+      if (this.exportFormat === 'pdf') {
+        await this.generatePdfReport();
+      } else {
+        await this.exportData();
       }
-
-      // Téléchargement du PDF
-      this.downloadPdf(pdfBlob);
-
     } catch (error) {
       console.error('Erreur:', error);
       alert(`Erreur génération rapport: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
       this.isLoading = false;
+    }
+  }
+
+  private async generatePdfReport(): Promise<void> {
+    let pdfBlob: Blob;
+
+    switch (this.reportType) {
+      case 'monthly':
+        pdfBlob = await this.generateMonthlyReport();
+        break;
+      case 'yearly':
+        pdfBlob = await this.generateYearlyReport();
+        break;
+      case 'period':
+        pdfBlob = await this.generatePeriodReport();
+        break;
+      default:
+        throw new Error('Type de rapport non supporté');
+    }
+
+    this.downloadPdf(pdfBlob);
+  }
+
+  private async exportData(): Promise<void> {
+    const token = this.tokenStorage.getToken();
+    let url = `http://localhost:8081/api/reports/export/${this.dataType}/${this.exportFormat}`;
+    const params = new URLSearchParams();
+
+    if (this.reportType === 'monthly') {
+      params.append('year', this.year.toString());
+      params.append('month', this.month.toString());
+    } else if (this.reportType === 'yearly') {
+      params.append('year', this.year.toString());
+    }
+
+    if (params.toString()) url += `?${params.toString()}`;
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const blob = await lastValueFrom(this.http.get(url, { headers, responseType: 'blob' }));
+
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = downloadUrl;
+    a.download = `${this.generateExportFileName()}`;
+    a.click();
+    window.URL.revokeObjectURL(downloadUrl);
+  }
+
+  private generateExportFileName(): string {
+    let baseName = 'export';
+
+    switch (this.dataType) {
+      case 'electricity':
+        baseName = 'electricite';
+        break;
+      case 'water':
+        baseName = 'eau';
+        break;
+      case 'combined':
+        baseName = 'combiné';
+        break;
+    }
+
+    switch (this.reportType) {
+      case 'monthly':
+        return `${baseName}_${this.getMonthName(this.month)}_${this.year}.${this.exportFormat}`;
+      case 'yearly':
+        return `${baseName}_annuel_${this.year}.${this.exportFormat}`;
+      case 'period':
+        return `${baseName}_periode_${this.getMonthName(this.startMonth)}_${this.getMonthName(this.endMonth)}_${this.year}.${this.exportFormat}`;
+      default:
+        return `export.${this.exportFormat}`;
     }
   }
 

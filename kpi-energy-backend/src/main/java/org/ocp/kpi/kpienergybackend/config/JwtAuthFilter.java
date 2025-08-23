@@ -27,10 +27,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String token = getJwtFromRequest(request);
+        String path = request.getServletPath();
 
-        // ✅ Ajout du log ici :
-        System.out.println("📦 Token envoyé dans l’en-tête : " + token);
+        // ✅ Skip des endpoints publics
+        if (path.startsWith("/api/auth/")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String token = getJwtFromRequest(request);
 
         if (token != null && tokenProvider.validateToken(token)) {
             String username = tokenProvider.getUsernameFromJWT(token);
@@ -53,6 +58,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 
 
     private String getJwtFromRequest(HttpServletRequest request) {

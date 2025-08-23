@@ -91,4 +91,8 @@ public class AuthService {
             throw new BadCredentialsException("Email ou mot de passe incorrect");
         }
     }
+
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
 }

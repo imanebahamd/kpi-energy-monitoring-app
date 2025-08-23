@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.ocp.kpi.kpienergybackend.dto.ChangePasswordDto;
 
 import java.util.List;
 import java.util.Optional;
@@ -101,5 +102,36 @@ public class UserService {
         }
 
         return saved;
+    }
+
+    public Optional<Utilisateur> findByEmail(String email) {
+        return utilisateurRepository.findByEmail(email);
+    }
+
+    public Optional<Utilisateur> findByResetToken(String token) {
+        return utilisateurRepository.findByResetToken(token);
+    }
+
+    public boolean changePassword(Long userId, ChangePasswordDto changePasswordDto) {
+        // Validation des mots de passe
+        if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())) {
+            return false;
+        }
+
+        // Récupération de l'utilisateur
+        Utilisateur user = utilisateurRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        // Vérification du mot de passe actuel
+        if (!passwordEncoder.matches(changePasswordDto.getCurrentPassword(), user.getMotDePasse())) {
+            return false;
+        }
+
+        // Mise à jour du mot de passe
+        user.setMotDePasse(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+        utilisateurRepository.save(user);
+
+        // Pas de log pour éviter les complications - le contrôleur gère déjà les logs
+        return true;
     }
 }

@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminUserService } from '../../services/user.service';
 import { User } from '../../../../core/models/user.model';
+import {MatDialog} from '@angular/material/dialog';
+import {ChangePasswordDialogComponent} from './change-password-dialog/change-password-dialog.component';
+
 
 @Component({
   selector: 'app-user-management',
@@ -36,7 +39,8 @@ export class UserManagementComponent implements OnInit {
     confirmPassword: ''
   };
 
-  constructor(private userService: AdminUserService) {}
+  constructor(private userService: AdminUserService ,
+              private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -248,7 +252,6 @@ export class UserManagementComponent implements OnInit {
     this.clearMessagesAfterDelay();
   }
 
-// Modifiez vos méthodes existantes pour utiliser ces nouvelles méthodes :
 
 
   // Gestion des erreurs
@@ -257,5 +260,18 @@ export class UserManagementComponent implements OnInit {
     this.errorMessage = error.error?.message || defaultMessage;
     this.isLoading = false;
     setTimeout(() => this.errorMessage = null, 5000);
+  }
+
+  openChangePasswordDialog(userId: number): void {
+    const dialogRef = this.dialog.open(ChangePasswordDialogComponent, {
+      width: '450px',
+      data: userId
+    });
+
+    dialogRef.afterClosed().subscribe(success => {
+      if (success) {
+        this.showSuccessMessage('Mot de passe changé avec succès');
+      }
+    });
   }
 }

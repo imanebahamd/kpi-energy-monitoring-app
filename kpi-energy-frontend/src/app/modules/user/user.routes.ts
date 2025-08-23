@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from '../../core/auth/guards/auth.guard';
 import { UserLayoutComponent } from './layout/user-layout.component';
 import { userGuard } from '../../core/auth/guards/user.guard';
+import {ChatbotWidgetComponent} from '../shared-features/chatbot-widget/chatbot-widget.component';
 
 export const USER_ROUTES: Routes = [
   {
@@ -49,6 +50,14 @@ export const USER_ROUTES: Routes = [
       {
         path: 'reports',
         loadComponent: () => import('../shared-features/reports/report-generator.component').then(m => m.ReportGeneratorComponent)
+      },
+      {
+        path: 'anomalies',
+        loadComponent: () => import('../shared-features/anomaly-management/anomaly-management.component').then(m => m.AnomalyManagementComponent)
+      },
+      {
+        path: 'chatbot',
+        loadComponent: () => import('../shared-features/chatbot-widget/chatbot-widget.component').then(m => m.ChatbotWidgetComponent)
       },
       {
         path: '',

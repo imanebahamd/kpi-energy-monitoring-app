@@ -54,6 +54,9 @@ export class AdminSidebarComponent {
       ]
     },
     { path: '/admin/reports', label: 'Rapports' },
+    { path: '/admin/anomalies', label: 'Anomalies' },
+
+    { path: '/admin/chatbot', label: 'Assistant IA'},
     { path: '/admin/users', label: 'Utilisateurs' },
     { path: '/admin/audit-log', label: 'Journal Audit' }
   ];

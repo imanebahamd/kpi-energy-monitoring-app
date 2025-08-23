@@ -1,21 +1,30 @@
 package org.ocp.kpi.kpienergybackend.controller;
 
+import org.ocp.kpi.kpienergybackend.dto.ChangePasswordDto;
 import org.ocp.kpi.kpienergybackend.dto.UserDto;
 import org.ocp.kpi.kpienergybackend.entity.Utilisateur;
 import org.ocp.kpi.kpienergybackend.repository.UtilisateurRepository;
 import org.ocp.kpi.kpienergybackend.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import jakarta.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/admin/users")
 @PreAuthorize("hasRole('ADMIN')")
 public class UserController {
-
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final UtilisateurRepository utilisateurRepository;
 
@@ -87,5 +96,37 @@ public class UserController {
         dto.setDepartement(utilisateur.getDepartement());
         dto.setFonction(utilisateur.getFonction());
         return dto;
+    }
+
+    @PostMapping("/{id}/change-password")
+    public ResponseEntity<?> changePassword(
+            @PathVariable Long id,
+            @Valid @RequestBody ChangePasswordDto changePasswordDto,
+            BindingResult bindingResult) {
+
+        log.info("Change password request received for user {}: {}", id, changePasswordDto);
+
+        // Validation explicite
+        if (bindingResult.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+            bindingResult.getFieldErrors().forEach(error ->
+                    errors.put(error.getField(), error.getDefaultMessage()));
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        if (!changePasswordDto.getNewPassword().equals(changePasswordDto.getConfirmPassword())) {
+            return ResponseEntity.badRequest().body("Les nouveaux mots de passe ne correspondent pas");
+        }
+
+        try {
+            boolean success = userService.changePassword(id, changePasswordDto);
+            if (!success) {
+                return ResponseEntity.badRequest().body("Mot de passe actuel incorrect");
+            }
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            log.error("Error changing password for user {}", id, e);
+            return ResponseEntity.internalServerError().body("Erreur interne du serveur");
+        }
     }
 }

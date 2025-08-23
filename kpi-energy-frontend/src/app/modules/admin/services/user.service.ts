@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { User } from '../../../core/models/user.model';
+import {catchError, Observable, throwError } from 'rxjs';
+import {ChangePasswordData, User } from '../../../core/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AdminUserService {
@@ -44,5 +44,26 @@ export class AdminUserService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  changePassword(userId: number, data: { currentPassword: string, newPassword: string, confirmPassword: string }): Observable<any> {
+    // Transformez les données pour qu'elles correspondent au DTO backend
+    const requestData = {
+      currentPassword: data.currentPassword,
+      newPassword: data.newPassword,
+      confirmPassword: data.confirmPassword
+    };
 
+    return this.http.post(
+      `${this.apiUrl}/${userId}/change-password`,
+      requestData,
+      { headers: this.getAuthHeaders() }
+    ).pipe(
+      catchError(error => {
+        let errorMsg = 'Erreur lors du changement de mot de passe';
+        if (error.error) {
+          errorMsg = typeof error.error === 'string' ? error.error : error.error.message;
+        }
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
 }

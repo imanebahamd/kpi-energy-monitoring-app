@@ -52,7 +52,9 @@ export class UserSidebarComponent {
         { path: '/user/electricity-graphs', label: 'Énergie' }
       ]
     },
-    { path: '/user/reports', label: 'Rapports' }
+    { path: '/user/chatbot', label: 'Assistant IA'},
+    { path: '/user/reports', label: 'Rapports' },
+    { path: '/user/anomalies', label: 'Anomalies' }
   ];
 
   isExpanded: {[key: string]: boolean} = {};

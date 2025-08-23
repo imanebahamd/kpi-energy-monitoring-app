@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/kpi-energy-backend/kpi-energy-backend.iml" filepath="$PROJECT_DIR$/kpi-energy-backend/kpi-energy-backend.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/kpi-energy-monitoring-app.iml" filepath="$PROJECT_DIR$/.idea/kpi-energy-monitoring-app.iml" />
     </modules>
   </component>

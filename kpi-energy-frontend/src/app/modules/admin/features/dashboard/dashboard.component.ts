@@ -8,11 +8,14 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { AnomalyService, AnomalyStats } from '../../../../core/services/anomaly.service';
+import { ChatbotWidgetComponent } from '../../../shared-features/chatbot-widget/chatbot-widget.component';
+
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgChartsModule, RouterModule, FormsModule],
+  imports: [CommonModule, NgChartsModule, RouterModule, FormsModule,ChatbotWidgetComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -28,6 +31,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   alertMessage = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
   showAlert = false;
+  anomalyStats: AnomalyStats | null = null;
 
   // Configuration des graphiques électriques
   public consumptionChartOptions: ChartConfiguration['options'] = {
@@ -174,10 +178,13 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ]
   };
 
+  showChatbot = false;
+
   constructor(
     private electricityService: ElectricityService,
     private waterService: WaterService,
-    private authService: AuthService,
+    public authService: AuthService,
+    private anomalyService: AnomalyService,
     private cdr: ChangeDetectorRef
   ) {
     this.initializeYears();
@@ -185,6 +192,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadData();
+    this.loadAnomalyStats();
   }
 
   ngAfterViewInit(): void {
@@ -268,6 +276,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.showAlertMessage('Erreur lors du chargement des données eau', 'error');
         waterLoaded = true;
         checkLoadingComplete();
+      }
+    });
+  }
+
+  private loadAnomalyStats(): void {
+    this.anomalyService.getStats().subscribe({
+      next: (stats: AnomalyStats) => {
+        this.anomalyStats = stats;
+      },
+      error: (err: any) => {
+        console.error('Erreur lors du chargement des statistiques d\'anomalies', err);
       }
     });
   }
@@ -372,5 +391,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
   formatNumber(value: number, decimals: number = 0): string {
     return value.toLocaleString('fr-FR', { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+  }
+
+  toggleChatbot(): void {
+    this.showChatbot = !this.showChatbot;
   }
 }

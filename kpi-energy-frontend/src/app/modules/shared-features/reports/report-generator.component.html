@@ -19,6 +19,25 @@
     </button>
   </div>
 
+  <div class="export-options">
+    <div class="format-selector">
+      <label>Format d'export:</label>
+      <select [(ngModel)]="exportFormat">
+        <option value="pdf">PDF</option>
+        <option value="csv">CSV</option>
+      </select>
+    </div>
+
+    <div class="data-type-selector" *ngIf="exportFormat !== 'pdf'">
+      <label>Données à exporter:</label>
+      <select [(ngModel)]="dataType">
+        <option value="electricity">Électricité</option>
+        <option value="water">Eau</option>
+        <option value="combined">Combiné</option>
+      </select>
+    </div>
+  </div>
+
   <div class="form-container">
     <!-- Formulaire pour rapport mensuel -->
     <div *ngIf="reportType === 'monthly'" class="form-group">

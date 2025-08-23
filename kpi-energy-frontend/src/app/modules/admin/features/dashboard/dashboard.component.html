@@ -1,5 +1,16 @@
 <!-- dashboard.component.html -->
 <div class="dashboard-container">
+  <!-- Bouton flottant pour le chatbot -->
+  <button class="chatbot-toggle-btn" (click)="toggleChatbot()"
+          [class.active]="showChatbot">
+    🤖
+    <span class="notification-badge" *ngIf="anomalyStats && anomalyStats.total_active_anomalies > 0">
+      {{ anomalyStats.total_active_anomalies }}
+    </span>
+  </button>
+
+  <!-- Widget chatbot -->
+  <app-chatbot-widget *ngIf="showChatbot" class="chatbot-widget"></app-chatbot-widget>
   <div class="dashboard-content">
     <!-- En-tête du tableau de bord -->
     <header class="dashboard-header">
@@ -151,6 +162,50 @@
             </a>
           </div>
         </div>
+      </div>
+    </section>
+
+
+
+    <!-- Section Alertes Anomalies -->
+    <section class="anomalies-section" *ngIf="!isLoading && anomalyStats">
+      <div class="section-header">
+        <h3 class="section-title">🛡️ Surveillance des Anomalies</h3>
+        <p class="section-subtitle">Détection automatique des problèmes</p>
+      </div>
+
+      <div class="anomaly-cards">
+        <div class="anomaly-card" [class.critical]="anomalyStats.critical_anomalies > 0">
+          <div class="anomaly-icon">⚠️</div>
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Anomalies Actives</h4>
+            <div class="anomaly-value">{{ anomalyStats.total_active_anomalies }}</div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies > 0">
+              {{ anomalyStats.critical_anomalies }} critique(s)
+            </div>
+          </div>
+        </div>
+
+        <div class="anomaly-card">
+          <div class="anomaly-icon">🕒</div>
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Dernière Détection</h4>
+            <div class="anomaly-value">
+              {{ anomalyStats.last_detection ? (anomalyStats.last_detection | date:'short') : 'Aucune' }}
+            </div>
+            <div class="anomaly-subtext">Scan automatique quotidien</div>
+          </div>
+        </div>
+
+        <a *ngIf="authService.isAdmin()"
+           routerLink="/admin/anomalies"
+           class="anomaly-card action-card">
+          <div class="anomaly-icon">📋</div>
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Gérer les Anomalies</h4>
+            <div class="anomaly-subtext">Voir le détail et résoudre</div>
+          </div>
+        </a>
       </div>
     </section>
 

@@ -4,6 +4,7 @@ import { WaterService, WaterData } from './water.service';
 import {NgClass, NgForOf, NgIf} from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AnomalyService } from '../../../core/services/anomaly.service';
 
 @Component({
   selector: 'app-water-saisie',
@@ -55,7 +56,7 @@ export class WaterSaisieComponent implements OnInit {
     }
   };
 
-  constructor(private fb: FormBuilder, private waterService: WaterService , private authService: AuthService,private route: ActivatedRoute) {}
+  constructor(private fb: FormBuilder, private waterService: WaterService ,  private anomalyService: AnomalyService,private authService: AuthService,private route: ActivatedRoute) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -80,7 +81,30 @@ export class WaterSaisieComponent implements OnInit {
     });
   }
 
+
+  validateDataWithAI(): void {
+    if (this.waterForm.valid) {
+      const formData = this.waterForm.value;
+      const validationData = {
+        data_type: 'water',
+        ...formData
+      };
+
+      this.anomalyService.validateData(validationData).subscribe({
+        next: (response: { is_anomaly: boolean; message: string }) => {
+          if (response.is_anomaly) {
+            this.showDynamicAlert(`⚠️ ${response.message}`, 'warning', 7000);
+          }
+        },
+        error: (err: any) => console.error('Erreur validation AI', err)
+      });
+    }
+  }
+
+
+
   onSubmit(): void {
+    this.validateDataWithAI();
     if (this.waterForm.invalid) {
       this.showDynamicAlert(this.validationMessages.error.validation, 'error', 5000);
       this.markFormGroupTouched();

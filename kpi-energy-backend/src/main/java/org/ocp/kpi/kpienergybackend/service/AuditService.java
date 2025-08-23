@@ -17,6 +17,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuditService {
@@ -27,15 +28,35 @@ public class AuditService {
     public void logAction(String action, String tableName, Long recordId,
                           String oldValues, String newValues) {
 
+        // Récupère l'authentification actuelle
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
+
+        // Si pas d'authentification ou non authentifié, on ne log pas
+        if (auth == null || !auth.isAuthenticated() || auth.getPrincipal() == null) {
             return;
         }
 
-        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
-        Utilisateur currentUser = utilisateurRepository.findById(userDetails.getId())
+        // Gestion des différents types de principal
+        Long userId = null;
+        if (auth.getPrincipal() instanceof CustomUserDetails) {
+            // Cas normal avec un utilisateur connecté
+            CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+            userId = userDetails.getId();
+        } else if (auth.getPrincipal() instanceof String) {
+            // Cas anonyme, on ne log pas
+            return;
+        }
+
+        // Si on n'a pas pu récupérer un userId valide, on ne log pas
+        if (userId == null) {
+            return;
+        }
+
+        // Récupère l'utilisateur
+        Utilisateur currentUser = utilisateurRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
+        // Récupère la requête HTTP
         HttpServletRequest request =
                 ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
                         .getRequest();

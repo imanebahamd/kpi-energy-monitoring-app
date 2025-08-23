@@ -35,7 +35,9 @@ export class LoginComponent {
   get password() {
     return this.loginForm.get('password');
   }
-
+  navigateToForgotPassword() {
+    this.router.navigate(['/forgot-password']);
+  }
   onSubmit() {
     if (this.loginForm.invalid) {
       return;

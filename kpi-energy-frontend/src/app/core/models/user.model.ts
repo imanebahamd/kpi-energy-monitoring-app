@@ -11,3 +11,10 @@ export interface User {
   fonction?: string;
   motDePasse?: string;
 }
+
+
+export interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}

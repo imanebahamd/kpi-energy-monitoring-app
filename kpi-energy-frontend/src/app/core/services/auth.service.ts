@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { TokenStorageService } from './token-storage.service';
 import { User } from '../models/user.model';
-import {catchError, tap, throwError } from 'rxjs';
+import {catchError, tap, throwError,Observable  } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +69,36 @@ export class AuthService {
   getCurrentUser(): User | null {
     return this.tokenStorage.getUser();
   }
+
+  forgotPassword(email: string): Observable<ForgotPasswordResponse> {
+    return this.http.post<ForgotPasswordResponse>(
+      `${this.apiUrl}/password/forgot`,
+      { email }
+    ).pipe(
+      catchError(error => {
+        let errorMsg = 'Erreur lors de la demande de réinitialisation';
+        if (error.error?.error) {
+          errorMsg = error.error.error;
+        } else if (error.error?.message) {
+          errorMsg = error.error.message;
+        }
+        return throwError(() => new Error(errorMsg));
+      })
+    );
+  }
+
+  resetPassword(token: string, newPassword: string) {
+    return this.http.post(`${this.apiUrl}/password/reset`, { token, newPassword })
+      .pipe(
+        catchError(error => {
+          let errorMsg = 'Erreur lors de la réinitialisation';
+          if (error.error && typeof error.error === 'string') {
+            errorMsg = error.error;
+          }
+          return throwError(() => new Error(errorMsg));
+        })
+      );
+  }
 }
 
 interface LoginResponse {
@@ -77,4 +107,11 @@ interface LoginResponse {
   email: string;
   role: string;
   nomComplet: string;
+}
+
+
+
+interface ForgotPasswordResponse {
+  message?: string;
+  error?: string;
 }

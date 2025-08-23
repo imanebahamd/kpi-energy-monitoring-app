@@ -84,6 +84,11 @@
           <span>{{ errorMessage }}</span>
         </div>
 
+        <div class="forgot-password-link" (click)="navigateToForgotPassword()">
+          Mot de passe oublié ?
+        </div>
+
+
         <!-- Bouton de connexion avec spinner -->
         <button type="submit" class="submit-btn" [disabled]="loginForm.invalid || isLoading">
           <div class="btn-content">
