@@ -37,11 +37,12 @@ export class AnomalyManagementComponent implements OnInit {
   // Options pour les filtres
   typesAnomalie = [
     { value: '', label: 'Tous les types' },
-    { value: 'ERREUR_SAISIE', label: 'Erreur de saisie' },
-    { value: 'PIC_CONSOMMATION', label: 'Pic de consommation' },
-    { value: 'FUITE_EAU', label: 'Fuite d\'eau' },
-    { value: 'PROBLEME_PRODUCTION', label: 'Problème de production' },
-    { value: 'FACTEUR_PUISSANCE', label: 'Facteur de puissance bas' }
+    { value: 'DATA_ENTRY_ERROR', label: 'Erreur de saisie' },
+    { value: 'CONSUMPTION_SPIKE', label: 'Pic de consommation' },
+    { value: 'WATER_LEAK', label: 'Fuite d\'eau' },
+    { value: 'PRODUCTION_ISSUE', label: 'Problème de production' },
+    { value: 'LOW_POWER_FACTOR', label: 'Facteur de puissance bas' },
+    { value: 'GENERAL_ANOMALY', label: 'Anomalie générale' } // Ajoutez cette ligne si nécessaire
   ];
 
   niveauxSeverite = [
