@@ -1,233 +1,269 @@
-<div class="monthly-summary">
+<link rel="stylesheet" href="monthly-summary.component.scss">
+<div class="electricity-monthly-container">
   <!-- Alert message -->
   <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
-    {{ alertMessage }}
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
+    </div>
   </div>
 
-  <div class="header">
-    <h1>
-      Tableau Mensuel Électrique
-    </h1>
+  <header class="electricity-header">
+    <div class="header-content">
+      <h1 class="electricity-title">Tableau Mensuel Électrique</h1>
+      <p class="electricity-subtitle">Surveillance et analyse des données énergétiques mensuelles</p>
+    </div>
     <div class="header-actions">
-      <a [routerLink]="[getRoutePrefix(), 'electricity-saisie']" class="button">
+      <a [routerLink]="[getRoutePrefix(), 'electricity-saisie']" class="action-button primary">
         <i class="icon add"></i> Saisir Nouvelles Données
       </a>
-      <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="button">
-        <i class="icon calendar"></i> Vue Annuelle
-      </a>
-      <a [routerLink]="[getRoutePrefix(), 'electricity-graphs']" class="button">
-        <i class="icon chart"></i> Visualisation Graphique
-      </a>
+    </div>
+  </header>
+
+  <div class="filters-card">
+    <div class="date-selector">
+      <div class="date-header">
+        <div class="icon">📅</div>
+        <h4>Filtres de période</h4>
+      </div>
+
+      <div class="filters-content">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <input id="year" type="number" class="form-control" [(ngModel)]="year"
+                   (change)="onFilterChange()"
+                   min="2000" max="2100"
+                   placeholder="Entrez l'année">
+          </div>
+
+          <div class="form-group" *ngIf="!showPeriodSelection">
+            <label class="form-label">Mois</label>
+            <select id="month" class="form-select" [(ngModel)]="month" (change)="onFilterChange()">
+              <option [ngValue]="null" disabled>Choisissez un mois</option>
+              <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="showPeriodSelection">
+            <label class="form-label">De</label>
+            <select class="form-select" [(ngModel)]="startMonth" (change)="onFilterChange()">
+              <option [ngValue]="null" disabled>Mois de début</option>
+              <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group" *ngIf="showPeriodSelection">
+            <label class="form-label">À</label>
+            <select class="form-select" [(ngModel)]="endMonth" (change)="onFilterChange()">
+              <option [ngValue]="null" disabled>Mois de fin</option>
+              <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
+            </select>
+          </div>
+
+          <div class="form-group period-toggle-group">
+            <label class="form-label" style="visibility: hidden;">Toggle</label>
+            <button (click)="togglePeriodSelection()" class="period-toggle">
+              {{ showPeriodSelection ? 'Sélection simple' : 'Période' }}
+            </button>
+          </div>
+
+          <div class="form-group submit-button-group">
+            <label class="form-label" style="visibility: hidden;">Submit</label>
+            <button (click)="showPeriodSelection ? loadPeriodSummary() : loadSummary()"
+                    [disabled]="!year || (!showPeriodSelection && !month) || (showPeriodSelection && (!startMonth || !endMonth)) || isLoading"
+                    class="action-button primary">
+              <span *ngIf="!isLoading">Afficher les données</span>
+              <span *ngIf="isLoading" class="spinner"></span>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="info-message">
-    <i class="icon info"></i>
-    <p>Cette page vous permet de consulter les données électriques mensuelles. Sélectionnez une année et un mois spécifique, ou choisissez une période pour afficher plusieurs mois. Vous pouvez également modifier ou supprimer les données existantes.</p>
-  </div>
-
-  <div class="filters">
-    <div class="filter-group">
-      <label for="year">Année</label>
-      <input id="year" type="number" [(ngModel)]="year"
-             (change)="onFilterChange()"
-             min="2000" max="2100"
-             placeholder="Entrez l'année">
-    </div>
-
-    <div class="filter-group" *ngIf="!showPeriodSelection">
-      <label for="month">Mois</label>
-      <select id="month" [(ngModel)]="month" (change)="onFilterChange()">
-        <option [ngValue]="null" disabled>Choisissez un mois</option>
-        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
-      </select>
-    </div>
-
-    <div class="filter-group" *ngIf="showPeriodSelection">
-      <label>De</label>
-      <select [(ngModel)]="startMonth" (change)="onFilterChange()">
-        <option [ngValue]="null" disabled>Mois de début</option>
-        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
-      </select>
-    </div>
-
-    <div class="filter-group" *ngIf="showPeriodSelection">
-      <label>À</label>
-      <select [(ngModel)]="endMonth" (change)="onFilterChange()">
-        <option [ngValue]="null" disabled>Mois de fin</option>
-        <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
-      </select>
-    </div>
-
-    <button (click)="togglePeriodSelection()" class="toggle-period">
-      {{ showPeriodSelection ? 'Sélection simple' : 'Période' }}
-    </button>
-
-    <button (click)="showPeriodSelection ? loadPeriodSummary() : loadSummary()"
-            [disabled]="!year || (!showPeriodSelection && !month) || (showPeriodSelection && (!startMonth || !endMonth)) || isLoading">
-      <span *ngIf="!isLoading">Afficher</span>
-      <span *ngIf="isLoading" class="spinner"></span>
-    </button>
-  </div>
-
-  <!-- Messages -->
-  <div *ngIf="!filtersTouched" class="instruction">
-    <i class="icon info"></i>
-    <span>Veuillez sélectionner une année et un mois (ou une période) pour afficher les données</span>
-  </div>
-
-  <div *ngIf="isLoading" class="status loading">
+  <div *ngIf="isLoading" class="status-card loading">
     <div class="spinner"></div>
     <span>Chargement en cours...</span>
   </div>
 
-  <div *ngIf="error && filtersTouched" class="status error">
+  <div *ngIf="error && filtersTouched" class="status-card error">
     <i class="icon warning"></i>
     <span>{{ error }}</span>
   </div>
 
   <!-- Tableau pour un mois unique -->
-  <div *ngIf="summary && !showPeriodSelection" class="network-section">
+  <div *ngIf="summary && !showPeriodSelection" class="data-section">
     <div class="section-header">
       <h2><i class="icon high-voltage"></i> Données pour {{ getMonthName(month) }} {{ year }}</h2>
       <div class="section-actions">
         <a [routerLink]="['/admin/electricity-saisie']"
            [queryParams]="{year: year, month: month}"
-           class="button edit">
+           class="action-button secondary">
           <i class="icon edit"></i> Modifier
         </a>
         <button (click)="deleteData(year, month)"
                 [disabled]="!month"
-                class="button delete">
+                class="action-button danger">
           <i class="icon delete"></i> Supprimer
         </button>
       </div>
     </div>
 
-    <!-- Tableau 60KV -->
-    <div class="network-subsection">
-      <h3>Réseau 60KV</h3>
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th>Pointe (KW)</th>
-          <th>Facteur de puissance</th>
-          <th>Consommation (KWh)</th>
-          <th>État</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="numeric">{{ summary.network60kvPeak | number:'1.2-2' }}</td>
-          <td class="numeric">{{ summary.network60kvPowerFactor | number:'1.3-3' }}</td>
-          <td class="numeric">{{ summary.network60kvConsumption | number:'1.2-2' }}</td>
-          <td class="status-cell" [class]="getCosphiStatus(summary.network60kvPowerFactor, 0.9)">
+    <div class="data-grid">
+      <!-- Tableau 60KV -->
+      <div class="data-card">
+        <div class="card-header network-60kv">
+          <h3>Réseau 60KV</h3>
+          <div class="status-indicator" [class]="getCosphiStatus(summary.network60kvPowerFactor, 0.9)">
             <i class="icon" [class]="getStatusIcon(getCosphiStatus(summary.network60kvPowerFactor, 0.9))"></i>
             {{ getCosphiStatus(summary.network60kvPowerFactor, 0.9) | titlecase }}
-          </td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-          <td colspan="4">Limite: ≥ 0.9 | Optimal: ≈0.95</td>
-        </tr>
-        </tfoot>
-      </table>
-    </div>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Pointe (KW)</span>
+            <span class="value">{{ summary.network60kvPeak | number:'1.2-2' }}</span>
+          </div>
+          <div class="data-item">
+            <span class="label">Facteur de puissance</span>
+            <span class="value">{{ summary.network60kvPowerFactor | number:'1.3-3' }}</span>
+          </div>
+          <div class="data-item">
+            <span class="label">Consommation (KWh)</span>
+            <span class="value">{{ summary.network60kvConsumption | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          Limite: ≥ 0.9 | Optimal: ≈0.95
+        </div>
+      </div>
 
-    <!-- Tableau 22KV -->
-    <div class="network-subsection">
-      <h3>Réseau 22KV</h3>
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th>Pointe (KW)</th>
-          <th>Facteur de puissance</th>
-          <th>Consommation (KWh)</th>
-          <th>État</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td class="numeric">{{ summary.network22kvPeak | number:'1.2-2' }}</td>
-          <td class="numeric">{{ summary.network22kvPowerFactor | number:'1.3-3' }}</td>
-          <td class="numeric">{{ summary.network22kvConsumption | number:'1.2-2' }}</td>
-          <td class="status-cell" [class]="getCosphiStatus(summary.network22kvPowerFactor, 0.8)">
+      <!-- Tableau 22KV -->
+      <div class="data-card">
+        <div class="card-header network-22kv">
+          <h3>Réseau 22KV</h3>
+          <div class="status-indicator" [class]="getCosphiStatus(summary.network22kvPowerFactor, 0.8)">
             <i class="icon" [class]="getStatusIcon(getCosphiStatus(summary.network22kvPowerFactor, 0.8))"></i>
             {{ getCosphiStatus(summary.network22kvPowerFactor, 0.8) | titlecase }}
-          </td>
-        </tr>
-        </tbody>
-        <tfoot>
-        <tr>
-          <td colspan="4">Limite: ≥ 0.8 | Optimal: ≈0.85</td>
-        </tr>
-        </tfoot>
-      </table>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Pointe (KW)</span>
+            <span class="value">{{ summary.network22kvPeak | number:'1.2-2' }}</span>
+          </div>
+          <div class="data-item">
+            <span class="label">Facteur de puissance</span>
+            <span class="value">{{ summary.network22kvPowerFactor | number:'1.3-3' }}</span>
+          </div>
+          <div class="data-item">
+            <span class="label">Consommation (KWh)</span>
+            <span class="value">{{ summary.network22kvConsumption | number:'1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="card-footer">
+          Limite: ≥ 0.8 | Optimal: ≈0.85
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Tableau pour une période -->
   <div *ngIf="periodSummaries.length > 0 && showPeriodSelection" class="period-section">
-    <h2><i class="icon calendar-range"></i> Données pour la période de {{ getMonthName(startMonth) }} à {{ getMonthName(endMonth) }} {{ year }}</h2>
+    <div class="section-header">
+      <h2><i class="icon calendar-range"></i> Données pour la période de {{ getMonthName(startMonth) }} à {{ getMonthName(endMonth) }} {{ year }}</h2>
+    </div>
 
-    <div *ngFor="let summary of periodSummaries" class="monthly-data">
-      <div class="month-header">
-        <h3>{{ getMonthName(summary.month) }} {{ summary.year }}</h3>
-        <div class="month-actions">
-          <a [routerLink]="['/admin/electricity-saisie']"
-             [queryParams]="{year: summary.year, month: summary.month}"
-             class="button edit">
-            <i class="icon edit"></i> Modifier
-          </a>
-          <button (click)="deleteData(summary.year, summary.month)"
-                  class="button delete">
-            <i class="icon delete"></i> Supprimer
-          </button>
+    <div class="period-grid">
+      <div *ngFor="let summary of periodSummaries" class="period-card">
+        <div class="period-header">
+          <h3>{{ getMonthName(summary.month) }} {{ summary.year }}</h3>
+          <div class="period-actions">
+            <a [routerLink]="['/admin/electricity-saisie']"
+               [queryParams]="{year: summary.year, month: summary.month}"
+               class="action-button small secondary">
+              <i class="icon edit"></i>
+            </a>
+            <button (click)="deleteData(summary.year, summary.month)"
+                    class="action-button small danger">
+              <i class="icon delete"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="period-content">
+          <div class="network-data">
+            <h4>Réseau 60KV</h4>
+            <div class="data-item">
+              <span>Pointe:</span>
+              <span class="numeric">{{ summary.network60kvPeak | number:'1.2-2' }} KW</span>
+            </div>
+            <div class="data-item">
+              <span>Facteur de puissance:</span>
+              <span class="numeric" [class]="getCosphiStatus(summary.network60kvPowerFactor, 0.9)">
+                {{ summary.network60kvPowerFactor | number:'1.3-3' }}
+                <i class="icon small" [class]="getStatusIcon(getCosphiStatus(summary.network60kvPowerFactor, 0.9))"></i>
+              </span>
+            </div>
+            <div class="data-item">
+              <span>Consommation:</span>
+              <span class="numeric">{{ summary.network60kvConsumption | number:'1.2-2' }} KWh</span>
+            </div>
+          </div>
+
+          <div class="network-data">
+            <h4>Réseau 22KV</h4>
+            <div class="data-item">
+              <span>Pointe:</span>
+              <span class="numeric">{{ summary.network22kvPeak | number:'1.2-2' }} KW</span>
+            </div>
+            <div class="data-item">
+              <span>Facteur de puissance:</span>
+              <span class="numeric" [class]="getCosphiStatus(summary.network22kvPowerFactor, 0.8)">
+                {{ summary.network22kvPowerFactor | number:'1.3-3' }}
+                <i class="icon small" [class]="getStatusIcon(getCosphiStatus(summary.network22kvPowerFactor, 0.8))"></i>
+              </span>
+            </div>
+            <div class="data-item">
+              <span>Consommation:</span>
+              <span class="numeric">{{ summary.network22kvConsumption | number:'1.2-2' }} KWh</span>
+            </div>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="data-grid">
-        <!-- 60KV Data -->
-        <div class="data-card">
-          <h4>Réseau 60KV</h4>
-          <div class="data-row">
-            <span>Pointe:</span>
-            <span class="numeric">{{ summary.network60kvPeak | number:'1.2-2' }} KW</span>
-          </div>
-          <div class="data-row">
-            <span>Facteur de puissance:</span>
-            <span class="numeric" [class]="getCosphiStatus(summary.network60kvPowerFactor, 0.9)">
-              {{ summary.network60kvPowerFactor | number:'1.3-3' }}
-              <i class="icon small" [class]="getStatusIcon(getCosphiStatus(summary.network60kvPowerFactor, 0.9))"></i>
-            </span>
-          </div>
-          <div class="data-row">
-            <span>Consommation:</span>
-            <span class="numeric">{{ summary.network60kvConsumption | number:'1.2-2' }} KWh</span>
-          </div>
-        </div>
+  <!-- Navigation section -->
+  <div class="navigation-section">
+    <div class="navigation-header">
+      <h3>Navigation Rapide</h3>
+      <p>Accédez aux autres sections du module énergie</p>
+    </div>
 
-        <!-- 22KV Data -->
-        <div class="data-card">
-          <h4>Réseau 22KV</h4>
-          <div class="data-row">
-            <span>Pointe:</span>
-            <span class="numeric">{{ summary.network22kvPeak | number:'1.2-2' }} KW</span>
-          </div>
-          <div class="data-row">
-            <span>Facteur de puissance:</span>
-            <span class="numeric" [class]="getCosphiStatus(summary.network22kvPowerFactor, 0.8)">
-              {{ summary.network22kvPowerFactor | number:'1.3-3' }}
-              <i class="icon small" [class]="getStatusIcon(getCosphiStatus(summary.network22kvPowerFactor, 0.8))"></i>
-            </span>
-          </div>
-          <div class="data-row">
-            <span>Consommation:</span>
-            <span class="numeric">{{ summary.network22kvConsumption | number:'1.2-2' }} KWh</span>
-          </div>
+    <div class="navigation-grid">
+
+
+      <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar"></i>
         </div>
-      </div>
+        <div class="nav-content">
+          <h4>Tableau Annuel</h4>
+          <p>Consulter les données annuelles d'énergie</p>
+        </div>
+      </a>
+
+      <a [routerLink]="[getRoutePrefix(), 'electricity-graphs']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon chart"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Visualisations</h4>
+          <p>Analyser les graphiques de consommation</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>

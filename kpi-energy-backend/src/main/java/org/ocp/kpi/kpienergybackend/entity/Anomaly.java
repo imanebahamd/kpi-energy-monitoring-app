@@ -1,5 +1,6 @@
 package org.ocp.kpi.kpienergybackend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
@@ -31,11 +32,13 @@ public class Anomaly {
 
     private Double severityScore; // 0-1
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     @Column(nullable = false)
     private LocalDateTime detectedAt;
 
     private Boolean resolved = false;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime resolvedAt;
 
     private String resolvedBy;

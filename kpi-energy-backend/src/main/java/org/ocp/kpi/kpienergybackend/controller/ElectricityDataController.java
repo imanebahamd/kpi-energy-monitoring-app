@@ -95,4 +95,19 @@ public class ElectricityDataController {
         dto.setNetwork22kvPeak(data.getNetwork22kvPeak());
         return dto;
     }
+
+    @PutMapping("/{year}/{month}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public ResponseEntity<ElectricityData> updateData(
+            @PathVariable int year,
+            @PathVariable int month,
+            @RequestBody ElectricityDataDto dto) {
+
+        if (year != dto.getYear() || month != dto.getMonth()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        ElectricityData updated = electricityService.saveElectricityData(dto);
+        return ResponseEntity.ok(updated);
+    }
 }

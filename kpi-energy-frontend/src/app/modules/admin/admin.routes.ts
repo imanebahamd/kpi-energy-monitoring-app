@@ -61,10 +61,7 @@ export const ADMIN_ROUTES: Routes = [
         path: 'anomalies',
         loadComponent: () => import('../shared-features/anomaly-management/anomaly-management.component').then(m => m.AnomalyManagementComponent)
       },
-      {
-        path: 'chatbot',
-        loadComponent: () => import('../shared-features/chatbot-widget/chatbot-widget.component').then(m => m.ChatbotWidgetComponent)
-      },
+
       {
         path: 'audit-log',
         loadComponent: () => import('./features/audit-log/audit-log.component').then(m => m.AuditLogComponent)

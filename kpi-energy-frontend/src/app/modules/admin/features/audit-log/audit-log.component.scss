@@ -1,8 +1,6 @@
 @use "sass:color";
 
-// =============================================
-// VARIABLES (identiques à user-management)
-// =============================================
+// Variables de couleurs
 $primary-color: #4361ee;
 $secondary-color: #7FB2F0;
 $success-color: #4CAF50;
@@ -28,368 +26,679 @@ $text-secondary: $text-light;
 $text-muted: #adb5bd;
 
 $background-primary: $white;
-$background-secondary: $light-bg;
+$background-secondary: #f8fafc;
 $background-card: $white;
 
-$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.08);
-$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.12);
-$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.16);
+$shadow-light: 0 2px 8px rgba(0, 0, 0, 0.04);
+$shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.08);
+$shadow-heavy: 0 8px 32px rgba(0, 0, 0, 0.12);
 
-$border-radius: 12px;
-$border-radius-sm: 8px;
-$border-radius-large: 16px;
+$border-radius: 10px;
+$border-radius-sm: 6px;
+$border-radius-large: 14px;
 $spacing-xs: 0.5rem;
 $spacing-sm: 0.75rem;
 $spacing-md: 1rem;
 $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-xxl: 3rem;
+$warning-dark: #e69500;
 
-// =============================================
-// STYLES DU COMPOSANT
-// =============================================
 .audit-container {
   padding: $spacing-xl;
   max-width: 1400px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
-  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  background: $white;
 
   @media (max-width: 768px) {
     padding: $spacing-md;
   }
 
   // ===============================
-  // HEADER
+  // PAGE HEADER
   // ===============================
-  .header {
+  .page-header {
+    background: $white;
+    border-radius: $border-radius-large;
+    padding: $spacing-xl;
     margin-bottom: $spacing-xl;
-    animation: slideInDown 0.5s ease-out;
+    color: $text-dark;
+    box-shadow: $shadow-medium;
+    border: 1px solid $border-color;
 
-    h2 {
-      color: $text-dark;
-      font-size: 2rem;
-      font-weight: 700;
-      margin-bottom: $spacing-sm;
+    .header-content {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: $spacing-md;
+      gap: $spacing-lg;
 
       @media (max-width: 768px) {
-        font-size: 1.8rem;
+        flex-direction: column;
+        text-align: center;
       }
     }
 
-    p {
-      color: $text-secondary;
-      margin: 0;
-      font-size: 1.1rem;
-      opacity: 0.9;
+    .title-section {
+      .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 $spacing-sm 0;
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+        color: black;
+
+        @media (max-width: 768px) {
+          font-size: 1.8rem;
+          justify-content: center;
+        }
+
+        i {
+          font-size: 2rem;
+          color: $primary-color;
+        }
+      }
+
+      .page-subtitle {
+        font-size: 1rem;
+        color: $text-secondary;
+        margin: 0;
+        font-weight: 400;
+      }
     }
   }
 
   // ===============================
-  // CARDS
+  // ALERTS
   // ===============================
-  .search-card, .results-card {
+  .alerts-container {
+    margin-bottom: $spacing-xl;
+
+    .alert {
+      padding: $spacing-md $spacing-lg;
+      border-radius: $border-radius;
+      margin-bottom: $spacing-md;
+      display: flex;
+      align-items: center;
+      gap: $spacing-md;
+      font-weight: 500;
+      animation: slideInDown 0.5s ease-out;
+      border: 1px solid transparent;
+
+      i {
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+
+      span {
+        flex: 1;
+      }
+
+      .alert-close {
+        background: none;
+        border: none;
+        color: currentColor;
+        font-size: 1.1rem;
+        cursor: pointer;
+        padding: $spacing-xs;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+      }
+
+      &.alert-success {
+        background: #f0f9f0;
+        color: #0f5132;
+        border-color: #badbcc;
+      }
+
+      &.alert-error {
+        background: #fdf2f2;
+        color: #842029;
+        border-color: #f5c2c7;
+      }
+    }
+  }
+
+  // ===============================
+  // FORM CARD
+  // ===============================
+  .form-card {
     background: $white;
     border-radius: $border-radius-large;
-    box-shadow: $shadow-heavy;
+    box-shadow: $shadow-medium;
     margin-bottom: $spacing-xl;
     overflow: hidden;
+    border: 1px solid $border-color;
     animation: slideInUp 0.6s ease-out;
 
-    mat-card-header {
-      background: linear-gradient(135deg, $primary-color, $secondary-color);
+    .card-header {
+      background: $background-secondary;
       padding: $spacing-lg $spacing-xl;
-      color: $white;
+      color: $text-dark;
+      border-bottom: 1px solid $border-color;
 
-      mat-card-title {
+      .card-title {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 600;
         display: flex;
         align-items: center;
         gap: $spacing-md;
 
-        mat-icon {
-          font-size: 1.4rem;
-          background: rgba($white, 0.2);
-          padding: $spacing-xs;
-          border-radius: $border-radius-sm;
+        i {
+          font-size: 1.2rem;
+          color: $primary-color;
         }
       }
     }
 
-    mat-card-content {
+    .card-body {
       padding: $spacing-xl;
 
       @media (max-width: 768px) {
         padding: $spacing-lg;
       }
-    }
-  }
 
-  // ===============================
-  // SEARCH FORM
-  // ===============================
-  .search-fields {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: $spacing-lg;
-    margin-bottom: $spacing-lg;
-
-    mat-form-field {
-      width: 100%;
-
-      .mat-form-field-outline {
-        background-color: $background-secondary;
-        border-radius: $border-radius;
-      }
-    }
-  }
-
-  .search-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: $spacing-md;
-    padding-top: $spacing-lg;
-    border-top: 1px solid $border-color;
-
-    button {
-      padding: $spacing-md $spacing-lg;
-      border-radius: $border-radius;
-      font-weight: 600;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-      min-width: 150px;
-      justify-content: center;
-      box-shadow: $shadow-light;
-
-      &[color="primary"] {
-        background: linear-gradient(45deg, $primary-color, $secondary-color);
-        color: $white;
-
-        &:hover:not(:disabled) {
-          background: linear-gradient(45deg,
-            color.adjust($primary-color, $lightness: -10%),
-            color.adjust($secondary-color, $lightness: -10%));
-          transform: translateY(-2px);
-          box-shadow: $shadow-medium;
-        }
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 50px;
+        margin-bottom: $spacing-xl;
       }
 
-      &:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-      }
+      .form-group {
+        .form-label {
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          font-weight: 600;
+          color: $text-dark;
+          margin-bottom: $spacing-sm;
+          font-size: 0.9rem;
 
-      mat-icon {
-        font-size: 1.2rem;
-      }
-    }
-  }
 
-  // ===============================
-  // RESULTS SECTION
-  // ===============================
-  .total-items {
-    color: $text-secondary;
-    font-size: 0.95rem;
-    margin-left: auto;
-  }
-
-  .table-container {
-    overflow-x: auto;
-    margin-top: $spacing-lg;
-    border-radius: $border-radius;
-    box-shadow: $shadow-light;
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-
-      th {
-        background: linear-gradient(135deg, $primary-color, $secondary-color);
-        color: $white;
-        padding: $spacing-md $spacing-lg;
-        text-align: left;
-        font-weight: 600;
-        position: relative;
-      }
-
-      td {
-        padding: $spacing-md $spacing-lg;
-        border-bottom: 1px solid $border-color;
-        vertical-align: middle;
-      }
-
-      tr:hover {
-        background: $hover-bg;
-      }
-    }
-
-    mat-paginator {
-      margin-top: $spacing-lg;
-      border-radius: 0 0 $border-radius $border-radius;
-      background: $background-secondary;
-    }
-  }
-
-  .user-cell {
-    display: flex;
-    flex-direction: column;
-    gap: $spacing-xs;
-
-    mat-icon {
-      font-size: 1.2rem;
-      height: 1.2rem;
-      width: 1.2rem;
-      margin-right: $spacing-sm;
-      color: $primary-color;
-    }
-
-    .user-email {
-      font-size: 0.85rem;
-      color: $text-secondary;
-      margin-left: calc(1.2rem + #{$spacing-sm});
-    }
-  }
-
-  .action-badge {
-    display: inline-block;
-    padding: $spacing-xs $spacing-sm;
-    border-radius: $border-radius-sm;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: $white;
-    box-shadow: $shadow-light;
-
-    &.create {
-      background: linear-gradient(45deg, $success-color, $success-dark);
-    }
-
-    &.update {
-      background: linear-gradient(45deg, $tertiary-color, color.adjust($tertiary-color, $lightness: -10%));
-    }
-
-    &.delete {
-      background: linear-gradient(45deg, $error-color, color.adjust($error-color, $lightness: -10%));
-    }
-  }
-
-  // ===============================
-  // ANIMATIONS
-  // ===============================
-  @keyframes slideInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  @keyframes slideInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  // ===============================
-  // RESPONSIVE DESIGN
-  // ===============================
-  @media (max-width: 992px) {
-    .search-fields {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (max-width: 768px) {
-    padding: $spacing-md;
-
-    .search-card, .results-card {
-      border-radius: $border-radius;
-
-      mat-card-content {
-        padding: $spacing-lg;
-      }
-    }
-
-    .search-fields {
-      grid-template-columns: 1fr;
-    }
-
-    .search-actions {
-      flex-direction: column;
-
-      button {
-        width: 100%;
-      }
-    }
-
-    .table-container {
-      table {
-        display: block;
-
-        thead {
-          display: none;
-        }
-
-        tbody, tr, td {
-          display: block;
-          width: 100%;
-        }
-
-        tr {
-          padding: $spacing-md;
-          border-bottom: 1px solid $border-color;
-        }
-
-        td {
-          padding: $spacing-xs 0;
-          border: none;
-
-          &:before {
-            content: attr(data-label) ': ';
-            font-weight: 600;
+          i {
+            font-size: 0.95rem;
             color: $primary-color;
-            display: inline-block;
-            width: 120px;
+          }
+        }
+
+        .form-control {
+          width: 95%;
+          padding: $spacing-md;
+          border: 1px solid $border-color;
+          border-radius: $border-radius;
+          font-size: 0.95rem;
+          transition: all 0.3s ease;
+          background: $white;
+
+          &:focus {
+            outline: none;
+            border-color: $primary-color;
+            box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+          }
+
+          &::placeholder {
+            color: $text-muted;
+          }
+        }
+
+        select.form-control {
+          cursor: pointer;
+          background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%234361ee' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e");
+          background-repeat: no-repeat;
+          background-position: right $spacing-md center;
+          background-size: 12px;
+          padding-right: $spacing-xxl;
+        }
+      }
+
+      .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-md;
+        padding-top: $spacing-lg;
+        border-top: 1px solid $border-color;
+
+        @media (max-width: 768px) {
+          flex-direction: column;
+        }
+
+        .btn {
+          padding: $spacing-md $spacing-lg;
+          border: none;
+          border-radius: $border-radius;
+          font-weight: 600;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          min-width: 140px;
+          justify-content: center;
+
+          &.btn-cancel {
+            background: $background-secondary;
+            color: $text-dark;
+            border: 1px solid $border-color;
+
+            &:hover {
+              background: color.adjust($background-secondary, $lightness: -5%);
+            }
+          }
+
+          &.btn-submit {
+            background: $primary-color;
+            color: $white;
+
+            &:hover:not(:disabled) {
+              background: color.adjust($primary-color, $lightness: -10%);
+            }
+
+            &:disabled {
+              opacity: 0.6;
+              cursor: not-allowed;
+            }
+
+            .loading {
+              display: flex;
+              align-items: center;
+              gap: $spacing-sm;
+
+              .spin {
+                animation: spin 1s linear infinite;
+              }
+            }
           }
         }
       }
     }
   }
 
-  @media (max-width: 480px) {
-    padding: $spacing-sm;
+  // ===============================
+  // USERS SECTION (RESULTS)
+  // ===============================
+  .users-section {
+    .section-header {
+      margin-bottom: $spacing-xl;
 
-    .header {
-      h2 {
+      .section-title {
         font-size: 1.5rem;
+        font-weight: 700;
+        color: $text-dark;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: $spacing-md;
+
+        i {
+          color: $primary-color;
+        }
+
+        .users-count {
+          background: $background-secondary;
+          color: $text-dark;
+          padding: $spacing-xs $spacing-md;
+          border-radius: $border-radius-large;
+          font-size: 0.85rem;
+          font-weight: 500;
+        }
       }
     }
 
-    .search-card, .results-card {
-      mat-card-header {
-        padding: $spacing-md;
+    .loading-state {
+      text-align: center;
+      padding: $spacing-xxl;
+      color: $text-secondary;
+
+      .loading-spinner {
+        font-size: 2.5rem;
+        color: $primary-color;
+        margin-bottom: $spacing-md;
+
+        .spin {
+          animation: spin 1s linear infinite;
+        }
+      }
+    }
+
+    .users-table-container {
+      background: $white;
+      border-radius: $border-radius-large;
+      box-shadow: $shadow-medium;
+      overflow: hidden;
+      border: 1px solid $border-color;
+
+      .table-wrapper {
+        overflow-x: auto;
       }
 
-      mat-card-content {
-        padding: $spacing-md;
+      .users-table {
+        width: 100%;
+        border-collapse: collapse;
+
+        thead {
+          background: $background-secondary;
+          color: $text-dark;
+
+          th {
+            padding: $spacing-md $spacing-lg;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            position: relative;
+            border-bottom: 1px solid $border-color;
+
+            i {
+              margin-right: $spacing-sm;
+              color: $primary-color;
+            }
+          }
+        }
+
+        tbody {
+          .user-row {
+            border-bottom: 1px solid $border-color;
+            transition: all 0.3s ease;
+
+            &:hover {
+              background: $hover-bg;
+            }
+
+            &:last-child {
+              border-bottom: none;
+            }
+
+            td {
+              padding: $spacing-md $spacing-lg;
+              vertical-align: middle;
+            }
+
+            .timestamp-info {
+              font-size: 0.9rem;
+              color: $text-dark;
+              font-weight: 500;
+            }
+
+            .user-info {
+              display: flex;
+              align-items: center;
+              gap: $spacing-md;
+
+              .user-avatar {
+                i {
+                  font-size: 2.2rem;
+                  color: $primary-color;
+                }
+              }
+
+              .user-details {
+                .user-name {
+                  font-weight: 600;
+                  font-size: 0.95rem;
+                  color: $text-dark;
+                  margin-bottom: $spacing-xs;
+                }
+
+                .user-email {
+                  font-size: 0.8rem;
+                  color: $text-secondary;
+                }
+              }
+            }
+
+            .action-info {
+              .action-badge {
+                display: inline-flex;
+                align-items: center;
+                gap: $spacing-sm;
+                padding: $spacing-xs $spacing-md;
+                border-radius: $border-radius;
+                font-size: 0.8rem;
+                font-weight: 600;
+
+                i {
+                  font-size: 0.9rem;
+                }
+
+                &.badge-create {
+                  background: rgba($success-color, 0.1);
+                  color: $success-dark;
+                  border: 1px solid rgba($success-color, 0.3);
+                }
+
+                &.badge-update {
+                  background: rgba($tertiary-color, 0.1);
+                  color: $tertiary-color;
+                  border: 1px solid rgba($tertiary-color, 0.3);
+                }
+
+                &.badge-delete {
+                  background: rgba($error-color, 0.1);
+                  color: $error-color;
+                  border: 1px solid rgba($error-color, 0.3);
+                }
+              }
+            }
+
+            .module-info {
+              font-size: 0.9rem;
+              color: $text-dark;
+            }
+          }
+        }
       }
+
+      .pagination-container {
+        padding: $spacing-md;
+        background: $background-secondary;
+        border-top: 1px solid $border-color;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: $spacing-xxl;
+        color: $text-secondary;
+
+        .empty-icon {
+          font-size: 3.5rem;
+          color: $border-color;
+          margin-bottom: $spacing-lg;
+        }
+
+        h3 {
+          color: $text-dark;
+          margin-bottom: $spacing-md;
+          font-size: 1.3rem;
+        }
+
+        p {
+          margin-bottom: $spacing-xl;
+          font-size: 1rem;
+        }
+
+        .btn-add-first {
+          background: $primary-color;
+          color: $white;
+          border: none;
+          padding: $spacing-md $spacing-lg;
+          border-radius: $border-radius;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: $spacing-sm;
+
+          &:hover {
+            background: color.adjust($primary-color, $lightness: -10%);
+            transform: translateY(-2px);
+            box-shadow: $shadow-medium;
+          }
+        }
+      }
+    }
+  }
+}
+
+// ===============================
+// ANIMATIONS
+// ===============================
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// ===============================
+// RESPONSIVE DESIGN
+// ===============================
+@media (max-width: 1200px) {
+  .audit-container {
+    padding: $spacing-lg;
+
+    .form-card .card-body {
+      padding: $spacing-lg;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .audit-container {
+    .page-header {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .title-section .page-title {
+        justify-content: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .audit-container {
+    padding: $spacing-md;
+
+    .page-header {
+      padding: $spacing-lg;
+      border-radius: $border-radius;
+
+      .title-section .page-title {
+        font-size: 1.6rem;
+      }
+    }
+
+    .form-card {
+      border-radius: $border-radius;
+
+      .card-body {
+        padding: $spacing-lg;
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+          flex-direction: column;
+
+          .btn {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .users-table-container {
+      border-radius: $border-radius;
+
+      .users-table {
+        thead {
+          display: none;
+        }
+
+        tbody {
+          .user-row {
+            display: block;
+            padding: $spacing-lg;
+            border-bottom: 1px solid $border-color;
+
+            td {
+              display: block;
+              padding: $spacing-sm 0;
+
+              &:before {
+                content: attr(data-label) ': ';
+                font-weight: 600;
+                color: $primary-color;
+                display: inline-block;
+                width: 120px;
+              }
+
+              &.user-info {
+                &:before {
+                  display: none;
+                }
+                padding-bottom: $spacing-md;
+                margin-bottom: $spacing-sm;
+                border-bottom: 1px solid $border-color;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .audit-container {
+    padding: $spacing-sm;
+
+    .page-header {
+      padding: $spacing-md;
+
+      .title-section .page-title {
+        font-size: 1.4rem;
+      }
+    }
+
+    .form-card .card-body {
+      padding: $spacing-md;
     }
   }
 }

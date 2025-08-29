@@ -707,59 +707,281 @@ $spacing-xxl: 3rem;
   }
 }
 
-// Styles pour le chatbot
-.chatbot-toggle-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4361ee, #3a0ca3);
-  color: white;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  box-shadow: 0 4px 20px rgba(67, 97, 238, 0.3);
-  z-index: 1000;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
-  &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 25px rgba(67, 97, 238, 0.4);
+// Section Alertes Anomalies - Version améliorée
+.anomalies-section {
+  margin-bottom: $spacing-xxl;
+
+  .section-header {
+    text-align: center;
+    margin-bottom: $spacing-xl;
+
+    .section-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0 0 $spacing-sm 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: $spacing-sm;
+    }
+
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: $text-secondary;
+      margin: 0;
+    }
   }
 
-  &.active {
-    background: linear-gradient(135deg, #f72585, #b5179e);
+  .anomaly-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: $spacing-lg;
+    margin-bottom: $spacing-xl;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      gap: $spacing-md;
+    }
+  }
+
+  .anomaly-card {
+    background: $background-card;
+    border-radius: $border-radius-large;
+    padding: $spacing-xl;
+    box-shadow: $shadow-medium;
+    border: 1px solid $border-color;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, $warning-color, color.adjust($warning-color, $lightness: 10%));
+      transition: all 0.3s ease;
+    }
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: $shadow-heavy;
+
+      &::before {
+        height: 6px;
+      }
+    }
+
+    &.critical {
+      &::before {
+        background: linear-gradient(90deg, $error-color, color.adjust($error-color, $lightness: 10%));
+      }
+
+      .anomaly-icon .icon-wrapper {
+        background: linear-gradient(135deg, rgba($error-color, 0.15), rgba($error-color, 0.25));
+        border-color: rgba($error-color, 0.3);
+      }
+    }
+
+    .anomaly-icon {
+      flex-shrink: 0;
+
+      .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        background: linear-gradient(135deg, rgba($warning-color, 0.15), rgba($warning-color, 0.25));
+        border: 2px solid rgba($warning-color, 0.2);
+
+        &.clock {
+          background: linear-gradient(135deg, rgba($info-color, 0.15), rgba($info-color, 0.25));
+          border-color: rgba($info-color, 0.2);
+        }
+
+        &.manage {
+          background: linear-gradient(135deg, rgba($primary-color, 0.15), rgba($primary-color, 0.25));
+          border-color: rgba($primary-color, 0.2);
+        }
+
+        &.info {
+          background: linear-gradient(135deg, rgba($accent-color, 0.15), rgba($accent-color, 0.25));
+          border-color: rgba($accent-color, 0.2);
+        }
+      }
+    }
+
+    .anomaly-content {
+      flex: 1;
+
+      .anomaly-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: $text-primary;
+        margin: 0 0 $spacing-xs 0;
+      }
+
+      .anomaly-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: $text-primary;
+        margin: 0 0 $spacing-xs 0;
+        line-height: 1;
+      }
+
+      .anomaly-subtext {
+        font-size: 0.9rem;
+        color: $text-secondary;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+
+    .anomaly-trend {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: $spacing-xs;
+
+      .trend-indicator {
+        font-size: 1.2rem;
+
+        &.positive {
+          color: $success-color;
+        }
+
+        &.negative {
+          color: $error-color;
+        }
+      }
+
+      .trend-text {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .anomaly-status {
+      padding: $spacing-xs $spacing-sm;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba($success-color, 0.1);
+      color: $success-color;
+
+      &.scan-due {
+        background: rgba($warning-color, 0.1);
+        color: $warning-color;
+      }
+    }
+
+    &.action-card {
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+
+      &:hover {
+        .action-arrow {
+          transform: translateX(4px);
+        }
+      }
+
+      .action-arrow {
+        font-size: 1.5rem;
+        color: $primary-color;
+        transition: transform 0.3s ease;
+      }
+    }
+
+    &.info-card {
+      &::before {
+        background: linear-gradient(90deg, $accent-color, color.adjust($accent-color, $lightness: 10%));
+      }
+    }
+  }
+
+  .anomaly-summary {
+    background: $background-card;
+    border-radius: $border-radius-large;
+    padding: $spacing-xl;
+    box-shadow: $shadow-medium;
+    border: 1px solid $border-color;
+
+    .summary-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: $text-primary;
+      margin: 0 0 $spacing-lg 0;
+      text-align: center;
+    }
+
+    .summary-chart {
+      .chart-bars {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        gap: $spacing-md;
+        height: 200px;
+        padding: $spacing-lg 0;
+
+        .chart-bar-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: $spacing-sm;
+          flex: 1;
+
+          .chart-bar {
+            width: 100%;
+            background: linear-gradient(to top, $primary-color, $secondary-color);
+            border-radius: 6px 6px 0 0;
+            min-height: 20px;
+            position: relative;
+            transition: height 0.5s ease;
+
+            .bar-value {
+              position: absolute;
+              top: -25px;
+              left: 50%;
+              transform: translateX(-50%);
+              font-size: 0.8rem;
+              font-weight: 600;
+              color: $text-primary;
+              background: $white;
+              padding: 2px 6px;
+              border-radius: 10px;
+              box-shadow: $shadow-light;
+            }
+          }
+
+          .bar-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: $text-secondary;
+            text-align: center;
+            writing-mode: horizontal-tb;
+            max-width: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+    }
   }
 }
 
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background: #ff4757;
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
 
-.chatbot-widget {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
-  z-index: 999;
-  width: 350px;
-  height: 500px;
-  border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-}

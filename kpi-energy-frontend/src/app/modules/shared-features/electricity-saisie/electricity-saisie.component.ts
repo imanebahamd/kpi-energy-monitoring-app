@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { ElectricityService } from './electricity.service';
-import {Router, RouterLink, RouterModule} from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import {CommonModule, DecimalPipe, NgClass} from '@angular/common';
 import { AnomalyService } from '../../../core/services/anomaly.service';
+import { Router, RouterLink, RouterModule, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-electricity-saisie',
@@ -28,6 +28,7 @@ export class ElectricitySaisieComponent implements OnInit {
   calculated60kvPowerFactor: number | null = null;
   calculated22kvPowerFactor: number | null = null;
   totalActiveEnergy: number | null = null;
+  isEditing = false;
 
   months = [
     {value: 1, name: 'Janvier'}, {value: 2, name: 'Février'},
@@ -42,6 +43,7 @@ export class ElectricitySaisieComponent implements OnInit {
     private fb: FormBuilder,
     private electricityService: ElectricityService,
     private router: Router,
+    private route: ActivatedRoute,
     private authService: AuthService,
     private anomalyService: AnomalyService
   ) {
@@ -59,7 +61,48 @@ export class ElectricitySaisieComponent implements OnInit {
 
   ngOnInit(): void {
     this.setupCalculations();
+    this.checkEditMode();
   }
+
+  checkEditMode(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['year'] && params['month']) {
+        this.isEditing = true;
+        const year = +params['year'];
+        const month = +params['month'];
+
+        // Chargez les données existantes
+        this.loadExistingData(year, month);
+      }
+    });
+  }
+
+  loadExistingData(year: number, month: number): void {
+    this.isLoading = true;
+    this.electricityService.getMonthlyDataForEdit(year, month).subscribe({
+      next: (data) => {
+        // Pré-remplissez le formulaire avec les données existantes
+        this.electricityForm.patchValue({
+          year: data.year,
+          month: data.month,
+          network60kvActiveEnergy: data.network60kvActiveEnergy,
+          network60kvReactiveEnergy: data.network60kvReactiveEnergy,
+          network60kvPeak: data.network60kvPeak,
+          network22kvActiveEnergy: data.network22kvActiveEnergy,
+          network22kvReactiveEnergy: data.network22kvReactiveEnergy,
+          network22kvPeak: data.network22kvPeak
+        });
+        this.isLoading = false;
+        this.showAlertMessage('Données chargées pour modification', 'success');
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.showAlertMessage('Erreur lors du chargement des données', 'error');
+        console.error('Erreur chargement données:', err);
+      }
+    });
+  }
+
 
   setupCalculations(): void {
     this.electricityForm.valueChanges.subscribe(() => {
@@ -149,22 +192,36 @@ export class ElectricitySaisieComponent implements OnInit {
       return;
     }
 
-    if (this.electricityForm.invalid) {
-      this.showAlertMessage('Veuillez corriger les erreurs dans le formulaire', 'error');
-      return;
-    }
-
     this.isLoading = true;
-    this.showAlertMessage('Enregistrement en cours...', 'info');
+    const message = this.isEditing ? 'Mise à jour en cours...' : 'Enregistrement en cours...';
+    this.showAlertMessage(message, 'info');
 
     const formData = this.electricityForm.value;
-    this.electricityService.saveElectricityData(formData).subscribe({
+
+    const observable = this.isEditing
+      ? this.electricityService.updateElectricityData(formData) // Vous devrez créer cette méthode
+      : this.electricityService.saveElectricityData(formData);
+
+    observable.subscribe({
       next: () => {
-        this.showAlertMessage('Données enregistrées avec succès', 'success');
+        const successMessage = this.isEditing
+          ? 'Données mises à jour avec succès'
+          : 'Données enregistrées avec succès';
+        this.showAlertMessage(successMessage, 'success');
         this.isLoading = false;
+
+        // Redirigez après succès si nécessaire
+        if (this.isEditing) {
+          setTimeout(() => {
+            this.router.navigate([this.getRoutePrefix(), 'electricity-monthly']);
+          }, 2000);
+        }
       },
       error: (err) => {
-        this.showAlertMessage('Erreur lors de l\'enregistrement', 'error');
+        const errorMessage = this.isEditing
+          ? 'Erreur lors de la mise à jour'
+          : 'Erreur lors de l\'enregistrement';
+        this.showAlertMessage(errorMessage, 'error');
         this.isLoading = false;
       }
     });

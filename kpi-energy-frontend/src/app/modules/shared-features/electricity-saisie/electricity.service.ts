@@ -82,7 +82,16 @@ export class ElectricityService {
     return this.http.delete<void>(`${this.apiUrl}/${year}/${month}`);
   }
 
+
   getMonthlyDataForEdit(year: number, month: number): Observable<ElectricityDataDto> {
-    return this.http.get<ElectricityDataDto>(`${this.apiUrl}/${year}/${month}/edit`);
+    return this.http.get<ElectricityDataDto>(`${this.apiUrl}/${year}/${month}/edit`, {
+      headers: this.getHeaders() // Ajoutez les headers d'authentification
+    });
+  }
+
+  updateElectricityData(data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${data.year}/${data.month}`, data, {
+      headers: this.getHeaders()
+    });
   }
 }

@@ -1,118 +1,191 @@
 <div class="audit-container">
-  <div class="header">
-    <h2>Journal des Activités</h2>
-    <p>Historique complet des actions effectuées sur le système</p>
+  <!-- En-tête avec titre -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <i class="bi bi-journal"></i>
+          Journal des Activités
+        </h1>
+        <p class="page-subtitle">Historique complet des actions effectuées sur le système</p>
+      </div>
+    </div>
   </div>
 
-  <mat-card class="search-card">
-    <mat-card-header>
-      <mat-card-title>Filtres de recherche</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
+  <!-- Messages d'alerte -->
+  <div class="alerts-container">
+    <div *ngIf="errorMessage" class="alert alert-error">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      <span>{{ errorMessage }}</span>
+      <button class="alert-close" (click)="errorMessage = null">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="bi bi-check-circle-fill"></i>
+      <span>{{ successMessage }}</span>
+      <button class="alert-close" (click)="successMessage = null">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Carte de recherche -->
+  <div class="form-card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="bi bi-funnel"></i>
+        Filtres de recherche
+      </h3>
+    </div>
+
+    <div class="card-body">
       <form [formGroup]="searchForm" (submit)="onSearch()">
-        <div class="search-fields">
-          <mat-form-field appearance="outline">
-            <mat-label>Type d'action</mat-label>
-            <mat-select formControlName="action">
-              <mat-option value="">Tous les types</mat-option>
-              <mat-option *ngFor="let action of actionTypes" [value]="action">
+        <div class="form-grid">
+          <!-- Type d'action -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-gear"></i>
+              Type d'action
+            </label>
+            <select class="form-control" formControlName="action">
+              <option value="">Tous les types</option>
+              <option *ngFor="let action of actionTypes" [value]="action">
                 {{ getActionLabel(action) }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              </option>
+            </select>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Table concernée</mat-label>
-            <mat-select formControlName="tableName">
-              <mat-option value="">Toutes les tables</mat-option>
-              <mat-option *ngFor="let table of tableNames" [value]="table">
+          <!-- Table concernée -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-table"></i>
+              Table concernée
+            </label>
+            <select class="form-control" formControlName="tableName">
+              <option value="">Toutes les tables</option>
+              <option *ngFor="let table of tableNames" [value]="table">
                 {{ table }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              </option>
+            </select>
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Email utilisateur</mat-label>
-            <input matInput formControlName="userEmail" placeholder="Filtrer par utilisateur">
-          </mat-form-field>
+          <!-- Email utilisateur -->
+          <div class="form-group">
+            <label class="form-label">
+              <i class="bi bi-envelope"></i>
+              Email utilisateur
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="userEmail"
+              placeholder="Filtrer par utilisateur">
+          </div>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Date de début</mat-label>
-            <input matInput [matDatepicker]="startPicker" formControlName="startDate">
-            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-            <mat-datepicker #startPicker></mat-datepicker>
-          </mat-form-field>
 
-          <mat-form-field appearance="outline">
-            <mat-label>Date de fin</mat-label>
-            <input matInput [matDatepicker]="endPicker" formControlName="endDate">
-            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-            <mat-datepicker #endPicker></mat-datepicker>
-          </mat-form-field>
         </div>
 
-        <div class="search-actions">
-          <button mat-raised-button color="primary" type="submit" [disabled]="isLoading">
-            <mat-icon>search</mat-icon> Rechercher
+        <!-- Boutons d'action -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-cancel" (click)="onReset()" [disabled]="isLoading">
+            <i class="bi bi-arrow-repeat"></i>
+            Réinitialiser
           </button>
-          <button mat-button type="button" (click)="onReset()" [disabled]="isLoading">
-            <mat-icon>refresh</mat-icon> Réinitialiser
+          <button type="submit" class="btn btn-submit" [disabled]="isLoading">
+            <i class="bi bi-search"></i>
+            <span *ngIf="!isLoading">Rechercher</span>
+            <span *ngIf="isLoading" class="loading">
+              <i class="bi bi-arrow-repeat spin"></i>
+              Recherche...
+            </span>
           </button>
         </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+  </div>
 
-  <mat-card class="results-card">
-    <mat-card-header>
-      <mat-card-title>Résultats</mat-card-title>
-      <span class="total-items">{{ totalItems }} activité(s) trouvée(s)</span>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="table-container">
-        <table mat-table [dataSource]="logs" class="mat-elevation-z1">
-          <!-- Date/Heure Column -->
-          <ng-container matColumnDef="timestamp">
-            <th mat-header-cell *matHeaderCellDef>Date/Heure</th>
-            <td mat-cell *matCellDef="let log">
+  <!-- Section des résultats -->
+  <div class="users-section">
+    <div class="section-header">
+      <h3 class="section-title">
+        <i class="bi bi-list-ul"></i>
+        Résultats
+        <span class="users-count">({{ totalItems }})</span>
+      </h3>
+    </div>
+
+    <!-- Loading state -->
+    <div *ngIf="isLoading && logs.length === 0" class="loading-state">
+      <div class="loading-spinner">
+        <i class="bi bi-arrow-repeat spin"></i>
+      </div>
+      <p>Chargement des activités...</p>
+    </div>
+
+    <!-- Table des résultats -->
+    <div *ngIf="!isLoading || logs.length > 0" class="users-table-container">
+      <div class="table-wrapper">
+        <table class="users-table">
+          <thead>
+          <tr>
+            <th class="col-date">
+              <i class="bi bi-clock"></i>
+              Date/Heure
+            </th>
+            <th class="col-user">
+              <i class="bi bi-person"></i>
+              Utilisateur
+            </th>
+            <th class="col-action">
+              <i class="bi bi-activity"></i>
+              Action
+            </th>
+            <th class="col-module">
+              <i class="bi bi-grid"></i>
+              Module
+            </th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let log of logs; trackBy: trackByLogId" class="user-row">
+            <td class="timestamp-info">
               {{ log.actionTimestamp | date:'dd/MM/yyyy HH:mm' }}
             </td>
-          </ng-container>
-
-          <!-- Utilisateur Column -->
-          <ng-container matColumnDef="user">
-            <th mat-header-cell *matHeaderCellDef>Utilisateur</th>
-            <td mat-cell *matCellDef="let log">
-              <div class="user-cell">
-                <mat-icon>person</mat-icon>
-                <span>{{ log.user.nomComplet }}</span>
+            <td class="user-info">
+              <div class="user-avatar">
+                <i class="bi bi-person-circle"></i>
+              </div>
+              <div class="user-details">
+                <div class="user-name">{{ log.user.nomComplet }}</div>
                 <div class="user-email">{{ log.user.email }}</div>
               </div>
             </td>
-          </ng-container>
-
-          <!-- Action Column -->
-          <ng-container matColumnDef="action">
-            <th mat-header-cell *matHeaderCellDef>Action</th>
-            <td mat-cell *matCellDef="let log">
-              <span class="action-badge" [class.create]="log.action === 'CREATE'"
-                    [class.update]="log.action === 'UPDATE'"
-                    [class.delete]="log.action === 'DELETE'">
-                {{ getActionLabel(log.action) }}
-              </span>
+            <td class="action-info">
+                <span class="action-badge" [ngClass]="{
+                  'badge-create': log.action === 'CREATE',
+                  'badge-update': log.action === 'UPDATE',
+                  'badge-delete': log.action === 'DELETE'
+                }">
+                  <i class="bi" [ngClass]="{
+                    'bi-plus-circle': log.action === 'CREATE',
+                    'bi-pencil': log.action === 'UPDATE',
+                    'bi-trash': log.action === 'DELETE'
+                  }"></i>
+                  {{ getActionLabel(log.action) }}
+                </span>
             </td>
-          </ng-container>
-
-          <!-- Table Column -->
-          <ng-container matColumnDef="table">
-            <th mat-header-cell *matHeaderCellDef>Module</th>
-            <td mat-cell *matCellDef="let log">{{ getTableLabel(log.tableName) }}</td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            <td class="module-info">
+              {{ getTableLabel(log.tableName) }}
+            </td>
+          </tr>
+          </tbody>
         </table>
+      </div>
 
+      <!-- Pagination -->
+      <div class="pagination-container">
         <mat-paginator [length]="totalItems"
                        [pageSize]="pageSize"
                        [pageIndex]="currentPage"
@@ -120,6 +193,19 @@
                        (page)="onPageChange($event)">
         </mat-paginator>
       </div>
-    </mat-card-content>
-  </mat-card>
+
+      <!-- Message si aucun résultat -->
+      <div *ngIf="logs.length === 0 && !isLoading" class="empty-state">
+        <div class="empty-icon">
+          <i class="bi bi-journal"></i>
+        </div>
+        <h3>Aucune activité trouvée</h3>
+        <p>Aucune activité ne correspond à vos critères de recherche</p>
+        <button class="btn-add-first" (click)="onReset()">
+          <i class="bi bi-arrow-repeat"></i>
+          Réinitialiser la recherche
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

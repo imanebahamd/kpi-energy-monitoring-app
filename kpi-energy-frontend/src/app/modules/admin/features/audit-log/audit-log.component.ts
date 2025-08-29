@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AuditLogService } from './audit-log.service';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { DatePipe, NgForOf, NgIf } from '@angular/common';
+import {DatePipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -33,7 +32,9 @@ import { provideNativeDateAdapter } from '@angular/material/core';
     MatInputModule,
     MatSelectModule,
     MatDatepickerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgClass,
+    NgIf
   ],
   providers: [provideNativeDateAdapter()]
 })
@@ -44,6 +45,10 @@ export class AuditLogComponent implements OnInit {
   pageSize = 10;
   currentPage = 0;
   isLoading = false;
+
+  // Propriétés manquantes pour corriger les erreurs
+  errorMessage: string | null = null;
+  successMessage: string | null = null;
 
   actionTypes = ['CREATE', 'UPDATE', 'DELETE'];
   tableNames = ['Données Électriques', 'Données Eau (Production)'];
@@ -89,6 +94,7 @@ export class AuditLogComponent implements OnInit {
       },
       error: (err) => {
         console.error('Erreur lors du chargement des logs:', err);
+        this.errorMessage = 'Erreur lors du chargement des activités';
         this.isLoading = false;
       }
     });
@@ -123,8 +129,13 @@ export class AuditLogComponent implements OnInit {
   getTableLabel(tableName: string): string {
     const tables: {[key: string]: string} = {
       'electricity_data': 'Données Électriques',
-      'water_data': 'Données Eau '
+      'water_data': 'Données Eau'
     };
     return tables[tableName] || tableName;
+  }
+
+  // Fonction trackBy manquante
+  trackByLogId(index: number, log: any): any {
+    return log.id || index;
   }
 }

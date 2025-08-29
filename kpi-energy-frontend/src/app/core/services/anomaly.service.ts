@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TokenStorageService } from './token-storage.service';
+import { map } from 'rxjs/operators';
 
 export interface Anomaly {
   id: number;
@@ -16,12 +17,17 @@ export interface Anomaly {
   resolved: boolean;
   resolvedAt?: string;
   resolvedBy?: string;
+  resolutionNotes?: string;
 }
 
 export interface AnomalyStats {
   total_active_anomalies: number;
   critical_anomalies: number;
-  last_detection: string;
+  last_detection: string | null;
+  trend?: string;
+  most_common_type?: string;
+  most_common_type_count?: number;
+  anomalies_by_type?: { [key: string]: number };
 }
 
 @Injectable({
@@ -57,7 +63,12 @@ export class AnomalyService {
   getStats(): Observable<AnomalyStats> {
     return this.http.get<AnomalyStats>(`${this.apiUrl}/stats`, {
       headers: this.getHeaders()
-    });
+    }).pipe(
+      map(stats => ({
+        ...stats,
+        last_detection: stats.last_detection === 'Aucune' ? null : stats.last_detection
+      }))
+    );
   }
 
   resolveAnomaly(id: number, resolvedBy: string, notes: string): Observable<void> {

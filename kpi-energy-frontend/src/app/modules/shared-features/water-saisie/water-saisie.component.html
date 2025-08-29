@@ -23,7 +23,7 @@
     </div>
 
     <!-- Conteneur du formulaire -->
-    <div *ngIf="!isLoading" class="form-container" [ngClass]="{'visible': isFormVisible}">
+    <div *ngIf="!isLoading" class="form-container">
       <form [formGroup]="waterForm" (ngSubmit)="onSubmit()">
 
         <!-- Sélecteur de date -->
@@ -33,7 +33,7 @@
             <h4>Période de saisie</h4>
           </div>
 
-          <div class="date-fields-row">
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">Année</label>
               <input type="number"
@@ -64,15 +64,21 @@
         </div>
 
         <!-- Données de production -->
-        <div class="data-card">
+        <div class="network-card water-data-card">
           <div class="card-header">
             <div class="header-content">
               <h3>Données de production d'eau</h3>
             </div>
+            <button type="button"
+                    class="reset-btn"
+                    (click)="resetWaterData()"
+                    title="Réinitialiser les données d'eau">
+              Réinitialiser
+            </button>
           </div>
 
           <div class="card-body">
-            <div class="inputs-grid">
+            <div class="form-row">
               <div class="form-group">
                 <label class="form-label">F3BIS (m³)</label>
                 <input type="number"
@@ -136,6 +142,29 @@
           </div>
         </div>
 
+        <!-- Carte de synthèse totale -->
+        <div class="network-card total-card">
+          <div class="card-header">
+            <div class="header-content">
+              <h3>Synthèse de la Production d'Eau</h3>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="metrics-grid">
+              <div class="metric-card" [ngClass]="totalProductionClass">
+                <div class="metric-label">
+                  Production totale d'eau
+                </div>
+                <div class="metric-value">
+                  {{ totalProduction | number:'1.2-2' }}
+                  <span class="metric-unit">m³</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Boutons d'action -->
         <div class="action-buttons">
           <div class="primary-actions">
@@ -158,20 +187,42 @@
               Réinitialiser
             </button>
           </div>
-
-          <div class="secondary-actions">
-            <a [routerLink]="getRoutePrefix() + '/water-monthly'" class="btn btn-outline-info">
-              Tableau Mensuel
-            </a>
-            <a [routerLink]="getRoutePrefix() + '/water-annual'" class="btn btn-outline-info">
-              Tableau Annuel
-            </a>
-            <a [routerLink]="getRoutePrefix() + '/water-graphs'" class="btn btn-outline-info">
-              Visualisations
-            </a>
-          </div>
         </div>
       </form>
+    </div>
+
+    <!-- Liens de redirection en dehors du formulaire -->
+    <div class="actions-section" *ngIf="!isLoading">
+      <div class="actions-header">
+        <h3 class="actions-title">Navigation Rapide</h3>
+        <p class="actions-subtitle">Accédez aux autres sections du module eau</p>
+      </div>
+
+      <div class="actions-grid">
+        <a [routerLink]="getRoutePrefix() + '/water-monthly'" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Tableau Mensuel</h4>
+            <p class="action-description">Consulter les données mensuelles de production d'eau</p>
+          </div>
+        </a>
+
+        <a [routerLink]="getRoutePrefix() + '/water-annual'" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Tableau Annuel</h4>
+            <p class="action-description">Consulter les données annuelles de production d'eau</p>
+          </div>
+        </a>
+
+        <a [routerLink]="getRoutePrefix() + '/water-graphs'" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Visualisations</h4>
+            <p class="action-description">Analyser les graphiques de production d'eau</p>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 </div>

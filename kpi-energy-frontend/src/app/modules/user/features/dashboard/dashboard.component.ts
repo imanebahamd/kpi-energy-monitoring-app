@@ -1,249 +1,269 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NgChartsModule, BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartType } from 'chart.js';
 import { AnomalyService, AnomalyStats } from '../../../../core/services/anomaly.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { ElectricityService } from '../../../shared-features/electricity-saisie/electricity.service';
+import { WaterService } from '../../../shared-features/water-saisie/water.service';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="welcome-container">
-      <div class="welcome-card">
-        <div class="logo">⚡</div>
-        <h1 class="welcome-title">Bienvenue sur EnergyTracker</h1>
-        <p class="welcome-message">
-          Votre application de gestion et suivi des KPIs énergétiques
-        </p>
-
-        <!-- Section Alertes Anomalies pour les utilisateurs -->
-        <div class="anomalies-section" *ngIf="anomalyStats">
-          <div class="section-header">
-            <h3 class="section-title">🛡️ Surveillance des Anomalies</h3>
-            <p class="section-subtitle">Détection automatique des problèmes</p>
-          </div>
-
-          <div class="anomaly-cards">
-            <div class="anomaly-card" [class.critical]="anomalyStats.critical_anomalies > 0">
-              <div class="anomaly-icon">⚠️</div>
-              <div class="anomaly-content">
-                <h4 class="anomaly-title">Anomalies Actives</h4>
-                <div class="anomaly-value">{{ anomalyStats.total_active_anomalies }}</div>
-                <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies > 0">
-                  {{ anomalyStats.critical_anomalies }} critique(s)
-                </div>
-              </div>
-            </div>
-
-            <div class="anomaly-card">
-              <div class="anomaly-icon">🕒</div>
-              <div class="anomaly-content">
-                <h4 class="anomaly-title">Dernière Détection</h4>
-                <div class="anomaly-value">{{ anomalyStats.last_detection | date:'short' }}</div>
-                <div class="anomaly-subtext">Scan automatique quotidien</div>
-              </div>
-            </div>
-
-            <a routerLink="/user/anomalies" class="anomaly-card action-card">
-              <div class="anomaly-icon">📋</div>
-              <div class="anomaly-content">
-                <h4 class="anomaly-title">Voir les Anomalies</h4>
-                <div class="anomaly-subtext">Consulter le détail</div>
-              </div>
-            </a>
-          </div>
-        </div>
-
-        <div class="features">
-          <div class="feature-item">
-            <span class="feature-icon">📊</span>
-            <span>Suivi en temps réel</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">📈</span>
-            <span>Analyses détaillées</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">🔋</span>
-            <span>Optimisation énergétique</span>
-          </div>
-          <div class="feature-item">
-            <span class="feature-icon">🛡️</span>
-            <span>Détection d'anomalies</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .welcome-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 80vh;
-      padding: 2rem;
-      background: #fff;
-    }
-
-    .welcome-card {
-      max-width: 800px; /* Augmentez la largeur pour accommoder les nouvelles sections */
-      width: 100%;
-      text-align: center;
-      padding: 2.5rem;
-      background: #ffffff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.05);
-    }
-
-    .logo {
-      font-size: 3.5rem;
-      margin-bottom: 1.5rem;
-      color: #4361ee;
-    }
-
-    .welcome-title {
-      color: #2b2d42;
-      font-size: 2rem;
-      margin-bottom: 1rem;
-      font-weight: 600;
-    }
-
-    .welcome-message {
-      color: #6c757d;
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-      line-height: 1.6;
-    }
-
-    /* Styles pour la section anomalies */
-    .anomalies-section {
-      margin: 2rem 0;
-      padding: 1.5rem;
-      background: #f8f9fa;
-      border-radius: 8px;
-      border-left: 4px solid #4361ee;
-    }
-
-    .section-header {
-      margin-bottom: 1.5rem;
-    }
-
-    .section-title {
-      color: #2b2d42;
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .section-subtitle {
-      color: #6c757d;
-      font-size: 1rem;
-    }
-
-    .anomaly-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .anomaly-card {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-
-    .anomaly-card.critical {
-      border: 2px solid #dc3545;
-    }
-
-    .anomaly-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .anomaly-title {
-      font-size: 1rem;
-      margin-bottom: 0.5rem;
-      color: #2b2d42;
-    }
-
-    .anomaly-value {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #4361ee;
-    }
-
-    .anomaly-subtext {
-      font-size: 0.8rem;
-      color: #6c757d;
-    }
-
-    .action-card {
-      display: block;
-      text-decoration: none;
-      color: inherit;
-      transition: transform 0.2s;
-    }
-
-    .action-card:hover {
-      transform: translateY(-2px);
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .features {
-      display: flex;
-      justify-content: center;
-      gap: 2rem;
-      margin-top: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .feature-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 120px;
-    }
-
-    .feature-icon {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .welcome-card {
-        padding: 1.5rem;
-      }
-
-      .welcome-title {
-        font-size: 1.7rem;
-      }
-
-      .anomaly-cards {
-        grid-template-columns: 1fr;
-      }
-
-      .features {
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-    }
-  `]
+  imports: [CommonModule, NgChartsModule, RouterModule, FormsModule],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild('electricityChart') electricityChart?: BaseChartDirective;
+  @ViewChild('waterChart') waterChart?: BaseChartDirective;
+
+  selectedYear: number = 2022;
+  years: number[] = [];
+  electricityData: any[] = [];
+  waterData: any[] = [];
+  isLoading = true;
+  alertMessage = '';
+  alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
+  showAlert = false;
   anomalyStats: AnomalyStats | null = null;
 
+  // Configuration des graphiques électriques
+  public consumptionChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        callbacks: {
+          label: (context) => `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} kWh`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        ticks: {
+          font: {
+            size: 12
+          },
+          callback: function(value) {
+            return Number(value).toLocaleString('fr-FR') + ' kWh';
+          }
+        }
+      }
+    }
+  };
+
+  // Configuration des graphiques eau
+  public waterChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      intersect: false,
+      mode: 'index'
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        callbacks: {
+          label: (context) => `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} m³`
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: {
+            size: 12
+          }
+        }
+      },
+      y: {
+        beginAtZero: true,
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        ticks: {
+          font: {
+            size: 12
+          },
+          callback: function(value) {
+            return Number(value).toLocaleString('fr-FR') + ' m³';
+          }
+        }
+      }
+    }
+  };
+
+  public consumptionChartData: ChartConfiguration['data'] = {
+    labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    datasets: [
+      {
+        label: 'Réseau 60KV',
+        data: [],
+        backgroundColor: 'rgba(30, 144, 255, 0.1)',
+        borderColor: 'rgba(30, 144, 255, 1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true
+      },
+      {
+        label: 'Réseau 22KV',
+        data: [],
+        backgroundColor: 'rgba(138, 43, 226, 0.1)',
+        borderColor: 'rgba(138, 43, 226, 1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  };
+
+  public waterChartData: ChartConfiguration['data'] = {
+    labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+    datasets: [
+      {
+        label: 'Production Eau Totale',
+        data: [],
+        backgroundColor: 'rgba(32, 178, 170, 0.1)',
+        borderColor: 'rgba(32, 178, 170, 1)',
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  };
+
   constructor(
+    private electricityService: ElectricityService,
+    private waterService: WaterService,
+    public authService: AuthService,
     private anomalyService: AnomalyService,
-    public authService: AuthService
-  ) {}
+    private cdr: ChangeDetectorRef
+  ) {
+    this.initializeYears();
+  }
 
   ngOnInit(): void {
+    this.loadData();
     this.loadAnomalyStats();
+  }
+
+  private initializeYears(): void {
+    const currentYear = new Date().getFullYear();
+    this.years = [];
+    for (let year = currentYear; year >= 2014; year--) {
+      this.years.push(year);
+    }
+  }
+
+  onYearChange(): void {
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.isLoading = true;
+    this.showAlert = false;
+    this.resetChartData();
+
+    let electricityLoaded = false;
+    let waterLoaded = false;
+
+    const checkLoadingComplete = () => {
+      if (electricityLoaded && waterLoaded) {
+        this.isLoading = false;
+        this.updateChartsDisplay();
+      }
+    };
+
+    // Charger les données électriques
+    this.electricityService.getAnnualSummary(this.selectedYear).subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data) && data.length > 0) {
+          this.electricityData = data;
+          this.updateElectricityChart();
+          this.showAlertMessage(`Données électriques ${this.selectedYear} chargées avec succès`, 'success');
+        } else {
+          this.electricityData = [];
+          this.showAlertMessage(`Aucune donnée électrique disponible pour ${this.selectedYear}`, 'warning');
+        }
+        electricityLoaded = true;
+        checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Erreur données électriques:', err);
+        this.electricityData = [];
+        this.showAlertMessage('Erreur lors du chargement des données électriques', 'error');
+        electricityLoaded = true;
+        checkLoadingComplete();
+      }
+    });
+
+    // Charger les données eau
+    this.waterService.getMonthlyData(this.selectedYear).subscribe({
+      next: (data) => {
+        if (data && Array.isArray(data) && data.length > 0) {
+          this.waterData = data;
+          this.updateWaterChart();
+          if (!this.showAlert) {
+            this.showAlertMessage(`Données eau ${this.selectedYear} chargées avec succès`, 'success');
+          }
+        } else {
+          this.waterData = [];
+          this.showAlertMessage(`Aucune donnée eau disponible pour ${this.selectedYear}`, 'warning');
+        }
+        waterLoaded = true;
+        checkLoadingComplete();
+      },
+      error: (err) => {
+        console.error('Erreur données eau:', err);
+        this.waterData = [];
+        this.showAlertMessage('Erreur lors du chargement des données eau', 'error');
+        waterLoaded = true;
+        checkLoadingComplete();
+      }
+    });
   }
 
   private loadAnomalyStats(): void {
@@ -255,5 +275,136 @@ export class DashboardComponent implements OnInit {
         console.error('Erreur lors du chargement des statistiques d\'anomalies', err);
       }
     });
+  }
+
+  private resetChartData(): void {
+    this.consumptionChartData.datasets[0].data = Array(12).fill(0);
+    this.consumptionChartData.datasets[1].data = Array(12).fill(0);
+    this.waterChartData.datasets[0].data = Array(12).fill(0);
+  }
+
+  private updateElectricityChart(): void {
+    const newData = Array(12).fill(0);
+    const newData22 = Array(12).fill(0);
+
+    if (this.electricityData && this.electricityData.length > 0) {
+      this.electricityData.forEach((item: any) => {
+        if (item.month && item.month >= 1 && item.month <= 12) {
+          const monthIndex = item.month - 1;
+          newData[monthIndex] = Number(item.network60kvConsumption) || 0;
+          newData22[monthIndex] = Number(item.network22kvConsumption) || 0;
+        }
+      });
+    }
+
+    this.consumptionChartData.datasets[0].data = [...newData];
+    this.consumptionChartData.datasets[1].data = [...newData22];
+  }
+
+  private updateWaterChart(): void {
+    const newData = Array(12).fill(0);
+
+    if (this.waterData && this.waterData.length > 0) {
+      this.waterData.forEach((item: any) => {
+        if (item.month && item.month >= 1 && item.month <= 12) {
+          const monthIndex = item.month - 1;
+          newData[monthIndex] = Number(item.totalProduction) || 0;
+        }
+      });
+    }
+
+    this.waterChartData.datasets[0].data = [...newData];
+  }
+
+  private updateChartsDisplay(): void {
+    setTimeout(() => {
+      if (this.electricityChart?.chart) {
+        this.electricityChart.chart.update();
+      }
+      if (this.waterChart?.chart) {
+        this.waterChart.chart.update();
+      }
+      this.cdr.detectChanges();
+    }, 50);
+  }
+
+  private showAlertMessage(message: string, type: 'success' | 'error' | 'info' | 'warning'): void {
+    this.alertMessage = message;
+    this.alertType = type;
+    this.showAlert = true;
+    setTimeout(() => this.showAlert = false, 5000);
+  }
+
+  // Méthodes de calcul pour les KPIs
+  getTotalConsumption(): number {
+    if (!this.electricityData || this.electricityData.length === 0) return 0;
+    return this.electricityData.reduce((sum: number, item: any) =>
+      sum + (Number(item.network60kvConsumption) || 0) + (Number(item.network22kvConsumption) || 0), 0);
+  }
+
+  getTotalWaterProduction(): number {
+    if (!this.waterData || this.waterData.length === 0) return 0;
+    return this.waterData.reduce((sum: number, item: any) =>
+      sum + (Number(item.totalProduction) || 0), 0);
+  }
+
+  getAveragePowerFactor(): number {
+    if (!this.electricityData || this.electricityData.length === 0) return 0;
+    const validItems = this.electricityData.filter((item: any) =>
+      item.network60kvPowerFactor && Number(item.network60kvPowerFactor) > 0);
+    return validItems.length > 0
+      ? validItems.reduce((sum: number, item: any) =>
+      sum + Number(item.network60kvPowerFactor), 0) / validItems.length
+      : 0;
+  }
+
+  // Méthodes utilitaires
+  hasElectricityData(): boolean {
+    return this.electricityData && this.electricityData.length > 0;
+  }
+
+  hasWaterData(): boolean {
+    return this.waterData && this.waterData.length > 0;
+  }
+
+  formatNumber(value: number, decimals: number = 0): string {
+    return value.toLocaleString('fr-FR', { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
+  }
+
+  // Méthodes utilitaires pour la section anomalies
+  isScanDue(lastDetection: string | null): boolean {
+    if (!lastDetection) return false;
+    const lastScanDate = new Date(lastDetection);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - lastScanDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 1;
+  }
+
+  getAnomalyTypes(anomaliesByType: { [key: string]: number } | undefined): string[] {
+    if (!anomaliesByType) return [];
+    return Object.keys(anomaliesByType);
+  }
+
+  getBarHeight(value: number, anomaliesByType: { [key: string]: number } | undefined): string {
+    if (!anomaliesByType) return '10%';
+    const values = Object.values(anomaliesByType);
+    const maxValue = Math.max(...values, 1);
+    const percentage = (value / maxValue) * 100;
+    return `${Math.max(percentage, 10)}%`;
+  }
+
+  formatAnomalyType(type: string): string {
+    const typeMap: { [key: string]: string } = {
+      'consumption_spike': 'Pic de consommation',
+      'unusual_pattern': 'Modèle inhabituel',
+      'data_gap': 'Données manquantes',
+      'value_outlier': 'Valeur aberrante',
+      'seasonal_deviation': 'Écart saisonnier',
+      'high_consumption': 'Consommation élevée',
+      'low_consumption': 'Consommation faible',
+      'irregular_pattern': 'Modèle irrégulier'
+    };
+    return typeMap[type] || type;
   }
 }

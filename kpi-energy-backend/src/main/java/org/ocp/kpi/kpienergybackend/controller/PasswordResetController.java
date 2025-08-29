@@ -48,7 +48,7 @@ public class PasswordResetController {
             if (userOpt.isEmpty()) {
                 logger.info("Email non trouvé: {}", request.getEmail());
                 return ResponseEntity.ok()
-                        .body(Map.of("message", "Si l'email existe, un lien de réinitialisation a été envoyé"));
+                        .body(Map.of("message", "Cet email ne correspond à aucun compte existant"));
             }
 
             Utilisateur user = userOpt.get();

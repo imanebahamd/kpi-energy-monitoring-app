@@ -3,8 +3,12 @@
     <!-- En-tête -->
     <header class="electricity-header">
       <div class="header-content">
-        <h1 class="electricity-title">Saisie des Données Énergétiques</h1>
-        <p class="electricity-subtitle">Enregistrement des consommations électriques mensuelles</p>
+        <h1 class="electricity-title">
+          {{ isEditing ? 'Modification' : 'Saisie' }} des Données Énergétiques
+        </h1>
+        <p class="electricity-subtitle">
+          {{ isEditing ? 'Modification' : 'Enregistrement' }} des consommations électriques mensuelles
+        </p>
       </div>
     </header>
 
@@ -33,7 +37,7 @@
             <h4>Période de saisie</h4>
           </div>
 
-          <div class="date-fields-row">
+          <div class="form-row">
             <div class="form-group">
               <label class="form-label">Année</label>
               <input type="number"
@@ -65,7 +69,7 @@
 
         <!-- Réseau 60KV -->
         <div class="network-card network-60kv">
-          <div class="card-header network-60kv">
+          <div class="card-header">
             <div class="header-content">
               <h3>Réseau Haute Tension 60KV</h3>
             </div>
@@ -78,7 +82,7 @@
           </div>
 
           <div class="card-body">
-            <div class="inputs-grid">
+            <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Énergie Active (KWh)</label>
                 <input type="number"
@@ -140,7 +144,7 @@
 
         <!-- Réseau 22KV -->
         <div class="network-card network-22kv">
-          <div class="card-header network-22kv">
+          <div class="card-header">
             <div class="header-content">
               <h3>Réseau Moyenne Tension 22KV</h3>
             </div>
@@ -153,7 +157,7 @@
           </div>
 
           <div class="card-body">
-            <div class="inputs-grid">
+            <div class="form-row">
               <div class="form-group">
                 <label class="form-label">Énergie Active (KWh)</label>
                 <input type="number"
@@ -215,7 +219,7 @@
 
         <!-- Carte de synthèse totale -->
         <div class="network-card total-card">
-          <div class="card-header total-card">
+          <div class="card-header">
             <div class="header-content">
               <h3>Synthèse Énergétique Globale</h3>
             </div>
@@ -242,13 +246,13 @@
             <button type="submit"
                     class="btn btn-primary"
                     [disabled]="electricityForm.invalid || isLoading">
-              <span *ngIf="!isLoading">
-                Enregistrer les données
-              </span>
+  <span *ngIf="!isLoading">
+    {{ isEditing ? 'Mettre à jour' : 'Enregistrer' }} les données
+  </span>
               <span *ngIf="isLoading">
-                <div class="loading-spinner"></div>
-                Enregistrement en cours...
-              </span>
+    <div class="loading-spinner"></div>
+                {{ isEditing ? 'Mise à jour' : 'Enregistrement' }} en cours...
+  </span>
             </button>
 
             <button type="button"
@@ -258,20 +262,42 @@
               Tout réinitialiser
             </button>
           </div>
-
-          <div class="secondary-actions">
-            <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="btn btn-outline-info">
-              Tableau Mensuel
-            </a>
-            <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="btn btn-outline-info">
-              Tableau Annuel
-            </a>
-            <a [routerLink]="[getRoutePrefix(), 'electricity-graphs']" class="btn btn-outline-info">
-              Visualisations
-            </a>
-          </div>
         </div>
       </form>
+    </div>
+
+    <!-- Liens de redirection en dehors du formulaire -->
+    <div class="actions-section" *ngIf="!isLoading">
+      <div class="actions-header">
+        <h3 class="actions-title">Navigation Rapide</h3>
+        <p class="actions-subtitle">Accédez aux autres sections du module énergie</p>
+      </div>
+
+      <div class="actions-grid">
+        <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Tableau Mensuel</h4>
+            <p class="action-description">Consulter les données mensuelles d'énergie</p>
+          </div>
+        </a>
+
+        <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Tableau Annuel</h4>
+            <p class="action-description">Consulter les données annuelles d'énergie</p>
+          </div>
+        </a>
+
+        <a [routerLink]="[getRoutePrefix(), 'electricity-graphs']" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Visualisations</h4>
+            <p class="action-description">Analyser les graphiques de consommation</p>
+          </div>
+        </a>
+      </div>
     </div>
   </div>
 </div>

@@ -10,7 +10,8 @@ import {NgIf} from '@angular/common';
     ReactiveFormsModule,
     NgIf
   ],
-  templateUrl: './reset-password.component.html'
+  templateUrl: './reset-password.component.html',
+  styleUrls: ['./reset-password.component.scss']
 })
 export class ResetPasswordComponent {
   form: FormGroup;

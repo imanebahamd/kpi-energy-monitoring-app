@@ -32,6 +32,7 @@ public class AnomalyService {
         anomalyRepository.findById(id).ifPresent(anomaly -> {
             anomaly.setResolved(true);
             anomaly.setResolvedBy(resolvedBy);
+            anomaly.setResolvedAt(LocalDateTime.now()); // Ajoutez cette ligne
             if (notes != null) {
                 anomaly.setDescription(anomaly.getDescription() + " | Résolution: " + notes);
             }

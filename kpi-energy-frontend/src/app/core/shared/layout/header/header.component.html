@@ -32,7 +32,10 @@
         </div>
         <div class="user-info">
           <span class="username">{{ currentUser?.nomComplet }}</span>
-          <span class="user-role">Administrateur</span>
+          <span class="user-role">
+  {{ currentUser?.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur' }}
+</span>
+
         </div>
         <button class="logout-btn" (click)="logout()">
           <svg class="logout-icon" viewBox="0 0 24 24" fill="currentColor">

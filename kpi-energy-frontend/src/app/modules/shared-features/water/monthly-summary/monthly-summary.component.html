@@ -1,204 +1,287 @@
 <div class="water-monthly-container">
-  <div class="water-monthly-content">
-    <!-- Alerte dynamique -->
-    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
-      <div class="alert-content">
-        {{ alertMessage }}
-      </div>
+  <!-- Alert message -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
     </div>
+  </div>
 
-    <!-- En-tête -->
-    <header class="water-header">
-      <h1 class="header-title">Tableau Mensuel de Production d'Eau</h1>
-
-      <div class="header-actions">
-        <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="btn btn-primary">
-          Saisir Nouvelles Données
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="btn btn-info">
-          Vue Annuelle
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'water-graphs']" class="btn btn-info">
-          Visualisation Graphique
-        </a>
-      </div>
-    </header>
-
-    <!-- Message d'information -->
-    <div class="info-card">
-      <p>Cette page vous permet de consulter les données de production d'eau mensuelles. Sélectionnez une année et un mois spécifique ou une période. Vous pouvez également modifier ou supprimer les données existantes.</p>
+  <header class="water-header">
+    <div class="header-content">
+      <h1 class="water-title">Tableau Mensuel de Production d'Eau</h1>
+      <p class="water-subtitle">Surveillance et analyse des données de production d'eau mensuelles</p>
     </div>
+    <div class="header-actions">
+      <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="action-button primary">
+        <i class="icon add"></i> Saisir Nouvelles Données
+      </a>
+    </div>
+  </header>
 
-    <!-- Filtres principaux -->
-    <div class="filters-section">
-      <div class="filters-row">
-        <div class="filter-group">
-          <label for="year">Année</label>
-          <select id="year" [(ngModel)]="selectedYear" (change)="onFilterChange()">
-            <option *ngFor="let y of years" [value]="y">{{ y }}</option>
-          </select>
-        </div>
+  <div class="filters-card">
+    <div class="date-selector">
+      <div class="date-header">
+        <div class="icon">📅</div>
+        <h4>Filtres de période</h4>
       </div>
 
-      <div class="filter-actions">
-        <button (click)="toggleMonthSelection()" class="btn btn-secondary">
-          {{ showMonthSelection ? 'Annuler' : 'Afficher un mois précis' }}
-        </button>
-        <button (click)="togglePeriodSelection()" class="btn btn-secondary">
-          {{ showPeriodSelection ? 'Annuler' : 'Afficher une période' }}
-        </button>
-      </div>
+      <div class="filters-content">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <input id="year" type="number" class="form-control" [(ngModel)]="selectedYear"
+                   (change)="onFilterChange()"
+                   min="2000" max="2100"
+                   placeholder="Entrez l'année">
+          </div>
 
-      <!-- Filtre pour un mois précis -->
-      <div *ngIf="showMonthSelection" class="advanced-filters">
-        <div class="filter-content">
-          <div class="filter-group">
-            <label>Mois</label>
-            <select [(ngModel)]="selectedMonth" (change)="onFilterChange()">
+          <div class="form-group" *ngIf="!showPeriodSelection && showMonthSelection">
+            <label class="form-label">Mois</label>
+            <select class="form-select" [(ngModel)]="selectedMonth" (change)="onFilterChange()">
               <option [ngValue]="null" disabled>Sélectionnez un mois</option>
               <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
             </select>
           </div>
 
-          <button (click)="loadSingleMonthData()"
-                  [disabled]="!selectedYear || !selectedMonth || isLoading"
-                  class="btn btn-primary">
-            <span *ngIf="!isLoading">Afficher</span>
-            <span *ngIf="isLoading" class="loading-spinner"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Filtres pour une période -->
-      <div *ngIf="showPeriodSelection" class="advanced-filters">
-        <div class="filter-content">
-          <div class="filter-group">
-            <label>Mois de début</label>
-            <select [(ngModel)]="startMonth" (change)="onFilterChange()">
-              <option [ngValue]="null" disabled>Sélectionnez</option>
+          <div class="form-group" *ngIf="showPeriodSelection">
+            <label class="form-label">De</label>
+            <select class="form-select" [(ngModel)]="startMonth" (change)="onFilterChange()">
+              <option [ngValue]="null" disabled>Mois de début</option>
               <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
             </select>
           </div>
 
-          <div class="filter-group">
-            <label>Mois de fin</label>
-            <select [(ngModel)]="endMonth" (change)="onFilterChange()">
-              <option [ngValue]="null" disabled>Sélectionnez</option>
+          <div class="form-group" *ngIf="showPeriodSelection">
+            <label class="form-label">À</label>
+            <select class="form-select" [(ngModel)]="endMonth" (change)="onFilterChange()">
+              <option [ngValue]="null" disabled>Mois de fin</option>
               <option *ngFor="let m of months" [value]="m.value">{{ m.name }}</option>
             </select>
           </div>
 
-          <button (click)="loadPeriodData()"
-                  [disabled]="!selectedYear || !startMonth || !endMonth || isLoading"
-                  class="btn btn-primary">
-            <span *ngIf="!isLoading">Afficher</span>
-            <span *ngIf="isLoading" class="loading-spinner"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Messages d'état -->
-    <div *ngIf="!filtersTouched" class="status-message info">
-      Veuillez sélectionner une année et un mois ou une période
-    </div>
-
-    <div *ngIf="isLoading" class="loading-container">
-      <div class="loading-spinner"></div>
-      <span class="loading-text">Chargement en cours...</span>
-    </div>
-
-    <div *ngIf="error && filtersTouched" class="status-message error">
-      {{ error }}
-    </div>
-
-    <!-- Affichage pour un mois précis -->
-    <div *ngIf="singleMonthData && showMonthSelection" class="data-section">
-      <h2 class="section-title">Données pour {{ getMonthName(selectedMonth) }} {{ selectedYear }}</h2>
-
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th>Mois</th>
-          <th>F3BIS (m³)</th>
-          <th>F3 (m³)</th>
-          <th>SE2 (m³)</th>
-          <th>SE3BIS (m³)</th>
-          <th>Total Production (m³)</th>
-          <th *ngIf="isAdminUser">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td>{{ getMonthName(singleMonthData.month) }}</td>
-          <td>{{ singleMonthData.f3bis | number:'1.2-2' }}</td>
-          <td>{{ singleMonthData.f3 | number:'1.2-2' }}</td>
-          <td>{{ singleMonthData.se2 | number:'1.2-2' }}</td>
-          <td>{{ singleMonthData.se3bis | number:'1.2-2' }}</td>
-          <td>{{ singleMonthData.totalProduction | number:'1.2-2' }}</td>
-          <td *ngIf="isAdminUser" class="actions-cell">
-            <a [routerLink]="[getRoutePrefix(), 'water-saisie']"
-               [queryParams]="{year: singleMonthData.year, month: singleMonthData.month}"
-               class="btn btn-warning">
-              Modifier
-            </a>
-            <button (click)="deleteData(singleMonthData.year, singleMonthData.month)"
-                    class="btn btn-danger">
-              Supprimer
+          <div class="form-group period-toggle-group">
+            <label class="form-label" style="visibility: hidden;">Toggle</label>
+            <button (click)="togglePeriodSelection()" class="period-toggle">
+              {{ showPeriodSelection ? 'Sélection simple' : 'Période' }}
             </button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+          </div>
+
+          <div class="form-group month-toggle-group" *ngIf="!showPeriodSelection">
+            <label class="form-label" style="visibility: hidden;">Toggle</label>
+            <button (click)="toggleMonthSelection()" class="period-toggle">
+              {{ showMonthSelection ? 'Masquer mois' : 'Afficher mois' }}
+            </button>
+          </div>
+
+          <div class="form-group submit-button-group">
+            <label class="form-label" style="visibility: hidden;">Submit</label>
+            <button (click)="showPeriodSelection ? loadPeriodData() : loadSingleMonthData()"
+                    [disabled]="!selectedYear || (showMonthSelection && !selectedMonth && !showPeriodSelection) || (showPeriodSelection && (!startMonth || !endMonth)) || isLoading"
+                    class="action-button primary">
+              <span *ngIf="!isLoading">Afficher les données</span>
+              <span *ngIf="isLoading" class="spinner"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <div *ngIf="error && filtersTouched" class="status-card error">
+    <i class="icon warning"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Affichage pour un mois précis -->
+  <div *ngIf="singleMonthData && showMonthSelection && !showPeriodSelection" class="data-section">
+    <div class="section-header">
+      <h2><i class="icon calendar"></i> Données pour {{ getMonthName(selectedMonth) }} {{ selectedYear }}</h2>
+      <div class="section-actions" *ngIf="isAdminUser">
+        <a [routerLink]="[getRoutePrefix(), 'water-saisie']"
+           [queryParams]="{year: singleMonthData.year, month: singleMonthData.month}"
+           class="action-button secondary">
+          <i class="icon edit"></i> Modifier
+        </a>
+        <button (click)="deleteData(singleMonthData.year, singleMonthData.month)"
+                class="action-button danger">
+          <i class="icon delete"></i> Supprimer
+        </button>
+      </div>
     </div>
 
-    <!-- Affichage pour une période -->
-    <div *ngIf="periodData.length > 0 && showPeriodSelection" class="data-section">
-      <h2 class="section-title">Période de {{ getMonthName(startMonth) }} à {{ getMonthName(endMonth) }} {{ selectedYear }}</h2>
+    <div class="data-grid">
+      <div class="data-card">
+        <div class="card-header f3bis">
+          <h3>F3BIS</h3>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Volume (m³)</span>
+            <span class="value">{{ singleMonthData.f3bis | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
 
-      <table class="data-table">
-        <thead>
-        <tr>
-          <th>Mois</th>
-          <th>F3BIS (m³)</th>
-          <th>F3 (m³)</th>
-          <th>SE2 (m³)</th>
-          <th>SE3BIS (m³)</th>
-          <th>Total Production (m³)</th>
-          <th *ngIf="isAdminUser">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let item of periodData">
-          <td>{{ getMonthName(item.month) }}</td>
-          <td>{{ item.f3bis | number:'1.2-2' }}</td>
-          <td>{{ item.f3 | number:'1.2-2' }}</td>
-          <td>{{ item.se2 | number:'1.2-2' }}</td>
-          <td>{{ item.se3bis | number:'1.2-2' }}</td>
-          <td>{{ item.totalProduction | number:'1.2-2' }}</td>
-          <td *ngIf="isAdminUser" class="actions-cell">
+      <div class="data-card">
+        <div class="card-header f3">
+          <h3>F3</h3>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Volume (m³)</span>
+            <span class="value">{{ singleMonthData.f3 | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card">
+        <div class="card-header se2">
+          <h3>SE2</h3>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Volume (m³)</span>
+            <span class="value">{{ singleMonthData.se2 | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card">
+        <div class="card-header se3bis">
+          <h3>SE3BIS</h3>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Volume (m³)</span>
+            <span class="value">{{ singleMonthData.se3bis | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-card">
+        <div class="card-header total">
+          <h3>Total Production</h3>
+        </div>
+        <div class="card-content">
+          <div class="data-item">
+            <span class="label">Volume (m³)</span>
+            <span class="value">{{ singleMonthData.totalProduction | number:'1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Affichage pour une période -->
+  <div *ngIf="periodData.length > 0 && showPeriodSelection" class="period-section">
+    <div class="section-header">
+      <h2><i class="icon calendar-range"></i> Données pour la période de {{ getMonthName(startMonth) }} à {{ getMonthName(endMonth) }} {{ selectedYear }}</h2>
+    </div>
+
+    <div class="period-grid">
+      <div *ngFor="let item of periodData" class="period-card">
+        <div class="period-header">
+          <h3>{{ getMonthName(item.month) }} {{ item.year }}</h3>
+          <div class="period-actions" *ngIf="isAdminUser">
             <a [routerLink]="[getRoutePrefix(), 'water-saisie']"
                [queryParams]="{year: item.year, month: item.month}"
-               class="btn btn-warning">
-              Modifier
+               class="action-button small secondary">
+              <i class="icon edit"></i>
             </a>
             <button (click)="deleteData(item.year, item.month)"
-                    class="btn btn-danger">
-              Supprimer
+                    class="action-button small danger">
+              <i class="icon delete"></i>
             </button>
-          </td>
-        </tr>
-        <tr class="total-row">
-          <td>Total Période</td>
-          <td>{{ calculateTotal(periodData).f3bis | number:'1.2-2' }}</td>
-          <td>{{ calculateTotal(periodData).f3 | number:'1.2-2' }}</td>
-          <td>{{ calculateTotal(periodData).se2 | number:'1.2-2' }}</td>
-          <td>{{ calculateTotal(periodData).se3bis | number:'1.2-2' }}</td>
-          <td>{{ calculateTotal(periodData).totalProduction | number:'1.2-2' }}</td>
-          <td *ngIf="isAdminUser"></td>
-        </tr>
-        </tbody>
-      </table>
+          </div>
+        </div>
+
+        <div class="period-content">
+          <div class="data-row">
+            <div class="data-item">
+              <span>F3BIS:</span>
+              <span class="numeric">{{ item.f3bis | number:'1.2-2' }} m³</span>
+            </div>
+            <div class="data-item">
+              <span>F3:</span>
+              <span class="numeric">{{ item.f3 | number:'1.2-2' }} m³</span>
+            </div>
+            <div class="data-item">
+              <span>SE2:</span>
+              <span class="numeric">{{ item.se2 | number:'1.2-2' }} m³</span>
+            </div>
+            <div class="data-item">
+              <span>SE3BIS:</span>
+              <span class="numeric">{{ item.se3bis | number:'1.2-2' }} m³</span>
+            </div>
+            <div class="data-item total">
+              <span>Total:</span>
+              <span class="numeric">{{ item.totalProduction | number:'1.2-2' }} m³</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="period-total">
+      <h3>Total de la période</h3>
+      <div class="total-content">
+        <div class="total-item">
+          <span>F3BIS:</span>
+          <span class="numeric">{{ calculateTotal(periodData).f3bis | number:'1.2-2' }} m³</span>
+        </div>
+        <div class="total-item">
+          <span>F3:</span>
+          <span class="numeric">{{ calculateTotal(periodData).f3 | number:'1.2-2' }} m³</span>
+        </div>
+        <div class="total-item">
+          <span>SE2:</span>
+          <span class="numeric">{{ calculateTotal(periodData).se2 | number:'1.2-2' }} m³</span>
+        </div>
+        <div class="total-item">
+          <span>SE3BIS:</span>
+          <span class="numeric">{{ calculateTotal(periodData).se3bis | number:'1.2-2' }} m³</span>
+        </div>
+        <div class="total-item grand-total">
+          <span>Total Production:</span>
+          <span class="numeric">{{ calculateTotal(periodData).totalProduction | number:'1.2-2' }} m³</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation section -->
+  <div class="navigation-section">
+    <div class="navigation-header">
+      <h3>Navigation Rapide</h3>
+      <p>Accédez aux autres sections du module eau</p>
+    </div>
+
+    <div class="navigation-grid">
+      <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Tableau Annuel</h4>
+          <p>Consulter les données annuelles de production d'eau</p>
+        </div>
+      </a>
+
+      <a [routerLink]="[getRoutePrefix(), 'water-graphs']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon chart"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Visualisations</h4>
+          <p>Analyser les graphiques de production d'eau</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>

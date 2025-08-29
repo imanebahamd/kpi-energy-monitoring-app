@@ -174,6 +174,9 @@ public class AnomalyDetectionService {
             case "LOW_POWER_FACTOR":
                 return String.format("Facteur de puissance anormalement bas (score: %.2f). " +
                         "Optimisation nécessaire.", score);
+            case "PRODUCTION_ISSUE":
+                return String.format("Problème de production détecté (score: %.2f). " +
+                        "Vérification requise.", score);
             default:
                 return String.format("Anomalie détectée (score: %.2f). Investigation recommandée.", score);
         }

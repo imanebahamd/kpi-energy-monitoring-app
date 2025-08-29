@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { WaterService, WaterData } from './water.service';
-import {NgClass, NgForOf, NgIf} from '@angular/common';
+import {DecimalPipe, NgClass, NgForOf, NgIf} from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { AnomalyService } from '../../../core/services/anomaly.service';
@@ -14,7 +14,8 @@ import { AnomalyService } from '../../../core/services/anomaly.service';
     NgForOf,
     NgIf,
     RouterModule,
-    NgClass
+    NgClass,
+    DecimalPipe
   ],
   styleUrls: ['./water-saisie.component.scss']
 })
@@ -43,13 +44,13 @@ export class WaterSaisieComponent implements OnInit {
 
   validationMessages = {
     success: {
-      save: '✅ Données enregistrées avec succès !',
-      reset: '🔄 Formulaire réinitialisé avec succès'
+      save: 'Données enregistrées avec succès !',
+      reset: 'Formulaire réinitialisé avec succès'
     },
     error: {
-      save: '❌ Erreur lors de l\'enregistrement des données',
-      validation: '📝 Veuillez corriger les erreurs dans le formulaire',
-      network: '🔌 Erreur de connexion au serveur'
+      save: 'Erreur lors de l\'enregistrement des données',
+      validation: 'Veuillez corriger les erreurs dans le formulaire',
+      network: 'Erreur de connexion au serveur'
     },
     info: {
       loading: '⏳ Chargement des données...'
@@ -218,5 +219,32 @@ export class WaterSaisieComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  resetWaterData(): void {
+    this.waterForm.patchValue({
+      f3bis: null,
+      f3: null,
+      se2: null,
+      se3bis: null
+    });
+    this.showDynamicAlert('Données de production réinitialisées', 'success', 3000);
+  }
+  get totalProduction(): number {
+    const f3bis = this.waterForm.get('f3bis')?.value || 0;
+    const f3 = this.waterForm.get('f3')?.value || 0;
+    const se2 = this.waterForm.get('se2')?.value || 0;
+    const se3bis = this.waterForm.get('se3bis')?.value || 0;
+
+    return f3bis + f3 + se2 + se3bis;
+  }
+
+  get totalProductionClass(): string {
+    const total = this.totalProduction;
+
+    if (total === 0) return 'neutral';
+    if (total < 1000) return 'low';
+    if (total < 5000) return 'medium';
+    return 'high';
   }
 }

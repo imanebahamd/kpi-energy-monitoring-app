@@ -1,4 +1,4 @@
-// Variables
+// Variables (mêmes couleurs que l'original)
 $primary-color: #4361ee;
 $secondary-color: #7FB2F0;
 $success-color: #4CAF50;
@@ -14,10 +14,10 @@ $active-bg: rgba(76, 175, 80, 0.15);
 $border-color: #e9ecef;
 $menu-spacing: 8px;
 $transition-speed: 0.3s;
-$sidebar-width: 300px;
+$sidebar-width: 320px;
 
-// Base styles
-.sidebar {
+// Modern Sidebar Base
+.modern-sidebar {
   width: $sidebar-width;
   height: calc(100vh - 70px);
   position: fixed;
@@ -26,21 +26,20 @@ $sidebar-width: 300px;
   background: $white;
   color: $text-dark;
   z-index: 100;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.03);
-  border-right: 1px solid $border-color;
-  transition: all $transition-speed ease;
-  overflow-y: auto;
-  overflow-x: hidden;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.08);
+  border-right: 1px solid rgba($border-color, 0.6);
+  transition: all $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
   font-family: 'Segoe UI', 'Roboto', sans-serif;
-  padding: 20px 0;
-
+  display: flex;
+  flex-direction: column;
 
   &.mobile-sidebar {
     transform: translateX(-100%);
     z-index: 1000;
     top: 0;
     height: 100vh;
-    width: 280px;
+    width: 300px;
 
     &.show {
       transform: translateX(0);
@@ -48,317 +47,497 @@ $sidebar-width: 300px;
   }
 }
 
-.sidebar-header {
-  padding: 0 20px 20px;
-  border-bottom: 1px solid $border-color;
-  margin-bottom: 15px;
+// Navigation Container
+.navigation-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 0;
 
-  .user-info {
-    display: flex;
-    align-items: center;
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
 
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: $light-bg;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 12px;
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 
-      i {
-        font-size: 24px;
-        color: $text-light;
-      }
-    }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($text-light, 0.2);
+    border-radius: 2px;
 
-    .details {
-      display: flex;
-      flex-direction: column;
-
-      .name {
-        font-weight: 600;
-        color: $text-dark;
-        font-size: 0.95rem;
-      }
-
-      .role {
-        font-size: 0.8rem;
-        color: $text-light;
-      }
+    &:hover {
+      background: rgba($text-light, 0.4);
     }
   }
 }
 
-.sidebar-menu {
+// Navigation Sections
+.nav-section {
+  margin-bottom: 32px;
+
+  .section-title {
+    padding: 0 20px 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .title-text {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: $text-light;
+    }
+
+    .title-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba($text-light, 0.3), transparent);
+    }
+  }
+}
+
+// Navigation List
+.nav-list {
   list-style: none;
   padding: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
-.menu-item {
+// Navigation Items
+.nav-item {
   margin: 0;
   padding: 0 16px;
 
-  > a, > .menu-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    color: $text-dark;
-    text-decoration: none;
-    transition: all $transition-speed ease;
-    font-size: 0.95rem;
-    font-weight: 500;
-    border-radius: 8px;
-    background: transparent;
-    cursor: pointer;
-    position: relative;
-    min-height: 52px;
-    box-sizing: border-box;
-
-    &:hover {
-      background: $hover-bg;
-      color: $success-dark;
-      transform: translateX(2px);
-
-      .expand-icon {
-        color: $success-color;
-        transform: scale(1.1);
-      }
-    }
-
-    .menu-label {
-      flex-grow: 1;
-      font-weight: 500;
-    }
-
-    .expand-icon {
-      font-size: 0.75rem;
-      color: $text-light;
-      transition: all $transition-speed;
-      margin-left: 12px;
-      transform-origin: center;
-    }
-  }
-
-  > a.active {
-    background: $active-bg;
-    color: $success-color;
-    font-weight: 600;
-    transform: translateX(2px);
-
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      height: 70%;
-      width: 4px;
-      background: $success-color;
-      border-radius: 0 4px 4px 0;
-    }
-  }
-
-  > .menu-group {
-    font-weight: 600;
-    color: $text-dark;
-
-    &.clickable {
-      cursor: pointer;
-
-      &:hover {
-        color: $success-color;
-      }
-    }
-
-    &.always-expanded {
-      cursor: default;
-    }
-
-    &.expanded:not(.always-expanded) {
-      background: $hover-bg;
-      color: $success-color;
-
-      .expand-icon {
-        transform: rotate(90deg) scale(1.1);
-        color: $success-color;
-      }
-    }
-  }
-}
-
-.submenu-wrapper {
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
-
-  &.expanded {
-    max-height: 800px;
-  }
-}
-
-.submenu {
-  list-style: none;
-  padding: 8px 0;
-  margin: 0 0 0 28px;
-  border-left: 2px solid rgba($success-color, 0.15);
-  background: rgba($light-bg, 0.3);
-  border-radius: 0 6px 6px 0;
-
-  .submenu-item {
-    margin: 2px 0;
-    position: relative;
-
-    > a, > .submenu-group {
+  &:not(.expandable) {
+    .nav-link {
+      position: relative;
       display: flex;
       align-items: center;
-      padding: 12px 20px;
-      font-size: 0.88rem;
+      gap: 16px;
+      padding: 16px 20px;
       color: $text-dark;
       text-decoration: none;
-      transition: all $transition-speed ease;
-      border-radius: 6px;
-      background: transparent;
-      min-height: 44px;
-      margin: 0 8px;
+      border-radius: 12px;
+      transition: all $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      font-size: 0.95rem;
+      overflow: hidden;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 0;
+        height: 100%;
+        background: linear-gradient(90deg, $success-color, $success-dark);
+        transition: width $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        z-index: -1;
+      }
 
       &:hover {
-        background: $hover-bg;
         color: $success-color;
-        transform: translateX(3px);
+        transform: translateX(4px);
+
+        &::before {
+          width: 4px;
+        }
+
+        .link-icon {
+          color: $success-color;
+          transform: scale(1.1);
+        }
       }
 
-      .submenu-label {
-        flex-grow: 1;
-        font-weight: 450;
+      &.active {
+        color: $success-color;
+        font-weight: 600;
+        background: $active-bg;
+        transform: translateX(4px);
+
+        &::before {
+          width: 4px;
+        }
+
+        .link-icon {
+          color: $success-color;
+        }
       }
 
-      .expand-icon {
-        font-size: 0.7rem;
+      .link-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
         color: $text-light;
         transition: all $transition-speed;
-        margin-left: 10px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
+      }
+
+      .link-text {
+        flex: 1;
+        line-height: 1.4;
       }
     }
+  }
 
-    > a.active {
-      background: $active-bg;
-      color: $success-color;
-      font-weight: 550;
-      transform: translateX(3px);
-    }
+  &.expandable {
+    .nav-group {
+      .group-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px 20px;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: all $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 600;
+        color: $text-dark;
 
-    > .submenu-group {
-      font-weight: 500;
-      color: $text-dark;
+        &:hover {
+          color: $success-color;
+          background: $hover-bg;
+
+          .link-icon {
+            color: $success-color;
+            transform: scale(1.1);
+          }
+
+          .expand-indicator {
+            color: $success-color;
+          }
+        }
+
+        .link-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 24px;
+          height: 24px;
+          color: $text-light;
+          transition: all $transition-speed;
+
+          svg {
+            width: 20px;
+            height: 20px;
+          }
+        }
+
+        .group-text {
+          flex: 1;
+          line-height: 1.4;
+        }
+
+        .expand-indicator {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: $text-light;
+          transition: all $transition-speed;
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
 
       &.expanded {
-        background: $hover-bg;
-        color: $success-color;
-
-        .expand-icon {
-          transform: rotate(90deg);
+        .group-header {
           color: $success-color;
+          background: $hover-bg;
+
+          .link-icon {
+            color: $success-color;
+          }
+
+          .expand-indicator {
+            color: $success-color;
+            transform: rotate(90deg);
+          }
         }
       }
     }
   }
 }
 
-.nested-submenu-wrapper {
+// Submenu Container
+.submenu-container {
   overflow: hidden;
   max-height: 0;
   transition: max-height $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
 
   &.expanded {
-    max-height: 400px;
+    max-height: 1000px;
   }
 }
 
-.nested-submenu {
+// Submenu List
+.submenu-list {
   list-style: none;
-  padding: 6px 0;
-  margin: 0 0 0 20px;
-  border-left: 2px solid rgba($success-color, 0.1);
-  background: rgba($light-bg, 0.2);
-  border-radius: 0 4px 4px 0;
+  padding: 8px 0 16px 0;
+  margin: 0;
+  position: relative;
 
-  .nested-item {
-    margin: 1px 0;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 52px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba($success-color, 0.2), transparent);
+    border-radius: 1px;
+  }
+}
 
-    > a {
-      display: block;
-      padding: 10px 18px;
-      font-size: 0.83rem;
-      color: $text-light;
-      text-decoration: none;
-      transition: all $transition-speed ease;
-      border-radius: 5px;
-      min-height: 38px;
-      margin: 0 6px;
-      box-sizing: border-box;
+// Submenu Items
+.submenu-item {
+  margin: 2px 0;
+  padding: 0 20px;
+
+  &:not(.nested) {
+    .submenu-link {
       display: flex;
       align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      color: $text-dark;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all $transition-speed;
+      font-size: 0.9rem;
+      font-weight: 450;
+      margin-left: 32px;
 
       &:hover {
         color: $success-color;
         background: $hover-bg;
         transform: translateX(2px);
+
+        .submenu-indicator {
+          background: $success-color;
+          transform: scale(1.2);
+        }
       }
 
       &.active {
         color: $success-color;
-        font-weight: 500;
+        font-weight: 550;
         background: $active-bg;
         transform: translateX(2px);
+
+        .submenu-indicator {
+          background: $success-color;
+        }
       }
 
-      .nested-label {
-        font-weight: 400;
+      .submenu-indicator {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: $text-light;
+        transition: all $transition-speed;
+        flex-shrink: 0;
+      }
+
+      .submenu-text {
+        flex: 1;
+        line-height: 1.4;
+      }
+    }
+  }
+
+  &.nested {
+    .submenu-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all $transition-speed;
+      font-weight: 500;
+      color: $text-dark;
+      margin-left: 32px;
+
+      &:hover {
+        color: $success-color;
+        background: $hover-bg;
+
+        .submenu-indicator {
+          background: $success-color;
+          transform: scale(1.2);
+        }
+
+        .nested-expand-indicator {
+          color: $success-color;
+        }
+      }
+
+      &.expanded {
+        color: $success-color;
+        background: $hover-bg;
+
+        .submenu-indicator {
+          background: $success-color;
+        }
+
+        .nested-expand-indicator {
+          color: $success-color;
+          transform: rotate(90deg);
+        }
+      }
+
+      .submenu-indicator {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: $text-light;
+        transition: all $transition-speed;
+        flex-shrink: 0;
+      }
+
+      .submenu-text {
+        flex: 1;
+        line-height: 1.4;
+        font-size: 0.9rem;
+      }
+
+      .nested-expand-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: $text-light;
+        transition: all $transition-speed;
+
+        svg {
+          width: 14px;
+          height: 14px;
+        }
       }
     }
   }
 }
 
+// Nested Submenu Container
+.nested-submenu-container {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height $transition-speed cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.expanded {
+    max-height: 500px;
+  }
+}
+
+// Nested Submenu List
+.nested-submenu-list {
+  list-style: none;
+  padding: 8px 0;
+  margin: 0;
+}
+
+// Nested Submenu Items
+.nested-submenu-item {
+  margin: 1px 0;
+  padding: 0 20px;
+
+  .nested-submenu-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: $text-light;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all $transition-speed;
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-left: 48px;
+
+    &:hover {
+      color: $success-color;
+      background: $hover-bg;
+      transform: translateX(2px);
+
+      .nested-indicator {
+        background: $success-color;
+        transform: scale(1.3);
+      }
+    }
+
+    &.active {
+      color: $success-color;
+      font-weight: 500;
+      background: $active-bg;
+      transform: translateX(2px);
+
+      .nested-indicator {
+        background: $success-color;
+      }
+    }
+
+    .nested-indicator {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba($text-light, 0.6);
+      transition: all $transition-speed;
+      flex-shrink: 0;
+    }
+
+    .nested-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+  }
+}
+
+// Sidebar Overlay
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all $transition-speed;
+  backdrop-filter: blur(4px);
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Responsive Design
 @media (max-width: 1200px) {
-  .sidebar {
+  .modern-sidebar {
     width: 280px;
   }
 }
 
 @media (max-width: 768px) {
-  .sidebar {
+  .modern-sidebar {
     transform: translateX(-100%);
-    width: 260px;
-    top: 0;
-    height: 100vh;
-    z-index: 1000;
+    width: 300px;
 
     &.show {
       transform: translateX(0);
     }
-  }
-}
-
-.sidebar::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebar::-webkit-scrollbar-thumb {
-  background: rgba($text-light, 0.3);
-  border-radius: 3px;
-
-  &:hover {
-    background: rgba($text-light, 0.5);
   }
 }

@@ -1,4 +1,3 @@
-// dashboard.component.ts
 import { Component, OnInit, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { ElectricityService } from '../../../shared-features/electricity-saisie/electricity.service';
 import { WaterService } from '../../../shared-features/water-saisie/water.service';
@@ -9,13 +8,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { AnomalyService, AnomalyStats } from '../../../../core/services/anomaly.service';
-import { ChatbotWidgetComponent } from '../../../shared-features/chatbot-widget/chatbot-widget.component';
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, NgChartsModule, RouterModule, FormsModule,ChatbotWidgetComponent],
+  imports: [CommonModule, NgChartsModule, RouterModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
 })
@@ -178,7 +176,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ]
   };
 
-  showChatbot = false;
 
   constructor(
     private electricityService: ElectricityService,
@@ -205,7 +202,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private initializeYears(): void {
     const currentYear = new Date().getFullYear();
     this.years = [];
-    for (let year = currentYear; year >= 2020; year--) {
+    for (let year = currentYear; year >= 2014; year--) {
       this.years.push(year);
     }
   }
@@ -393,7 +390,49 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     return value.toLocaleString('fr-FR', { maximumFractionDigits: decimals, minimumFractionDigits: decimals });
   }
 
-  toggleChatbot(): void {
-    this.showChatbot = !this.showChatbot;
+
+
+  // Méthodes utilitaires pour la section anomalies
+  isScanDue(lastDetection: string | null): boolean {
+    if (!lastDetection) return false;
+
+    const lastScanDate = new Date(lastDetection);
+    const today = new Date();
+    const diffTime = Math.abs(today.getTime() - lastScanDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays > 1; // Considéré comme dû si plus d'un jour depuis le dernier scan
   }
+
+  getAnomalyTypes(anomaliesByType: { [key: string]: number } | undefined): string[] {
+    if (!anomaliesByType) return [];
+    return Object.keys(anomaliesByType);
+  }
+
+  getBarHeight(value: number, anomaliesByType: { [key: string]: number } | undefined): string {
+    if (!anomaliesByType) return '10%';
+
+    const values = Object.values(anomaliesByType);
+    const maxValue = Math.max(...values, 1); // Évite la division par zéro
+    const percentage = (value / maxValue) * 100;
+    return `${Math.max(percentage, 10)}%`; // Au moins 10% pour la visibilité
+  }
+
+// Méthode pour formater les types d'anomalies pour l'affichage
+  formatAnomalyType(type: string): string {
+    const typeMap: { [key: string]: string } = {
+      'consumption_spike': 'Pic de consommation',
+      'unusual_pattern': 'Modèle inhabituel',
+      'data_gap': 'Données manquantes',
+      'value_outlier': 'Valeur aberrante',
+      'seasonal_deviation': 'Écart saisonnier',
+      'high_consumption': 'Consommation élevée',
+      'low_consumption': 'Consommation faible',
+      'irregular_pattern': 'Modèle irrégulier'
+    };
+
+    return typeMap[type] || type;
+  }
+
+
 }

@@ -21,6 +21,7 @@ export class AnnualSummaryComponent implements OnInit {
   alertMessage: string = '';
   alertType: 'success' | 'error' | 'info' | 'warning' = 'info';
   noDataAvailable: boolean = false;
+  isAdminUser: boolean = false;
 
   months = [
     { value: 1, name: 'Janvier' },
@@ -114,4 +115,5 @@ export class AnnualSummaryComponent implements OnInit {
       this.showAlert = false;
     }, 5000);
   }
+
 }

@@ -1,51 +1,69 @@
 <div class="water-annual-container">
-  <div class="water-annual-content">
-    <!-- Alerte dynamique -->
-    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
-      <div class="alert-content">
-        {{ alertMessage }}
+  <!-- Alerte dynamique -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
+    </div>
+  </div>
+
+  <header class="water-header">
+    <div class="header-content">
+      <h1 class="water-title">Tableau Annuel de Production d'Eau</h1>
+      <p class="water-subtitle">Surveillance et analyse des données de production d'eau annuelles</p>
+    </div>
+
+  </header>
+
+  <div class="filters-card">
+    <div class="date-selector">
+      <div class="date-header">
+        <div class="icon">📅</div>
+        <h4>Sélection de l'année</h4>
+      </div>
+
+      <div class="filters-content">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <input id="year" type="number" class="form-control" [(ngModel)]="selectedYear"
+                   (change)="loadData()"
+                   min="2000" max="2100"
+                   placeholder="Entrez l'année"
+                   [disabled]="isLoading">
+          </div>
+
+          <div class="form-group submit-button-group">
+            <label class="form-label" style="visibility: hidden;">Submit</label>
+            <button (click)="loadData()"
+                    [disabled]="!selectedYear || isLoading"
+                    class="action-button primary">
+              <span *ngIf="!isLoading">Afficher les données</span>
+              <span *ngIf="isLoading" class="spinner"></span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- En-tête -->
-    <header class="annual-header">
-      <h1 class="header-title">Tableau Annuel de Production d'Eau</h1>
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
 
-      <div class="header-actions">
-        <a routerLink="/water-saisie" class="btn btn-primary">
-          Saisir Nouvelles Données
-        </a>
-        <a routerLink="/water-monthly" class="btn btn-secondary">
-          Tableau Mensuel
-        </a>
-        <a routerLink="/water-graphs" class="btn btn-info">
-          Visualisation Graphique
-        </a>
-      </div>
-    </header>
+  <div *ngIf="noDataAvailable && !isLoading" class="status-card no-data">
+    <i class="icon info"></i>
+    <span>Aucune donnée disponible pour l'année {{selectedYear}}</span>
+  </div>
 
-    <!-- Sélecteur d'année -->
-    <div class="year-selector">
-      <label>Année:</label>
-      <select [(ngModel)]="selectedYear" (change)="loadData()" [disabled]="isLoading">
-        <option *ngFor="let year of years" [value]="year">{{year}}</option>
-      </select>
-      <span *ngIf="isLoading" class="loading-spinner"></span>
+  <!-- Section de données -->
+  <div *ngIf="monthlyData.length > 0 && !isLoading" class="data-section">
+    <div class="section-header">
+      <h2><i class="icon calendar"></i> Données pour l'année {{selectedYear}}</h2>
     </div>
 
-    <!-- Messages d'état -->
-    <div *ngIf="isLoading" class="status-message loading">
-      Chargement des données en cours...
-    </div>
-
-    <div *ngIf="noDataAvailable && !isLoading" class="status-message no-data">
-      Aucune donnée disponible pour l'année {{selectedYear}}
-    </div>
-
-    <!-- Section de données -->
-    <div *ngIf="monthlyData.length > 0 && !isLoading" class="data-section">
-      <h2 class="section-title">Données pour l'année {{selectedYear}}</h2>
-
+    <div class="table-responsive">
       <table class="data-table">
         <thead>
         <tr>
@@ -59,23 +77,55 @@
         </thead>
         <tbody>
         <tr *ngFor="let item of monthlyData">
-          <td>{{ getMonthName(item.month) }}</td>
-          <td>{{ item.f3bis | number:'1.2-2' }}</td>
-          <td>{{ item.f3 | number:'1.2-2' }}</td>
-          <td>{{ item.se2 | number:'1.2-2' }}</td>
-          <td>{{ item.se3bis | number:'1.2-2' }}</td>
-          <td>{{ item.totalProduction | number:'1.2-2' }}</td>
-        </tr>
-        <tr class="total-row">
-          <td>Total Année</td>
-          <td>{{ calculateYearlyTotal().f3bis | number:'1.2-2' }}</td>
-          <td>{{ calculateYearlyTotal().f3 | number:'1.2-2' }}</td>
-          <td>{{ calculateYearlyTotal().se2 | number:'1.2-2' }}</td>
-          <td>{{ calculateYearlyTotal().se3bis | number:'1.2-2' }}</td>
-          <td>{{ calculateYearlyTotal().totalProduction | number:'1.2-2' }}</td>
+          <td><strong>{{ getMonthName(item.month) }}</strong></td>
+          <td class="numeric">{{ item.f3bis | number:'1.2-2' }}</td>
+          <td class="numeric">{{ item.f3 | number:'1.2-2' }}</td>
+          <td class="numeric">{{ item.se2 | number:'1.2-2' }}</td>
+          <td class="numeric">{{ item.se3bis | number:'1.2-2' }}</td>
+          <td class="numeric">{{ item.totalProduction | number:'1.2-2' }}</td>
         </tr>
         </tbody>
+        <tfoot>
+        <tr class="total-row">
+          <td><strong>Total Année</strong></td>
+          <td class="numeric">{{ calculateYearlyTotal().f3bis | number:'1.2-2' }}</td>
+          <td class="numeric">{{ calculateYearlyTotal().f3 | number:'1.2-2' }}</td>
+          <td class="numeric">{{ calculateYearlyTotal().se2 | number:'1.2-2' }}</td>
+          <td class="numeric">{{ calculateYearlyTotal().se3bis | number:'1.2-2' }}</td>
+          <td class="numeric">{{ calculateYearlyTotal().totalProduction | number:'1.2-2' }}</td>
+        </tr>
+        </tfoot>
       </table>
+    </div>
+  </div>
+
+  <!-- Navigation section -->
+  <div class="navigation-section">
+    <div class="navigation-header">
+      <h3>Navigation Rapide</h3>
+      <p>Accédez aux autres sections du module eau</p>
+    </div>
+
+    <div class="navigation-grid">
+      <a routerLink="/water-monthly" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar-month"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Tableau Mensuel</h4>
+          <p>Consulter les données mensuelles de production d'eau</p>
+        </div>
+      </a>
+
+      <a routerLink="/water-graphs" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon chart"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Visualisations</h4>
+          <p>Analyser les graphiques de production d'eau</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>

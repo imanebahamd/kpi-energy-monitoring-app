@@ -1,0 +1,277 @@
+<div class="dashboard-container">
+  <div class="dashboard-content">
+    <!-- En-tête du tableau de bord -->
+    <header class="dashboard-header">
+      <div class="header-content">
+        <h1 class="dashboard-title">Tableau de Bord Énergétique</h1>
+        <p class="dashboard-subtitle">Suivi de la consommation électrique et production d'eau</p>
+      </div>
+
+      <div class="year-selector">
+        <label for="year-select" class="selector-label">Année d'analyse</label>
+        <select
+          id="year-select"
+          [(ngModel)]="selectedYear"
+          (change)="onYearChange()"
+          class="year-select"
+          [disabled]="isLoading">
+          <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+        </select>
+        <div class="selector-underline"></div>
+      </div>
+    </header>
+
+    <!-- Messages d'alerte -->
+    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
+      <div class="alert-content">
+        <span class="alert-indicator"></span>
+        <span class="alert-message">{{ alertMessage }}</span>
+      </div>
+    </div>
+
+    <!-- Indicateur de chargement -->
+    <div *ngIf="isLoading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <span class="loading-text">Chargement des données en cours...</span>
+    </div>
+
+    <!-- Cartes KPI -->
+    <section class="kpi-section" *ngIf="!isLoading">
+      <div class="kpi-grid">
+        <div class="kpi-card primary">
+          <div class="kpi-header">
+            <h3 class="kpi-title">Consommation Électrique Totale</h3>
+            <div class="kpi-unit">kWh</div>
+          </div>
+          <div class="kpi-value">{{ formatNumber(getTotalConsumption(), 0) }}</div>
+          <div class="kpi-footer">
+            <span class="kpi-period">Année {{ selectedYear }}</span>
+            <span class="kpi-status" [class.no-data]="!hasElectricityData()">
+              {{ hasElectricityData() ? 'Données disponibles' : 'Aucune donnée' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="kpi-card secondary">
+          <div class="kpi-header">
+            <h3 class="kpi-title">Production d'Eau Totale</h3>
+            <div class="kpi-unit">m³</div>
+          </div>
+          <div class="kpi-value">{{ formatNumber(getTotalWaterProduction(), 0) }}</div>
+          <div class="kpi-footer">
+            <span class="kpi-period">Année {{ selectedYear }}</span>
+            <span class="kpi-status" [class.no-data]="!hasWaterData()">
+              {{ hasWaterData() ? 'Données disponibles' : 'Aucune donnée' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="kpi-card tertiary">
+          <div class="kpi-header">
+            <h3 class="kpi-title">Facteur de Puissance Moyen</h3>
+            <div class="kpi-unit">cos φ</div>
+          </div>
+          <div class="kpi-value">{{ formatNumber(getAveragePowerFactor(), 3) }}</div>
+          <div class="kpi-footer">
+            <span class="kpi-period">Réseau 60KV - {{ selectedYear }}</span>
+            <span class="kpi-status" [class.no-data]="!hasElectricityData()">
+              {{ hasElectricityData() ? 'Données disponibles' : 'Aucune donnée' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section des graphiques -->
+    <section class="charts-section" *ngIf="!isLoading">
+      <div class="charts-grid">
+        <!-- Graphique Consommation Électrique -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Évolution de la Consommation Électrique</h3>
+            <div class="chart-subtitle">Répartition mensuelle par réseau (kWh)</div>
+          </div>
+
+          <div class="chart-container">
+            <div *ngIf="!hasElectricityData()" class="no-data-message">
+              <div class="no-data-icon"></div>
+              <p>Aucune donnée électrique disponible pour {{ selectedYear }}</p>
+            </div>
+
+            <canvas
+              *ngIf="hasElectricityData()"
+              #electricityChart
+              baseChart
+              [data]="consumptionChartData"
+              [options]="consumptionChartOptions"
+              type="line">
+            </canvas>
+          </div>
+
+          <div class="chart-actions">
+            <a
+              routerLink="/user/electricity-graphs"
+              [queryParams]="{year: selectedYear}"
+              class="chart-link">
+              Analyse détaillée
+            </a>
+          </div>
+        </div>
+
+        <!-- Graphique Production d'Eau -->
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3 class="chart-title">Évolution de la Production d'Eau</h3>
+            <div class="chart-subtitle">Production mensuelle totale (m³)</div>
+          </div>
+
+          <div class="chart-container">
+            <div *ngIf="!hasWaterData()" class="no-data-message">
+              <div class="no-data-icon"></div>
+              <p>Aucune donnée de production d'eau disponible pour {{ selectedYear }}</p>
+            </div>
+
+            <canvas
+              *ngIf="hasWaterData()"
+              #waterChart
+              baseChart
+              [data]="waterChartData"
+              [options]="waterChartOptions"
+              type="line">
+            </canvas>
+          </div>
+
+          <div class="chart-actions">
+            <a
+              routerLink="/user/water-graphs"
+              [queryParams]="{year: selectedYear}"
+              class="chart-link">
+              Analyse détaillée
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Alertes Anomalies -->
+    <section class="anomalies-section" *ngIf="!isLoading && anomalyStats">
+      <div class="section-header">
+        <h3 class="section-title">Surveillance des Anomalies</h3>
+        <p class="section-subtitle">Détection automatique des problèmes énergétiques</p>
+      </div>
+
+      <div class="anomaly-cards">
+        <div class="anomaly-card" [class.critical]="anomalyStats.critical_anomalies > 0">
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Anomalies Actives</h4>
+            <div class="anomaly-value">{{ anomalyStats.total_active_anomalies }}</div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies > 0">
+              {{ anomalyStats.critical_anomalies }} critique(s) nécessitant une attention immédiate
+            </div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies === 0">
+              Aucune anomalie critique détectée
+            </div>
+          </div>
+          <div class="anomaly-trend" *ngIf="anomalyStats.trend">
+            <span class="trend-indicator" [class.positive]="anomalyStats.trend === 'decreasing'"
+                  [class.negative]="anomalyStats.trend === 'increasing'">
+              {{ anomalyStats.trend === 'decreasing' ? '↘' : '↗' }}
+            </span>
+            <span class="trend-text">
+              {{ anomalyStats.trend === 'decreasing' ? 'Amélioration' : 'Augmentation' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="anomaly-card">
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Dernière Détection</h4>
+            <div class="anomaly-value">
+              {{ anomalyStats.last_detection ? (anomalyStats.last_detection | date:'short') : 'Aucune' }}
+            </div>
+            <div class="anomaly-subtext">Scan automatique quotidien</div>
+          </div>
+          <div class="anomaly-status" [class.scan-due]="isScanDue(anomalyStats.last_detection)">
+            {{ isScanDue(anomalyStats.last_detection) ? 'Scan attendu' : 'À jour' }}
+          </div>
+        </div>
+
+        <a routerLink="/user/anomalies" class="anomaly-card action-card">
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Voir les Anomalies</h4>
+            <div class="anomaly-subtext">Consulter le détail des problèmes détectés</div>
+          </div>
+          <div class="action-arrow">→</div>
+        </a>
+
+        <div class="anomaly-card info-card" *ngIf="anomalyStats.most_common_type">
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Type le plus fréquent</h4>
+            <div class="anomaly-value">{{ formatAnomalyType(anomalyStats.most_common_type) }}</div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.most_common_type_count">
+              {{ anomalyStats.most_common_type_count }} occurrence(s)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résumé des anomalies par type -->
+      <div class="anomaly-summary" *ngIf="anomalyStats.anomalies_by_type && getAnomalyTypes(anomalyStats.anomalies_by_type).length > 0">
+        <h4 class="summary-title">Répartition par type d'anomalie</h4>
+        <div class="summary-chart">
+          <div class="chart-bars">
+            <div *ngFor="let type of getAnomalyTypes(anomalyStats.anomalies_by_type)"
+                 class="chart-bar-container">
+              <div class="chart-bar" [style.height]="getBarHeight(anomalyStats.anomalies_by_type[type], anomalyStats.anomalies_by_type)">
+                <span class="bar-value">{{ anomalyStats.anomalies_by_type[type] }}</span>
+              </div>
+              <span class="bar-label">{{ formatAnomalyType(type) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Actions rapides pour utilisateur -->
+    <section class="actions-section" *ngIf="!isLoading">
+      <div class="actions-header">
+        <h3 class="actions-title">Accès Rapide</h3>
+        <p class="actions-subtitle">Navigation vers les principales fonctionnalités</p>
+      </div>
+
+      <div class="actions-grid">
+        <a routerLink="/user/electricity-graphs" class="action-card primary-action">
+          <div class="action-icon energy"></div>
+          <div class="action-content">
+            <h4 class="action-title">Graphiques Énergie</h4>
+            <p class="action-description">Visualiser les données de consommation électrique</p>
+          </div>
+        </a>
+
+        <a routerLink="/user/water-graphs" class="action-card secondary-action">
+          <div class="action-icon water"></div>
+          <div class="action-content">
+            <h4 class="action-title">Graphiques Eau</h4>
+            <p class="action-description">Visualiser les données de production d'eau</p>
+          </div>
+        </a>
+
+        <a routerLink="/user/anomalies" class="action-card tertiary-action">
+          <div class="action-icon report"></div>
+          <div class="action-content">
+            <h4 class="action-title">Anomalies</h4>
+            <p class="action-description">Consulter les anomalies détectées</p>
+          </div>
+        </a>
+
+        <a routerLink="/user/reports" class="action-card quaternary-action">
+          <div class="action-icon users"></div>
+          <div class="action-content">
+            <h4 class="action-title">Rapports</h4>
+            <p class="action-description">Accéder aux rapports d'analyse</p>
+          </div>
+        </a>
+      </div>
+    </section>
+  </div>
+</div>

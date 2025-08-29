@@ -1,16 +1,5 @@
 <!-- dashboard.component.html -->
 <div class="dashboard-container">
-  <!-- Bouton flottant pour le chatbot -->
-  <button class="chatbot-toggle-btn" (click)="toggleChatbot()"
-          [class.active]="showChatbot">
-    🤖
-    <span class="notification-badge" *ngIf="anomalyStats && anomalyStats.total_active_anomalies > 0">
-      {{ anomalyStats.total_active_anomalies }}
-    </span>
-  </button>
-
-  <!-- Widget chatbot -->
-  <app-chatbot-widget *ngIf="showChatbot" class="chatbot-widget"></app-chatbot-widget>
   <div class="dashboard-content">
     <!-- En-tête du tableau de bord -->
     <header class="dashboard-header">
@@ -170,24 +159,36 @@
     <!-- Section Alertes Anomalies -->
     <section class="anomalies-section" *ngIf="!isLoading && anomalyStats">
       <div class="section-header">
-        <h3 class="section-title">🛡️ Surveillance des Anomalies</h3>
-        <p class="section-subtitle">Détection automatique des problèmes</p>
+        <h3 class="section-title">Surveillance des Anomalies</h3>
+        <p class="section-subtitle">Détection automatique des problèmes énergétiques</p>
       </div>
 
       <div class="anomaly-cards">
         <div class="anomaly-card" [class.critical]="anomalyStats.critical_anomalies > 0">
-          <div class="anomaly-icon">⚠️</div>
+
           <div class="anomaly-content">
             <h4 class="anomaly-title">Anomalies Actives</h4>
             <div class="anomaly-value">{{ anomalyStats.total_active_anomalies }}</div>
             <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies > 0">
-              {{ anomalyStats.critical_anomalies }} critique(s)
+              {{ anomalyStats.critical_anomalies }} critique(s) nécessitant une attention immédiate
             </div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.critical_anomalies === 0">
+              Aucune anomalie critique détectée
+            </div>
+          </div>
+          <div class="anomaly-trend" *ngIf="anomalyStats.trend">
+        <span class="trend-indicator" [class.positive]="anomalyStats.trend === 'decreasing'"
+              [class.negative]="anomalyStats.trend === 'increasing'">
+          {{ anomalyStats.trend === 'decreasing' ? '↘' : '↗' }}
+        </span>
+            <span class="trend-text">
+          {{ anomalyStats.trend === 'decreasing' ? 'Amélioration' : 'Augmentation' }}
+        </span>
           </div>
         </div>
 
         <div class="anomaly-card">
-          <div class="anomaly-icon">🕒</div>
+
           <div class="anomaly-content">
             <h4 class="anomaly-title">Dernière Détection</h4>
             <div class="anomaly-value">
@@ -195,17 +196,48 @@
             </div>
             <div class="anomaly-subtext">Scan automatique quotidien</div>
           </div>
+          <div class="anomaly-status" [class.scan-due]="isScanDue(anomalyStats.last_detection)">
+            {{ isScanDue(anomalyStats.last_detection) ? 'Scan attendu' : 'À jour' }}
+          </div>
         </div>
 
         <a *ngIf="authService.isAdmin()"
            routerLink="/admin/anomalies"
            class="anomaly-card action-card">
-          <div class="anomaly-icon">📋</div>
+
           <div class="anomaly-content">
             <h4 class="anomaly-title">Gérer les Anomalies</h4>
-            <div class="anomaly-subtext">Voir le détail et résoudre</div>
+            <div class="anomaly-subtext">Voir le détail et résoudre les problèmes</div>
           </div>
+          <div class="action-arrow">→</div>
         </a>
+
+        <div class="anomaly-card info-card" *ngIf="anomalyStats.most_common_type">
+
+          <div class="anomaly-content">
+            <h4 class="anomaly-title">Type le plus fréquent</h4>
+            <div class="anomaly-value">{{ formatAnomalyType(anomalyStats.most_common_type) }}</div>
+            <div class="anomaly-subtext" *ngIf="anomalyStats.most_common_type_count">
+              {{ anomalyStats.most_common_type_count }} occurrence(s)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résumé des anomalies par type -->
+      <div class="anomaly-summary" *ngIf="anomalyStats.anomalies_by_type && getAnomalyTypes(anomalyStats.anomalies_by_type).length > 0">
+        <h4 class="summary-title">Répartition par type d'anomalie</h4>
+        <div class="summary-chart">
+          <div class="chart-bars">
+            <div *ngFor="let type of getAnomalyTypes(anomalyStats.anomalies_by_type)"
+                 class="chart-bar-container">
+              <div class="chart-bar" [style.height]="getBarHeight(anomalyStats.anomalies_by_type[type], anomalyStats.anomalies_by_type)">
+                <span class="bar-value">{{ anomalyStats.anomalies_by_type[type] }}</span>
+              </div>
+              <span class="bar-label">{{ formatAnomalyType(type) }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

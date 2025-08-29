@@ -1,0 +1,254 @@
+<div class="anomaly-management-container">
+  <!-- Alert message -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
+    </div>
+  </div>
+
+  <!-- Header Section -->
+  <header class="anomaly-header">
+    <div class="header-content">
+      <h1 class="anomaly-title">Gestion des Anomalies</h1>
+      <p class="anomaly-subtitle">Surveillance et résolution des problèmes détectés</p>
+    </div>
+    <div class="header-actions">
+      <button (click)="loadAnomalies()" class="action-button primary" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-small"></span>
+        {{ isLoading ? 'Chargement...' : 'Actualiser' }}
+      </button>
+      <button (click)="triggerScan()" class="action-button secondary" [disabled]="isLoading">
+        <span *ngIf="isLoading" class="spinner-small"></span>
+        {{ isLoading ? 'Analyse...' : 'Lancer une analyse' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Statistics Card -->
+  <section class="stats-card">
+    <div class="stats-header">
+      <h4>Statistiques des Anomalies</h4>
+    </div>
+
+    <div class="stats-content" *ngIf="stats">
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h3>Anomalies Actives</h3>
+            <span class="stat-value">{{ stats.total_active_anomalies }}</span>
+            <p class="stat-desc">Nécessitant une attention</p>
+          </div>
+        </div>
+
+        <div class="stat-item critical">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h3>Anomalies Critiques</h3>
+            <span class="stat-value">{{ stats.critical_anomalies }}</span>
+            <p class="stat-desc">Intervention immédiate</p>
+          </div>
+        </div>
+
+        <div class="stat-item" *ngIf="stats.last_detection">
+          <div class="stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+            </svg>
+          </div>
+          <div class="stat-info">
+            <h3>Dernière Détection</h3>
+            <span class="stat-value">{{ formatDate(stats.last_detection) }}</span>
+            <p class="stat-desc">Dernière anomalie détectée</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters Section -->
+  <section class="filters-card">
+    <div class="filters-header">
+      <h4>Filtres de recherche</h4>
+    </div>
+
+    <div class="filters-content">
+      <div class="filters-grid">
+        <div class="form-group">
+          <label class="form-label">Type d'anomalie</label>
+          <select id="typeFilter" class="form-select" [(ngModel)]="filters.type" (change)="applyFilters()">
+            <option *ngFor="let option of typesAnomalie" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Niveau de sévérité</label>
+          <select id="severityFilter" class="form-select" [(ngModel)]="filters.severite" (change)="applyFilters()">
+            <option *ngFor="let option of niveauxSeverite" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Source de données</label>
+          <select id="sourceFilter" class="form-select" [(ngModel)]="filters.source" (change)="applyFilters()">
+            <option *ngFor="let option of sourcesDonnees" [value]="option.value">{{ option.label }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date de début</label>
+          <input id="startDate" type="date" class="form-control" [(ngModel)]="filters.dateDebut" (change)="applyFilters()">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Date de fin</label>
+          <input id="endDate" type="date" class="form-control" [(ngModel)]="filters.dateFin" (change)="applyFilters()">
+        </div>
+
+        <div class="form-group submit-button-group">
+          <label class="form-label" style="visibility: hidden;">Réinitialiser</label>
+          <button (click)="resetFilters()" class="action-button secondary">
+            Réinitialiser
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-toggle">
+        <label class="toggle-switch">
+          <input type="checkbox" [(ngModel)]="showOnlyResolved" (change)="toggleResolvedFilter()">
+          <span class="slider"></span>
+          Afficher uniquement les anomalies résolues
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- Status Indicators -->
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <span>Chargement des anomalies...</span>
+  </div>
+
+  <div *ngIf="!isLoading && filteredAnomalies.length === 0" class="status-card no-data">
+    <i class="icon info"></i>
+    <span>{{ showOnlyResolved ? 'Aucune anomalie résolue correspondant à vos critères' : 'Aucune anomalie correspondant à vos critères' }}</span>
+    <button (click)="resetFilters()" class="action-button primary" style="margin-left: auto;">Réinitialiser les filtres</button>
+  </div>
+
+  <!-- Anomalies List -->
+  <section *ngIf="!isLoading && filteredAnomalies.length > 0" class="data-section">
+    <div class="section-header">
+      <h2>Liste des Anomalies</h2>
+      <div class="section-header-controls">
+        <span class="result-count">{{ filteredAnomalies.length }} résultat(s)</span>
+
+        <!-- Sélecteur d'éléments par page -->
+        <div class="items-per-page-selector">
+          <label>Afficher</label>
+          <select [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+          <label>éléments par page</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="anomalies-list">
+      <div *ngFor="let anomaly of paginatedAnomalies" class="anomaly-card" [class.resolved]="anomaly.resolved">
+        <div class="anomaly-main">
+          <div class="anomaly-header">
+            <div class="anomaly-badges">
+              <span class="badge resolved-badge" *ngIf="anomaly.resolved">
+                Résolu
+              </span>
+              <span class="badge" [class]="getSeverityClass(anomaly.severityScore)">
+                {{ getSeveriteLabel(anomaly.severityScore) }}
+              </span>
+              <span class="badge type-badge">
+                {{ getTypeAnomalieLabel(anomaly.anomalyType) }}
+              </span>
+            </div>
+            <span class="date">{{ formatDate(anomaly.detectedAt) }}</span>
+          </div>
+
+          <div class="anomaly-content">
+            <h4>{{ getAnomalyTitle(anomaly) }}</h4>
+            <p class="anomaly-description">{{ anomaly.description }}</p>
+
+            <div class="anomaly-meta">
+              <div class="meta-item">
+                <span class="meta-label">Score:</span>
+                <span class="meta-value">{{ anomaly.severityScore | number:'1.2-2' }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Période:</span>
+                <span class="meta-value">{{ anomaly.month }}/{{ anomaly.year }}</span>
+              </div>
+              <div class="meta-item">
+                <span class="meta-label">Source:</span>
+                <span class="meta-value">{{ getSourceLabel(anomaly.sourceType) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="anomaly-actions" *ngIf="!anomaly.resolved && authService.isAdmin()">
+          <button
+            (click)="resolveAnomaly(anomaly.id)"
+            class="action-button success"
+            [disabled]="resolvingAnomalies[anomaly.id]">
+            <span *ngIf="resolvingAnomalies[anomaly.id]" class="spinner-small"></span>
+            {{ resolvingAnomalies[anomaly.id] ? 'Traitement...' : 'Marquer comme résolu' }}
+          </button>
+        </div>
+
+        <div class="resolution-info" *ngIf="anomaly.resolved">
+          <div class="resolved-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div class="resolution-details">
+            <p><strong>Résolu par {{ anomaly.resolvedBy }}</strong></p>
+            <p *ngIf="anomaly.description.includes('Résolution:')" class="resolution-notes">
+              Notes: {{ anomaly.description.split('Résolution:')[1] }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button
+        (click)="previousPage()"
+        [disabled]="currentPage === 1"
+        class="pagination-button">
+        Précédent
+      </button>
+
+      <span class="pagination-info">
+        Page {{ currentPage }} sur {{ totalPages }}
+      </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages"
+        class="pagination-button">
+        Suivant
+      </button>
+    </div>
+  </section>
+</div>

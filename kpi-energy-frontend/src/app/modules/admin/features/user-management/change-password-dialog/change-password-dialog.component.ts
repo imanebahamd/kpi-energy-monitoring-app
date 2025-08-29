@@ -19,15 +19,10 @@ import {NgIf} from '@angular/common';
   selector: 'app-change-password-dialog',
   templateUrl: './change-password-dialog.component.html',
   imports: [
-    MatDialogActions,
-    MatProgressSpinner,
-    MatDialogTitle,
-    MatFormField,
-    MatDialogContent,
+
     FormsModule,
-    MatLabel,
-    MatInput,
-    MatButton,
+
+
     NgIf,
   ],
   styleUrls: ['./change-password-dialog.component.scss']

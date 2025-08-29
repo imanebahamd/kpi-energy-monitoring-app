@@ -63,7 +63,6 @@ public class SecurityConfig {
                         ).hasAnyRole("USER", "ADMIN")
                         .requestMatchers("/api/admin/audit/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/chatbot/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter(), UsernamePasswordAuthenticationFilter.class);

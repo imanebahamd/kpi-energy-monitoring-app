@@ -1,49 +1,70 @@
 <div class="water-graphs-container">
-  <div class="water-graphs-content">
-    <!-- Alerte dynamique -->
-    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
-      <div class="alert-content">
-        {{ alertMessage }}
+  <!-- Alerte dynamique -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
+    </div>
+  </div>
+
+  <!-- En-tête -->
+  <header class="water-header">
+    <div class="header-content">
+      <h1 class="water-title">Visualisation de la Production d'Eau</h1>
+      <p class="water-subtitle">Analyse visuelle des données de production d'eau</p>
+    </div>
+    <div class="header-actions">
+      <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="action-button primary">
+        <i class="icon add"></i> Saisir Nouvelles Données
+      </a>
+    </div>
+  </header>
+
+  <!-- Contrôles -->
+  <div class="filters-card">
+    <div class="date-selector">
+      <div class="date-header">
+        <div class="icon">💧</div>
+        <h4>Paramètres de visualisation</h4>
+      </div>
+
+      <div class="filters-content">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <input type="number" class="form-control" [(ngModel)]="selectedYear"
+                   (change)="loadData()" min="2000" max="2100"
+                   placeholder="Entrez l'année" [disabled]="isLoading">
+          </div>
+
+          <div class="form-group submit-button-group">
+            <label class="form-label" style="visibility: hidden;">Submit</label>
+            <button (click)="loadData()"
+                    [disabled]="isLoading"
+                    class="action-button primary">
+              <span *ngIf="!isLoading">Afficher les données</span>
+              <span *ngIf="isLoading" class="spinner"></span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- En-tête -->
-    <header class="graphs-header">
-      <h1 class="header-title">Visualisation de la Production d'Eau</h1>
+  <!-- Messages d'état -->
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
 
-      <div class="header-actions">
-        <a [routerLink]="[getRoutePrefix(), 'water-saisie']" class="btn btn-primary">
-          Saisir Nouvelles Données
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'water-monthly']" class="btn btn-secondary">
-          Tableau Mensuel
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="btn btn-info">
-          Tableau Annuel
-        </a>
-      </div>
-    </header>
+  <div *ngIf="!isLoading && monthlyData.length === 0" class="status-card no-data">
+    <i class="icon info"></i>
+    <span>Aucune donnée disponible pour l'année sélectionnée</span>
+  </div>
 
-    <!-- Sélecteur d'année -->
-    <div class="year-selector">
-      <label>Année:</label>
-      <select [(ngModel)]="selectedYear" (change)="loadData()" [disabled]="isLoading">
-        <option *ngFor="let year of years" [value]="year">{{year}}</option>
-      </select>
-      <span *ngIf="isLoading" class="loading-spinner"></span>
-    </div>
-
-    <!-- Messages d'état -->
-    <div *ngIf="isLoading" class="status-message loading">
-      Chargement des données en cours...
-    </div>
-
-    <div *ngIf="!isLoading && monthlyData.length === 0" class="status-message no-data">
-      Aucune donnée disponible pour l'année sélectionnée
-    </div>
-
-    <!-- Onglets et graphiques -->
-    <mat-tab-group *ngIf="!isLoading && monthlyData.length > 0">
+  <!-- Onglets et graphiques -->
+  <div *ngIf="!isLoading && monthlyData.length > 0" class="tabs-container">
+    <mat-tab-group>
       <mat-tab label="Tendance Mensuelle">
         <div class="chart-container">
           <p-chart type="line" [data]="monthlyTrendChart" [options]="chartOptions"></p-chart>
@@ -62,31 +83,37 @@
         </div>
       </mat-tab>
     </mat-tab-group>
+  </div>
 
-    <!-- Résumé des données -->
-    <div *ngIf="!isLoading && monthlyData.length > 0" class="data-summary">
-      <h2 class="summary-title">Résumé des Données pour {{selectedYear}}</h2>
-      <div class="summary-cards">
-        <div class="summary-card">
-          <h3 class="card-title">Production Totale</h3>
-          <p class="card-value">{{ getTotalProduction() | number:'1.2-2' }} m³</p>
-        </div>
 
-        <div class="summary-card">
-          <h3 class="card-title">Moyenne Mensuelle</h3>
-          <p class="card-value">{{ getAverageProduction() | number:'1.2-2' }} m³</p>
-        </div>
 
-        <div class="summary-card">
-          <h3 class="card-title">Max Mensuel</h3>
-          <p class="card-value">{{ getMaxProduction() | number:'1.2-2' }} m³</p>
-        </div>
+  <!-- Navigation section -->
+  <div class="navigation-section">
+    <div class="navigation-header">
+      <h3>Navigation Rapide</h3>
+      <p>Accédez aux autres sections du module eau</p>
+    </div>
 
-        <div class="summary-card">
-          <h3 class="card-title">Min Mensuel</h3>
-          <p class="card-value">{{ getMinProduction() | number:'1.2-2' }} m³</p>
+    <div class="navigation-grid">
+      <a [routerLink]="[getRoutePrefix(), 'water-monthly']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar-month"></i>
         </div>
-      </div>
+        <div class="nav-content">
+          <h4>Tableau Mensuel</h4>
+          <p>Consulter les données mensuelles de production d'eau</p>
+        </div>
+      </a>
+
+      <a [routerLink]="[getRoutePrefix(), 'water-annual']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Tableau Annuel</h4>
+          <p>Analyser les données annuelles consolidées</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>

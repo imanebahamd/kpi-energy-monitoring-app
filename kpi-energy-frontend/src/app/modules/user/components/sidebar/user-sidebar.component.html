@@ -1,62 +1,115 @@
-<div class="sidebar" [class.mobile-sidebar]="isMobile" [class.show]="sidebarOpen">
+<div class="modern-sidebar" [class.mobile-sidebar]="isMobile" [class.show]="sidebarOpen">
+  <!-- Navigation Container -->
+  <nav class="navigation-container">
+    <div class="nav-section" *ngFor="let section of organizedMenuItems">
+      <!-- Section Title -->
+      <div class="section-title" *ngIf="section.title">
+        <span class="title-text">{{ section.title }}</span>
+        <div class="title-line"></div>
+      </div>
 
-  <ul class="sidebar-menu">
-    <ng-container *ngFor="let item of menuItems">
-      <li class="menu-item">
-        <ng-container *ngIf="!item.children; else hasChildren">
-          <a [routerLink]="item.path" routerLinkActive="active">
-            <span class="menu-label">{{ item.label }}</span>
-          </a>
-        </ng-container>
+      <!-- Menu Items -->
+      <ul class="nav-list">
+        <ng-container *ngFor="let item of section.items">
+          <!-- Simple Menu Item -->
+          <li class="nav-item" *ngIf="!item.children">
+            <a [routerLink]="item.path"
+               routerLinkActive="active"
+               class="nav-link"
+               (click)="closeOnMobile()">
+              <div class="link-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <ng-container [ngSwitch]="item.icon">
+                    <path *ngSwitchCase="'dashboard'" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    <path *ngSwitchCase="'energy'" d="M11 21h2v-2h-2v2zm0-4h2v-2h-2v2zm0-4h2V9h-2v4zm0-6h2V3h-2v4z"/>
+                    <path *ngSwitchCase="'water'" d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
+                    <path *ngSwitchCase="'report'" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/>
+                    <path *ngSwitchCase="'tables'" d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/>
+                    <path *ngSwitchCase="'charts'" d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L3.5 15.9l.01 2.59z"/>
+                    <circle *ngSwitchDefault cx="12" cy="12" r="3"/>
+                  </ng-container>
+                </svg>
+              </div>
+              <span class="link-text">{{ item.label }}</span>
+            </a>
+          </li>
 
-        <ng-template #hasChildren>
-          <div class="menu-group"
-               (click)="!item.alwaysExpanded && toggleExpand(item.label)"
-               [class.expanded]="isExpanded[item.label]"
-               [class.always-expanded]="item.alwaysExpanded"
-               [class.clickable]="!item.alwaysExpanded">
-            <span class="menu-label">{{ item.label }}</span>
-            <span class="expand-icon" *ngIf="!item.alwaysExpanded">
-              {{ isExpanded[item.label] ? '▼' : '►' }}
-            </span>
-          </div>
+          <!-- Expandable Menu Item -->
+          <li class="nav-item expandable" *ngIf="item.children">
+            <div class="nav-group"
+                 [class.expanded]="isExpanded[item.label]"
+                 (click)="toggleExpand(item.label)">
+              <div class="group-header">
+                <div class="link-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <ng-container [ngSwitch]="item.icon">
+                      <path *ngSwitchCase="'tables'" d="M3 3v18h18V3H3zm16 16H5V5h14v14z"/>
+                      <path *ngSwitchCase="'charts'" d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L3.5 15.9l.01 2.59z"/>
+                      <circle *ngSwitchDefault cx="12" cy="12" r="3"/>
+                    </ng-container>
+                  </svg>
+                </div>
+                <span class="group-text">{{ item.label }}</span>
+                <div class="expand-indicator">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
 
-          <div class="submenu-wrapper" [class.expanded]="isExpanded[item.label]">
-            <ul class="submenu">
-              <ng-container *ngFor="let child of item.children">
-                <li *ngIf="!child.children; else hasGrandChildren" class="submenu-item">
-                  <a [routerLink]="child.path" routerLinkActive="active">
-                    <span class="submenu-label">{{ child.label }}</span>
-                  </a>
-                </li>
+            <!-- Submenu -->
+            <div class="submenu-container" [class.expanded]="isExpanded[item.label]">
+              <ul class="submenu-list">
+                <ng-container *ngFor="let child of item.children">
+                  <!-- Simple Child Item -->
+                  <li class="submenu-item" *ngIf="!child.children">
+                    <a [routerLink]="child.path"
+                       routerLinkActive="active"
+                       class="submenu-link"
+                       (click)="closeOnMobile()">
+                      <div class="submenu-indicator"></div>
+                      <span class="submenu-text">{{ child.label }}</span>
+                    </a>
+                  </li>
 
-                <ng-template #hasGrandChildren>
-                  <li class="submenu-item">
+                  <!-- Nested Child Item -->
+                  <li class="submenu-item nested" *ngIf="child.children">
                     <div class="submenu-group"
-                         (click)="toggleExpand(child.label)"
-                         [class.expanded]="isExpanded[child.label]">
-                      <span class="submenu-label">{{ child.label }}</span>
-                      <span class="expand-icon">
-                        {{ isExpanded[child.label] ? '▼' : '►' }}
-                      </span>
+                         [class.expanded]="isExpanded[child.label]"
+                         (click)="toggleExpand(child.label)">
+                      <div class="submenu-indicator"></div>
+                      <span class="submenu-text">{{ child.label }}</span>
+                      <div class="nested-expand-indicator">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                      </div>
                     </div>
 
-                    <div class="nested-submenu-wrapper" [class.expanded]="isExpanded[child.label]">
-                      <ul class="nested-submenu">
-                        <li *ngFor="let grandChild of child.children" class="nested-item">
-                          <a [routerLink]="grandChild.path" routerLinkActive="active">
-                            <span class="nested-label">{{ grandChild.label }}</span>
+                    <!-- Nested Submenu -->
+                    <div class="nested-submenu-container" [class.expanded]="isExpanded[child.label]">
+                      <ul class="nested-submenu-list">
+                        <li class="nested-submenu-item" *ngFor="let grandChild of child.children">
+                          <a [routerLink]="grandChild.path"
+                             routerLinkActive="active"
+                             class="nested-submenu-link"
+                             (click)="closeOnMobile()">
+                            <div class="nested-indicator"></div>
+                            <span class="nested-text">{{ grandChild.label }}</span>
                           </a>
                         </li>
                       </ul>
                     </div>
                   </li>
-                </ng-template>
-              </ng-container>
-            </ul>
-          </div>
-        </ng-template>
-      </li>
-    </ng-container>
-  </ul>
+                </ng-container>
+              </ul>
+            </div>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </nav>
 </div>
+
+<div class="sidebar-overlay" (click)="closeSidebar.emit()" *ngIf="isMobile && sidebarOpen"></div>

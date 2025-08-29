@@ -1,85 +1,127 @@
 <div class="electricity-graphs-container">
-  <div class="electricity-graphs-content">
-    <!-- Alerte dynamique -->
-    <div *ngIf="showAlert" class="alert-container" [attr.data-type]="alertType">
-      <div class="alert-content">
-        {{ alertMessage }}
-      </div>
+  <!-- Alerte dynamique -->
+  <div *ngIf="showAlert" class="dynamic-alert" [ngClass]="alertType">
+    <div class="alert-content">
+      <i class="alert-icon" [ngClass]="alertType"></i>
+      <span>{{ alertMessage }}</span>
     </div>
+  </div>
 
-    <!-- En-tête -->
-    <header class="graphs-header">
-      <h1 class="header-title">Visualisation de la Consomation </h1>
-
-      <div class="header-actions">
-        <a [routerLink]="[getRoutePrefix(), 'electricity-saisie']" class="btn btn-primary">
-          <i class="icon add"></i> Saisir Nouvelles Données
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="btn btn-secondary">
-          <i class="icon calendar-month"></i> Tableau Mensuel
-        </a>
-        <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="btn btn-info">
-          <i class="icon calendar"></i> Tableau Annuel
-        </a>
-      </div>
-    </header>
-
-    <!-- Message d'information -->
-    <div class="info-message">
-      <i class="icon info"></i>
-      <p>Cette interface vous permet de visualiser les données électriques sous forme graphique. Sélectionnez une année et le type de données à afficher.</p>
+  <!-- En-tête -->
+  <header class="electricity-header">
+    <div class="header-content">
+      <h1 class="electricity-title">Visualisation Graphique Électrique</h1>
+      <p class="electricity-subtitle">Analyse visuelle des données énergétiques</p>
     </div>
+    <div class="header-actions">
+      <a [routerLink]="[getRoutePrefix(), 'electricity-saisie']" class="action-button primary">
+        <i class="icon add"></i> Saisir Nouvelles Données
+      </a>
 
-    <!-- Contrôles -->
-    <div class="controls">
-      <div class="control-group">
-        <label>Année:
-          <input type="number" [(ngModel)]="year" (change)="loadData()" min="2000" max="2100">
-        </label>
+    </div>
+  </header>
+
+  <!-- Contrôles -->
+  <div class="filters-card">
+    <div class="date-selector">
+      <div class="date-header">
+        <div class="icon">📊</div>
+        <h4>Paramètres de visualisation</h4>
       </div>
 
-      <div class="control-group">
-        <label>Type de graphique:
-          <select [(ngModel)]="chartType" (change)="changeChartType(chartType)">
-            <option value="line">Courbe</option>
-            <option value="bar">Barres</option>
-          </select>
-        </label>
+      <div class="filters-content">
+        <div class="filter-row">
+          <div class="form-group">
+            <label class="form-label">Année</label>
+            <input type="number" class="form-control" [(ngModel)]="year"
+                   (change)="loadData()" min="2000" max="2100"
+                   placeholder="Entrez l'année" [disabled]="isLoading">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Type de graphique</label>
+            <select class="form-select" [(ngModel)]="chartType" (change)="changeChartType(chartType)" [disabled]="isLoading">
+              <option value="line">Courbe</option>
+              <option value="bar">Barres</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Données à afficher</label>
+            <select class="form-select" [(ngModel)]="graphType" (change)="changeGraphType(graphType)" [disabled]="isLoading">
+              <option value="consumption">Consommation (kWh)</option>
+              <option value="powerFactor">Facteur de puissance</option>
+            </select>
+          </div>
+
+          <div class="form-group submit-button-group">
+            <label class="form-label" style="visibility: hidden;">Submit</label>
+            <button (click)="loadData()"
+                    [disabled]="!year || isLoading"
+                    class="action-button primary">
+              <span *ngIf="!isLoading">Afficher les données</span>
+              <span *ngIf="isLoading" class="spinner"></span>
+            </button>
+          </div>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <div class="control-group">
-        <label>Données à afficher:
-          <select [(ngModel)]="graphType" (change)="changeGraphType(graphType)">
-            <option value="consumption">Consommation (kWh)</option>
-            <option value="powerFactor">Facteur de puissance</option>
-          </select>
-        </label>
-      </div>
+  <!-- Messages d'état -->
+  <div *ngIf="isLoading" class="status-card loading">
+    <div class="spinner"></div>
+    <span>Chargement en cours...</span>
+  </div>
+
+  <div *ngIf="error" class="status-card error">
+    <i class="icon warning"></i>
+    <span>{{ error }}</span>
+  </div>
+
+  <div *ngIf="noDataAvailable && !error && !isLoading" class="status-card no-data">
+    <i class="icon info"></i>
+    <span>Aucune donnée disponible pour l'année {{ year }}</span>
+  </div>
+
+  <!-- Graphique -->
+  <div class="chart-wrapper" *ngIf="!isLoading && !noDataAvailable">
+    <div class="chart-container">
+      <canvas baseChart
+              [type]="chartType"
+              [data]="currentChartData"
+              [options]="currentChartOptions">
+      </canvas>
+    </div>
+  </div>
+
+  <!-- Navigation section -->
+  <div class="navigation-section">
+    <div class="navigation-header">
+      <h3>Navigation Rapide</h3>
+      <p>Accédez aux autres sections du module énergie</p>
     </div>
 
-    <!-- Messages d'état -->
-    <div *ngIf="isLoading" class="status-message loading">
-      <span class="spinner"></span> Chargement en cours...
-    </div>
+    <div class="navigation-grid">
+      <a [routerLink]="[getRoutePrefix(), 'electricity-monthly']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar-month"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Tableau Mensuel</h4>
+          <p>Consulter les données mensuelles d'énergie</p>
+        </div>
+      </a>
 
-    <div *ngIf="error" class="status-message error">
-      {{ error }}
-    </div>
-
-    <div *ngIf="noDataAvailable && !error && !isLoading" class="status-message no-data">
-      <i class="icon info"></i>
-      <span>Aucune donnée disponible pour l'année {{ year }}</span>
-    </div>
-
-    <!-- Graphique -->
-    <div class="chart-wrapper" *ngIf="!isLoading && !noDataAvailable">
-      <div class="chart-container">
-        <canvas baseChart
-                [type]="chartType"
-                [data]="currentChartData"
-                [options]="currentChartOptions">
-        </canvas>
-      </div>
+      <a [routerLink]="[getRoutePrefix(), 'electricity-annual']" class="navigation-card">
+        <div class="nav-icon">
+          <i class="icon calendar"></i>
+        </div>
+        <div class="nav-content">
+          <h4>Tableau Annuel</h4>
+          <p>Analyser les données annuelles consolidées</p>
+        </div>
+      </a>
     </div>
   </div>
 </div>
