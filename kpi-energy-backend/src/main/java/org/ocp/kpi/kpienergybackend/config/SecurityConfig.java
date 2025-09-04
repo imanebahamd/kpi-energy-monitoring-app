@@ -30,7 +30,8 @@ import java.util.Arrays;
 public class SecurityConfig {
     private final JwtAuthenticationEntryPoint unauthorizedHandler;
     private final JwtTokenProvider tokenProvider;
-    private final CustomUserDetailsService customUserDetailsService; // Injection directe de votre implémentation
+    private final CustomUserDetailsService customUserDetailsService;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

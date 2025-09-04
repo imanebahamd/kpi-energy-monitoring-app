@@ -82,7 +82,6 @@ public class Utilisateur implements UserDetails {
     @Column(name = "reset_token_expiry")
     private LocalDateTime resetTokenExpiry;
 
-    // Getters et setters
     public String getResetToken() {
         return resetToken;
     }
@@ -123,5 +122,13 @@ public class Utilisateur implements UserDetails {
 
     public void setFonction(String fonction) {
         this.fonction = fonction;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getMotDePasse() {
+        return motDePasse;
     }
 }

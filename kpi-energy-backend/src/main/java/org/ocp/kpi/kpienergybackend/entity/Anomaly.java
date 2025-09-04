@@ -47,4 +47,44 @@ public class Anomaly {
     public void onCreate() {
         detectedAt = LocalDateTime.now();
     }
+
+    public Boolean getResolved() {
+        return resolved;
+    }
+
+    public void setResolved(Boolean resolved) {
+        this.resolved = resolved;
+    }
+
+    public LocalDateTime getResolvedAt() {
+        return resolvedAt;
+    }
+
+    public void setResolvedAt(LocalDateTime resolvedAt) {
+        this.resolvedAt = resolvedAt;
+    }
+
+    public String getResolvedBy() {
+        return resolvedBy;
+    }
+
+    public void setResolvedBy(String resolvedBy) {
+        this.resolvedBy = resolvedBy;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getDetectedAt() {
+        return detectedAt;
+    }
+
+    public void setDetectedAt(LocalDateTime detectedAt) {
+        this.detectedAt = detectedAt;
+    }
 }
