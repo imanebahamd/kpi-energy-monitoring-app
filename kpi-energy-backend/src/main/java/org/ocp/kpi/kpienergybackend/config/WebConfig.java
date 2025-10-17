@@ -14,6 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .exposedHeaders("Content-Disposition")
                 .allowCredentials(true)
-                .maxAge(3600); // Ajout du cache CORS
+                .maxAge(3600);
     }
 }

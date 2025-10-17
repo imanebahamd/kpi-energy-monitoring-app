@@ -14,7 +14,7 @@ public class AppConfig {
 
     @Data
     public static class ResetPassword {
-        private int expiration = 24; // heures
+        private int expiration = 24;
     }
 
     @Data

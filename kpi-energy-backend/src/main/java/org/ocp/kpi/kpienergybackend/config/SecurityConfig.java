@@ -87,7 +87,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthFilter jwtAuthFilter() {
-        return new JwtAuthFilter(tokenProvider, customUserDetailsService); // Utilisation du service injecté
+        return new JwtAuthFilter(tokenProvider, customUserDetailsService);
     }
 
     @Bean

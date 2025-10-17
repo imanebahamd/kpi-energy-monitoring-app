@@ -53,5 +53,4 @@ Thumbs.db
 /kpi-energy-backend/*.iml
 
 
-# Spring Boot sensitive config
-kpi-energy-backend/src/main/resources/application.properties
+.env
