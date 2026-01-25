@@ -171,11 +171,6 @@ cd kpi-energy-monitoring-app
 
 # Lancer avec Docker Compose
 docker-compose up -d
-
-# L'application sera accessible sur :
-# Frontend: http://localhost:4200
-# Backend: http://localhost:8080
-# AI Service: http://localhost:5000
 ```
 
 
